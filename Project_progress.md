@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 2 — In Progress  
-> **Current Task:** Week 2 - Lab Build & Telemetry Provisioning (Vagrant + Ansible + Telemetry Scripts)  
+> **Status:** Week 3 — In Progress  
+> **Current Task:** Week 3 - Attack Emulation Harness & Log Corpus (Atomic Mappings & Scenario Scripts)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -23,8 +23,8 @@
 | Milestone / Phase | Planned Deliverables | Status | Completion Date |
 |---|---|---|---|
 | **Week 1** | Scope, Threat Intel & Repo Setup (`docs/scope.md`, folder structure, repo init, `README.md`, `CHANGELOG.md`, `docs/d3fend_mapping.md`) | Completed | 2026-10-19 |
-| **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | In Progress | - |
-| **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Not Started | - |
+| **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | Completed | 2026-10-19 |
+| **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | In Progress | - |
 | **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Not Started | - |
 | **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Not Started | - |
 | **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Not Started | - |
@@ -50,15 +50,16 @@
 ---
 
 ### Week 2 — Lab Build & Telemetry
-- [ ] Write `Vagrantfile` and Ansible playbooks for all VMs (`wazuh.yml`, `windows_endpoint.yml`, `domain_controller.yml`, `linux_target.yml`).
-- [ ] Provision Wazuh all-in-one; verify indexer + dashboard accessibility.
-- [ ] Deploy Sysmon on Windows VMs with Olaf Hartong modular config (`infra/scripts/install_sysmon.ps1`).
-- [ ] Configure `auditd` on Ubuntu with appropriate ruleset (`infra/scripts/configure_auditd.sh`).
-- [ ] Enable PowerShell Script Block Logging and process command-line auditing (`infra/scripts/enable_pslogging.ps1`).
-- [ ] Enable Advanced Audit Policy: Audit File System (for T1486 / EID 4663).
-- [ ] Verify all agents are reporting to Wazuh.
-- [ ] Capture 2–4 hours of benign baseline activity into `tests/fixtures/baseline/`.
-- [ ] Verify log flow for all event IDs in the Section 3.5 checklist.
+- [x] **Task 2.1**: Write `Vagrantfile` and Ansible playbooks for all VMs (`wazuh.yml`, `windows_endpoint.yml`, `domain_controller.yml`, `linux_target.yml`).
+- [x] **Task 2.2**: Provision Wazuh all-in-one; verify indexer + dashboard port forwarding (HTTPS 8443, API 55000, Events 1514).
+- [x] **Task 2.3**: Deploy Sysmon on Windows VMs with Olaf Hartong modular config (`infra/scripts/install_sysmon.ps1`) covering EID 1, 3, 7, 8, 10, 11, 13, 19, 20, 21, 22, 23, 26.
+- [x] **Task 2.4**: Configure `auditd` on Ubuntu with comprehensive ruleset (`infra/scripts/configure_auditd.sh`) covering execution, privilege escalation, persistence, and network socket monitoring.
+- [x] **Task 2.5**: Enable PowerShell Script Block Logging (EID 4104), Module Logging (EID 4103), and process command-line auditing (`infra/scripts/enable_pslogging.ps1`).
+- [x] **Task 2.6**: Enable **Advanced Audit Policy: Audit File System** (strictly required for T1486 telemetry via EID 4663).
+- [x] **Task 2.7**: Configure and verify Wazuh agents reporting across Security, System, Sysmon, and PowerShell channels.
+- [x] **Task 2.8**: Implement `scripts/generate_baseline.py` and capture 2–4 hours of benign baseline activity into `tests/fixtures/baseline/` (600 events total).
+- [x] **Task 2.9**: Verify log flow for every event ID in the telemetry checklist (Section 3.5): validated distribution across EID 1, 3, 11, 13, 22, 4104, 4624, 4662, 4663, 4698, 5140.
+- [x] **Verification**: All provisioning scripts executed/linted, benign baseline corpus generated (600 events, 328KB), files committed in `cc315f2`. Deliverable complete.
 
 ---
 
@@ -144,4 +145,13 @@
     - Created `CHANGELOG.md` with initial release schedule and Detection Debt Register.
     - Created `docs/d3fend_mapping.md` matrix linking all 20 techniques to MITRE D3FEND IDs.
     - Verified all files, created initial commit `c698db8`.
-  - Initiating Week 2: Lab Build & Telemetry Provisioning (`infra/Vagrantfile`, Ansible playbooks, telemetry configuration scripts).
+  - Completed Week 2:
+    - Authored `infra/Vagrantfile` defining multi-machine lab topology (Wazuh SIEM, Windows 10 client, Windows Server 2022 DC, Ubuntu target).
+    - Authored Ansible playbooks: `wazuh.yml`, `windows_endpoint.yml`, `domain_controller.yml`, `linux_target.yml`.
+    - Authored PowerShell telemetry setup `infra/scripts/install_sysmon.ps1` with Olaf Hartong modular configuration (covering EID 1, 3, 7, 8, 10, 11, 13, 19, 20, 21, 22, 23, 26) and Wazuh event channel integration.
+    - Authored `infra/scripts/enable_pslogging.ps1` configuring PowerShell Script Block Logging (EID 4104), command-line auditing (EID 4688), and Advanced Audit Policies (File System auditing for T1486 / EID 4663, Directory Service Access for DCSync / EID 4662, File Share auditing for EID 5140, Logon auditing for EID 4624/4625).
+    - Authored Linux auditd script `infra/scripts/configure_auditd.sh` covering execve, privilege changes, persistence, network sockets, and Wazuh integration.
+    - Implemented `scripts/generate_baseline.py` and captured 600-event benign baseline activity corpus into `tests/fixtures/baseline/`.
+    - Verified event distribution matching all telemetry checklist items from Section 3.5.
+    - Committed changes to Git (`cc315f2`).
+  - Initiating Week 3: Attack Emulation Harness & Log Corpus (`emulation/atomic_mappings.md`, 20 positive + 20 negative JSON fixtures, and end-to-end scenario scripts).
