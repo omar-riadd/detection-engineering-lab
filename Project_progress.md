@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 1 — In Progress  
-> **Current Task:** Week 1 - Repo Setup & Threat Intel Scoping  
+> **Status:** Week 2 — In Progress  
+> **Current Task:** Week 2 - Lab Build & Telemetry Provisioning (Vagrant + Ansible + Telemetry Scripts)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -22,8 +22,8 @@
 
 | Milestone / Phase | Planned Deliverables | Status | Completion Date |
 |---|---|---|---|
-| **Week 1** | Scope, Threat Intel & Repo Setup (`docs/scope.md`, folder structure, repo init, `README.md`, `CHANGELOG.md`, `docs/d3fend_mapping.md`) | In Progress | - |
-| **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | Not Started | - |
+| **Week 1** | Scope, Threat Intel & Repo Setup (`docs/scope.md`, folder structure, repo init, `README.md`, `CHANGELOG.md`, `docs/d3fend_mapping.md`) | Completed | 2026-10-19 |
+| **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | In Progress | - |
 | **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Not Started | - |
 | **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Not Started | - |
 | **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Not Started | - |
@@ -37,15 +37,15 @@
 ## 3. Detailed Weekly Task Breakdown
 
 ### Week 1 — Scope, Threat Intel & Repo Setup
-- [ ] **Task 1.1**: Read and annotate threat intel sources per scenario (CISA, Red Canary, DFIR Report).
-- [ ] **Task 1.2**: Finalise the 20 sub-techniques across 2 scenarios (Scenario A: AD Intrusion, Scenario B: Ransomware Precursor).
-- [ ] **Task 1.3**: Write `docs/scope.md` — document technique selection rationale with intel citations; note lab limitations (e.g., T1566.001 email delivery).
-- [ ] **Task 1.4**: Initialise Git repository with the full required folder structure (Section 2 of `PROJECT_PLAN.md`).
-- [ ] **Task 1.5**: Write `README.md` skeleton with architecture diagram placeholder and project metrics table structure.
-- [ ] **Task 1.6**: Set up branch protection guidelines and `.github/` workflow base.
-- [ ] **Task 1.7**: Set up `CHANGELOG.md` with initial release tracking entry.
-- [ ] **Task 1.8**: Create `docs/d3fend_mapping.md` skeleton.
-- [ ] **Verification**: Verify all directories and skeleton files are in place; test git tree and validate documents against requirements.
+- [x] **Task 1.1**: Read and annotate threat intel sources per scenario (CISA AA21-116A, AA23-075A, Red Canary TDR, DFIR Report).
+- [x] **Task 1.2**: Finalise the 20 sub-techniques across 2 scenarios (Scenario A: AD Intrusion, Scenario B: Ransomware Precursor).
+- [x] **Task 1.3**: Write `docs/scope.md` — document technique selection rationale with intel citations; note lab limitations (e.g., T1566.001 email delivery, T1490 hierarchy, T1486 telemetry constraints).
+- [x] **Task 1.4**: Initialise Git repository with the full required folder structure (Section 2 of `PROJECT_PLAN.md`).
+- [x] **Task 1.5**: Write `README.md` skeleton with architecture diagram placeholder and project metrics table structure.
+- [x] **Task 1.6**: Set up branch protection guidelines (`.github/BRANCH_PROTECTION.md`) and `.github/workflows/ci.yml` workflow base.
+- [x] **Task 1.7**: Set up `CHANGELOG.md` with initial release tracking entry and Detection Debt Register.
+- [x] **Task 1.8**: Create `docs/d3fend_mapping.md` skeleton with all 20 techniques mapped to MITRE D3FEND IDs.
+- [x] **Verification**: All 26 files/directories created, git repo initialized on `main`, initial commit created, all markdown links verified. Deliverable complete.
 
 ---
 
@@ -134,4 +134,14 @@
 - **2026-10-19**: 
   - Read `PROJECT_PLAN.md` in full (798 lines, 38,453 bytes) without skipping any content.
   - Created `Project_progress.md` tracking all 8 weeks, execution rules, and deliverables.
-  - Initiating Week 1 execution: Threat Intel Scoping & Repository Structure initialization.
+  - Completed Week 1:
+    - Analyzed threat intel sources (CISA AA21-116A, AA23-075A, Red Canary TDR, The DFIR Report).
+    - Finalized 20 ATT&CK sub-techniques across Scenario A (AD Intrusion) and Scenario B (Ransomware Precursor).
+    - Wrote `docs/scope.md` with explicit technical rationale and laboratory simulation boundaries.
+    - Initialized Git repository on branch `main` with full directory hierarchy (26 items).
+    - Created `README.md` with executive summary, Mermaid pipeline architecture, metrics targets, and quick-start instructions.
+    - Created `.github/BRANCH_PROTECTION.md` policy and `.github/workflows/ci.yml`.
+    - Created `CHANGELOG.md` with initial release schedule and Detection Debt Register.
+    - Created `docs/d3fend_mapping.md` matrix linking all 20 techniques to MITRE D3FEND IDs.
+    - Verified all files, created initial commit `c698db8`.
+  - Initiating Week 2: Lab Build & Telemetry Provisioning (`infra/Vagrantfile`, Ansible playbooks, telemetry configuration scripts).
