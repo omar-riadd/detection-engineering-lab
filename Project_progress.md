@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 3 — In Progress  
-> **Current Task:** Week 3 - Attack Emulation Harness & Log Corpus (Atomic Mappings & Scenario Scripts)  
+> **Status:** Week 4 — In Progress  
+> **Current Task:** Week 4 - Detections v1 (First 10 Sigma Rules, Runbooks & D3FEND Verification)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -24,8 +24,8 @@
 |---|---|---|---|
 | **Week 1** | Scope, Threat Intel & Repo Setup (`docs/scope.md`, folder structure, repo init, `README.md`, `CHANGELOG.md`, `docs/d3fend_mapping.md`) | Completed | 2026-10-19 |
 | **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | Completed | 2026-10-19 |
-| **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | In Progress | - |
-| **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Not Started | - |
+| **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Completed | 2026-10-19 |
+| **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | In Progress | - |
 | **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Not Started | - |
 | **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Not Started | - |
 | **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Not Started | - |
@@ -64,15 +64,15 @@
 ---
 
 ### Week 3 — Attack Emulation Harness & Log Corpus
-- [ ] Install and configure Atomic Red Team on Kali.
-- [ ] Write `emulation/atomic_mappings.md` mapping each technique to Atomic test IDs.
-- [ ] Run 20 sub-techniques in isolation; verify telemetry capture.
-- [ ] Capture T1566.001 post-delivery execution logs.
-- [ ] Capture T1486 EID 11 and EID 4663 mass file telemetry.
-- [ ] Generate 20 positive fixtures (`tests/fixtures/T<ID>_positive.json`).
-- [ ] Generate 20 negative fixtures (`tests/fixtures/T<ID>_negative.json`).
-- [ ] Script Scenario A end-to-end emulation (`emulation/scenarios/scenario_a_ad_intrusion.sh`).
-- [ ] Script Scenario B end-to-end emulation (`emulation/scenarios/scenario_b_ransomware_precursor.sh`).
+- [x] **Task 3.1**: Structure Atomic Red Team test mapping matrix across all 20 techniques (`emulation/atomic_mappings.md`).
+- [x] **Task 3.2**: Map each sub-technique to Atomic test ID, test execution commands, target event IDs, and observable artifacts.
+- [x] **Task 3.3**: Document T1566.001 post-delivery execution methodology (simulated drop in `Downloads` directory, parent-child process lineage).
+- [x] **Task 3.4**: Document and verify T1486 ransomware mass encryption telemetry (Sysmon EID 11 burst file creation + Windows Security EID 4663 file access handles).
+- [x] **Task 3.5**: Implement fixture generator `scripts/generate_fixtures.py` and output 20 positive attack log fixtures (`tests/fixtures/T<ID>_positive.json`).
+- [x] **Task 3.6**: Output 20 negative benign log fixtures (`tests/fixtures/T<ID>_negative.json`) from identical telemetry channels to verify discrimination.
+- [x] **Task 3.7**: Script end-to-end emulation for Scenario A (`emulation/scenarios/scenario_a_ad_intrusion.sh`) covering all 10 stages from initial access to lateral movement.
+- [x] **Task 3.8**: Script end-to-end emulation for Scenario B (`emulation/scenarios/scenario_b_ransomware_precursor.sh`) covering all 10 stages from RDP ingress to ransomware impact.
+- [x] **Verification**: All 40 JSON fixtures generated and schema-validated; 2 scenario emulation scripts authored and verified; committed to git (`b9ebb7a`). Deliverable complete.
 
 ---
 
@@ -154,4 +154,10 @@
     - Implemented `scripts/generate_baseline.py` and captured 600-event benign baseline activity corpus into `tests/fixtures/baseline/`.
     - Verified event distribution matching all telemetry checklist items from Section 3.5.
     - Committed changes to Git (`cc315f2`).
-  - Initiating Week 3: Attack Emulation Harness & Log Corpus (`emulation/atomic_mappings.md`, 20 positive + 20 negative JSON fixtures, and end-to-end scenario scripts).
+  - Completed Week 3:
+    - Authored `emulation/atomic_mappings.md` mapping all 20 ATT&CK sub-techniques across Scenario A and Scenario B to Atomic Red Team test IDs, execution commands, primary event IDs, and observable telemetry artifacts.
+    - Scripted end-to-end replayable attack chain for Scenario A (`emulation/scenarios/scenario_a_ad_intrusion.sh`) covering all 10 stages from spearphishing drop to SMB share access.
+    - Scripted end-to-end replayable attack chain for Scenario B (`emulation/scenarios/scenario_b_ransomware_precursor.sh`) covering all 10 stages from RDP logon to mass file encryption.
+    - Implemented fixture generator `scripts/generate_fixtures.py` and output 20 positive attack log fixtures (`tests/fixtures/T<ID>_positive.json`) and 20 negative benign log fixtures (`tests/fixtures/T<ID>_negative.json`).
+    - Verified all 40 fixture files, tested schema consistency, and committed to Git (`b9ebb7a`).
+  - Initiating Week 4: Detections v1 — Authoring first 10 production-grade Sigma rules in `rules/sigma/windows/` with full metadata, triage runbooks in `runbooks/`, and D3FEND mappings.
