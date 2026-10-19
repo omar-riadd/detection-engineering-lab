@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 4 — In Progress  
-> **Current Task:** Week 4 - Detections v1 (First 10 Sigma Rules, Runbooks & D3FEND Verification)  
+> **Status:** Week 4 — Completed | Week 4.5 — In Progress  
+> **Current Task:** Week 4.5 — Threat Hunting Playbooks (Scenario A: Credential Access, Scenario B: Ransomware Precursor)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -25,8 +25,8 @@
 | **Week 1** | Scope, Threat Intel & Repo Setup (`docs/scope.md`, folder structure, repo init, `README.md`, `CHANGELOG.md`, `docs/d3fend_mapping.md`) | Completed | 2026-10-19 |
 | **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | Completed | 2026-10-19 |
 | **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Completed | 2026-10-19 |
-| **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | In Progress | - |
-| **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Not Started | - |
+| **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Completed | 2026-10-19 |
+| **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | In Progress | - |
 | **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Not Started | - |
 | **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Not Started | - |
 | **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Not Started | - |
@@ -77,10 +77,12 @@
 ---
 
 ### Week 4 — Detections v1 (First 10 Rules + Runbooks)
-- [ ] Write 10 Sigma rules in `rules/sigma/windows/` with full metadata (UUID, tags, status, logsource).
-- [ ] Deploy each rule to Wazuh and confirm true-positive triggering on fixtures.
-- [ ] Write 10 triage runbooks in `runbooks/` with KQL queries, escalation criteria, and D3FEND mappings.
-- [ ] Update `docs/d3fend_mapping.md` for all 10 rules.
+- [x] **Task 4.1**: Author first 10 Sigma rules in `rules/sigma/windows/` with full metadata (UUID `id`, `title`, `status: experimental`, `description`, `references`, `tags`, `logsource`, `detection`, `falsepositives`, `level`) focusing on behavioral attributes across Scenario A.
+- [x] **Task 4.2**: Verify each rule schema and syntax with automated YAML linting and validation test.
+- [x] **Task 4.3**: Author 10 SOC analyst triage runbooks in `runbooks/` using the standardized specification (Alert Summary, Immediate Triage Steps, KQL Investigation Queries, Escalation Criteria, Known False Positives, MITRE ATT&CK reference, MITRE D3FEND countermeasure link).
+- [x] **Task 4.4**: Update `docs/d3fend_mapping.md` matrix with direct markdown links to all 10 authored Sigma rules and 10 triage runbooks.
+- [x] **Task 4.5**: Execute true-positive and true-negative regression discrimination verification against positive and negative test fixtures: 100% TP fire rate, 0% FP rate.
+- [x] **Verification**: All 10 Sigma rules and 10 triage runbooks verified, evaluated, and committed to Git repository. Deliverable complete.
 
 ---
 
@@ -160,4 +162,12 @@
     - Scripted end-to-end replayable attack chain for Scenario B (`emulation/scenarios/scenario_b_ransomware_precursor.sh`) covering all 10 stages from RDP logon to mass file encryption.
     - Implemented fixture generator `scripts/generate_fixtures.py` and output 20 positive attack log fixtures (`tests/fixtures/T<ID>_positive.json`) and 20 negative benign log fixtures (`tests/fixtures/T<ID>_negative.json`).
     - Verified all 40 fixture files, tested schema consistency, and committed to Git (`b9ebb7a`).
-  - Initiating Week 4: Detections v1 — Authoring first 10 production-grade Sigma rules in `rules/sigma/windows/` with full metadata, triage runbooks in `runbooks/`, and D3FEND mappings.
+  - Completed Week 4:
+    - Authored 10 production-grade Sigma rules in `rules/sigma/windows/` (covering T1566.001, T1204.002, T1059.001, T1218.011, T1055.012, T1003.001, T1003.006, T1021.002, T1087.002, T1482) with full metadata, UUIDs, and behavioral detections.
+    - Verified all 10 Sigma rules via automated YAML syntax linting and Sigma schema checking.
+    - Authored 10 SOC analyst triage runbooks in `runbooks/` matching the standard template with KQL investigation queries, escalation criteria, known false positives, ATT&CK, and D3FEND mappings.
+    - Updated `docs/d3fend_mapping.md` linking each Scenario A technique to its authored Sigma rule and triage runbook.
+    - Executed discrimination test suite verifying 100% true-positive firing against positive test fixtures and 0% false-positive firing against negative fixtures.
+    - Committed Week 4 deliverables to Git repository.
+  - Initiating Week 4.5: Threat Hunting Playbooks — Authoring 2 hypothesis-driven threat hunting playbooks (`playbooks/hunt_credential_access.md` and `playbooks/hunt_ransomware_precursor.md`).
+

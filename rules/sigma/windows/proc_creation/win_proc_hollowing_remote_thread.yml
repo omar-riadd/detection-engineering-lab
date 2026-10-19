@@ -1,0 +1,40 @@
+title: Remote Thread Injection into System Processes (Process Hollowing)
+id: f184a201-9023-4c91-9e87-a24681b95005
+status: experimental
+description: |
+  Detects creation of a remote thread (Sysmon Event ID 8) targeting standard Windows system processes
+  such as svchost.exe, notepad.exe, or explorer.exe originating from non-system binaries or user-context processes.
+  Characteristic of process hollowing and memory injection techniques used by malware loaders (APT29 / Cobalt Strike).
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://attack.mitre.org/techniques/T1055/012/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1055.012
+  - attack.defense_evasion
+  - attack.privilege_escalation
+logsource:
+  product: windows
+  category: create_remote_thread
+detection:
+  selection_target:
+    TargetImage|endswith:
+      - '\svchost.exe'
+      - '\notepad.exe'
+      - '\spoolsv.exe'
+  selection_source:
+    SourceImage|endswith:
+      - '\rundll32.exe'
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+  filter_csrss:
+    SourceImage|endswith: '\csrss.exe'
+  condition: selection_target and selection_source and not filter_csrss
+falsepositives:
+  - Security software and debugging tools injecting monitoring shims into target processes
+  - Enterprise management software managing remote execution hooks
+level: critical

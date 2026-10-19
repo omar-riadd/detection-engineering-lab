@@ -1,0 +1,45 @@
+title: User Execution of Script Interpreter from Untrusted Interactive Parent
+id: 9b2d3c81-8172-4d1e-9243-b2f75738c002
+status: experimental
+description: |
+  Detects interactive user execution of script engines (wscript.exe, cscript.exe, mshta.exe)
+  spawned from shell parents (explorer.exe, archive utilities) referencing payloads located in Downloads or Temp directories.
+  Models the initial execution phase of spearphishing and malicious attachment chains (CISA AA21-116A).
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1204/002/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1204.002
+  - attack.execution
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_interpreter:
+    Image|endswith:
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+  selection_parent:
+    ParentImage|endswith:
+      - '\explorer.exe'
+      - '\winrar.exe'
+      - '\7zFM.exe'
+      - '\7zG.exe'
+  selection_cli:
+    CommandLine|contains:
+      - '\Downloads\'
+      - '\Temp\'
+      - '\AppData\Local\Temp\'
+  filter_known_good:
+    CommandLine|contains:
+      - 'C:\Windows\System32\Printing_Admin_Scripts\'
+  condition: selection_interpreter and selection_parent and selection_cli and not filter_known_good
+falsepositives:
+  - Administrative login scripts executed interactively by systems engineers
+  - Legacy business applications deploying VBS wrappers inside temporary folders
+level: high

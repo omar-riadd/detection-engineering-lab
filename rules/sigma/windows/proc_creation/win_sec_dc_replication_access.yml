@@ -1,0 +1,39 @@
+title: Active Directory DCSync Credential Replication Request
+id: 8b3c1094-4912-4a0b-9ef1-c3085a187007
+status: experimental
+description: |
+  Detects Active Directory Directory Service object access requests (Windows Security EID 4662)
+  for extended rights DS-Replication-Get-Changes or DS-Replication-Get-Changes-All initiated by non-machine or non-DC accounts.
+  Indicates an adversary executing DCSync via Mimikatz, Impacket, or similar tools to extract domain hashes.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1003/006/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1003.006
+  - attack.credential_access
+logsource:
+  product: windows
+  service: security
+detection:
+  selection_event:
+    EventID: 4662
+  selection_guid:
+    Properties|contains:
+      - '1131f6aa-9c07-11d1-f79f-00c04fc2dcd2'
+      - '1131f6ad-9c07-11d1-f79f-00c04fc2dcd2'
+      - '89e4b325-9444-11d1-ae62-00c04fc2dcd2'
+  filter_machine_accounts:
+    SubjectUserName|endswith: '$'
+  filter_known_sync:
+    SubjectUserName:
+      - 'MSOL_'
+      - 'AzureADConnect'
+  condition: selection_event and selection_guid and not filter_machine_accounts and not filter_known_sync
+falsepositives:
+  - Legitimate domain controller synchronization tasks configured under non-standard accounts
+  - Azure AD Connect / Entra ID sync service account performing legitimate hybrid identity synchronization
+level: critical

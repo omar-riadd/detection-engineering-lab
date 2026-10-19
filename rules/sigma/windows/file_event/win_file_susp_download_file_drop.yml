@@ -1,0 +1,54 @@
+title: Suspicious File Drop in User Downloads or Staging Directory
+id: 5a8e2b70-9831-4a9f-8641-a1e64627b001
+status: experimental
+description: |
+  Detects creation of executable or script files (.vbs, .hta, .js, .ps1, .exe, .dll, .iso, .lnk)
+  within user Downloads, Temp, or staging directories spawned by email clients, browsers, or archive utilities.
+  Grounded in CISA AA21-116A and DFIR Report post-delivery initial access patterns.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1566/001/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1566.001
+  - attack.initial_access
+logsource:
+  product: windows
+  category: file_event
+detection:
+  selection_target:
+    TargetFilename|contains:
+      - '\Downloads\'
+      - '\AppData\Local\Temp\'
+  selection_extensions:
+    TargetFilename|endswith:
+      - '.vbs'
+      - '.js'
+      - '.hta'
+      - '.lnk'
+      - '.iso'
+      - '.ps1'
+      - '.exe'
+  selection_image:
+    Image|endswith:
+      - '\OUTLOOK.EXE'
+      - '\thunderbird.exe'
+      - '\chrome.exe'
+      - '\msedge.exe'
+      - '\firefox.exe'
+      - '\winrar.exe'
+      - '\7zFM.exe'
+  filter_benign:
+    TargetFilename|endswith:
+      - '.pdf'
+      - '.docx'
+      - '.xlsx'
+      - '.tmp'
+  condition: selection_target and selection_extensions and selection_image and not filter_benign
+falsepositives:
+  - Legitimate user downloading development tools, utility scripts, or approved software installers
+  - Enterprise software deployment tools packaging scripts in temporary locations
+level: high

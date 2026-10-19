@@ -1,0 +1,40 @@
+title: Suspicious Process Access Request Targeting LSASS Memory
+id: 7e2f1043-3921-48e0-bb15-998f4a296006
+status: experimental
+description: |
+  Detects suspicious process handle requests (Sysmon Event ID 10) targeting the Local Security Authority
+  Subsystem Service (lsass.exe) with memory read rights (0x1010, 0x1F0FFF).
+  Indicates credential harvesting tools attempting to read plaintext credentials or hashes from LSASS memory (ProcDump, Mimikatz).
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1003/001/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1003.001
+  - attack.credential_access
+logsource:
+  product: windows
+  category: process_access
+detection:
+  selection_target:
+    TargetImage|endswith: '\lsass.exe'
+  selection_access:
+    GrantedAccess|contains:
+      - '0x1010'
+      - '0x1F0FFF'
+      - '0x1038'
+      - '0x1410'
+  filter_system_callers:
+    SourceImage|endswith:
+      - '\svchost.exe'
+      - '\csrss.exe'
+      - '\winlogon.exe'
+      - '\services.exe'
+  condition: selection_target and selection_access and not filter_system_callers
+falsepositives:
+  - Endpoint Detection and Response (EDR) or Antivirus agents inspecting credentials processes
+  - Legitimate administrative diagnostics tools (e.g., Task Manager user memory dump by authorized admins)
+level: critical

@@ -1,0 +1,41 @@
+title: Lateral Movement via Administrative SMB Network Share Access
+id: a29c4815-5012-4c2b-99f1-d18471e08008
+status: experimental
+description: |
+  Detects network share access events (Windows Security Event ID 5140) targeting administrative
+  shares (C$, ADMIN$) across the network. Used by adversaries during lateral movement to stage tools or execute remote services.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1021/002/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1021.002
+  - attack.lateral_movement
+logsource:
+  product: windows
+  service: security
+detection:
+  selection_event:
+    EventID: 5140
+  selection_share:
+    ShareName|endswith:
+      - '\ADMIN$'
+      - '\C$'
+  filter_local:
+    IpAddress:
+      - '127.0.0.1'
+      - '::1'
+  filter_machine_account:
+    SubjectUserName|endswith: '$'
+  filter_benign_sysvol:
+    ShareName|contains:
+      - 'SYSVOL'
+      - 'NETLOGON'
+  condition: selection_event and selection_share and not filter_local and not filter_machine_account and not filter_benign_sysvol
+falsepositives:
+  - Enterprise systems management tools (SCCM, Tanium, vulnerability scanners) accessing admin shares
+  - Legitimate remote administration by authorized system administrators
+level: high

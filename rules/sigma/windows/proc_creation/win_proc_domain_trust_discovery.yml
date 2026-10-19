@@ -1,0 +1,31 @@
+title: Active Directory Domain Trust Discovery via Nltest
+id: 5b2e9c10-2918-48f1-a1e0-d47182900010
+status: experimental
+description: |
+  Detects the execution of nltest.exe with domain trust discovery flags (/domain_trusts, /all_trusts).
+  Adversaries use nltest during the discovery phase to map multi-domain enterprise forests and identify lateral movement trust paths.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1482/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1482
+  - attack.discovery
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_binary:
+    Image|endswith: '\nltest.exe'
+  selection_flags:
+    CommandLine|contains:
+      - '/domain_trusts'
+      - '/all_trusts'
+  condition: selection_binary and selection_flags
+falsepositives:
+  - Legitimate network and domain migration audits executed by enterprise administrators
+  - Third-party Active Directory auditing or monitoring tools
+level: medium

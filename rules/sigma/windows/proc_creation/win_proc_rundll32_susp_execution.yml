@@ -1,0 +1,39 @@
+title: Suspicious Rundll32 Execution from Writable User Path
+id: 3d7a8e10-1849-4f7b-a2c6-d18302f74004
+status: experimental
+description: |
+  Detects rundll32.exe executing dynamic link libraries (DLLs) located within user-writable directories
+  such as Users\Public, AppData, Downloads, or Temp. Adversaries proxy execution through rundll32 to evade application allowlisting.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1218/011/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1218.011
+  - attack.defense_evasion
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_binary:
+    Image|endswith: '\rundll32.exe'
+  selection_paths:
+    CommandLine|contains:
+      - 'C:\Users\Public\'
+      - '\AppData\Local\Temp\'
+      - '\AppData\Roaming\'
+      - '\Downloads\'
+      - 'C:\PerfLogs\'
+      - 'C:\Windows\Temp\'
+  filter_known_system:
+    CommandLine|contains:
+      - 'shell32.dll,Control_RunDLL'
+      - 'dfshim.dll,ShOpenVerbShortcut'
+  condition: selection_binary and selection_paths and not filter_known_system
+falsepositives:
+  - Third-party installer helper processes running from user Temp folders
+  - Non-standard software plugins executing DLLs from local application directories
+level: high

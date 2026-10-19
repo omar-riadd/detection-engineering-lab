@@ -1,0 +1,37 @@
+title: Active Directory Domain Account Reconnaissance via Net CLI
+id: 4e1b8c29-3910-46d2-88f1-a1b920499009
+status: experimental
+description: |
+  Detects command-line execution of net.exe or net1.exe used by adversaries to enumerate
+  Active Directory domain users, domain groups, and privileged accounts (e.g., Domain Admins).
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1087/002/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1087.002
+  - attack.discovery
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_binary:
+    Image|endswith:
+      - '\net.exe'
+      - '\net1.exe'
+  selection_flags:
+    CommandLine|contains:
+      - '/domain'
+  selection_targets:
+    CommandLine|contains:
+      - 'user'
+      - 'group'
+      - 'accounts'
+  condition: selection_binary and selection_flags and selection_targets
+falsepositives:
+  - System administrators manually verifying domain account properties during troubleshooting
+  - Domain onboarding and logon scripts validating group memberships
+level: medium

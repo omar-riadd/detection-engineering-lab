@@ -1,0 +1,41 @@
+title: Suspicious PowerShell In-Memory Script Block Execution
+id: c4f781a2-5201-49b8-a764-88d4072f1003
+status: experimental
+description: |
+  Detects suspicious PowerShell ScriptBlock text (EID 4104) containing network download cradles,
+  in-memory reflection, or execution primitives (DownloadString, WebClient, IEX, Net.Sockets).
+  Heavily utilized by initial access loaders and post-exploitation frameworks (Cobalt Strike, APT29, Conti).
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1059/001/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1059.001
+  - attack.execution
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection_cradle:
+    ScriptBlockText|contains:
+      - 'Net.WebClient'
+      - 'DownloadString'
+      - 'DownloadFile'
+      - 'DownloadData'
+  selection_execution:
+    ScriptBlockText|contains:
+      - 'IEX'
+      - 'Invoke-Expression'
+      - '[System.Reflection.Assembly]::Load'
+  filter_known_admin:
+    ScriptBlockText|contains:
+      - 'Chocolatey'
+      - 'Install-PackageProvider'
+  condition: selection_cradle and selection_execution and not filter_known_admin
+falsepositives:
+  - Software installation scripts (e.g., Chocolatey bootstrap, AWS CLI install)
+  - Legitimate enterprise automation scripts downloading trusted internal updates
+level: high
