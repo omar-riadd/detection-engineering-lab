@@ -1,0 +1,60 @@
+name: Detection Engineering CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-convert-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install pysigma sigma-cli pyyaml pytest jinja2
+
+      - name: 1 - YAML lint
+        run: |
+          python -c "
+          import yaml, glob, sys
+          errors = []
+          for f in glob.glob('rules/sigma/**/*.yml', recursive=True):
+              try: yaml.safe_load(open(f))
+              except Exception as e: errors.append(f'{f}: {e}')
+          if errors: print('\n'.join(errors)); sys.exit(1)
+          print('YAML lint passed')
+          "
+
+      - name: 2 - Sigma validation
+        run: sigma check rules/sigma/
+
+      - name: 3 - Convert to Wazuh XML + KQL + SPL
+        run: |
+          mkdir -p rules/wazuh converted/kql converted/splunk
+          python scripts/convert_sigma.py \
+            --input rules/sigma/ \
+            --wazuh rules/wazuh/ \
+            --kql converted/kql/ \
+            --splunk converted/splunk/
+
+      - name: 4 - Positive regression tests (attack logs MUST fire)
+        run: pytest tests/ -k "positive" -v
+
+      - name: 5 - Negative regression tests (benign logs MUST NOT fire)
+        run: pytest tests/ -k "negative" -v
+
+      - name: 6 - Upload converted rules as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: converted-rules-${{ github.sha }}
+          path: |
+            rules/wazuh/
+            converted/kql/
+            converted/splunk/

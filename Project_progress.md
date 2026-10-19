@@ -1,0 +1,137 @@
+# Project Progress: Detection Engineering Portfolio
+
+> **Last Updated:** 2026-10-19  
+> **Status:** Week 1 — In Progress  
+> **Current Task:** Week 1 - Repo Setup & Threat Intel Scoping  
+> **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
+
+---
+
+## 1. Project Overview & Tracking Rules
+
+### Strict Execution Rules
+1. **Follow Exactly the Project Plan**: Every directory, file, naming convention, and task specification follows `PROJECT_PLAN.md`.
+2. **Always Verify, Don't Assume**: Validate with test commands, file checks, syntax linting, or log verification at every step.
+3. **Continuous Progress Tracking**: Maintain and update `Project_progress.md` after completing each task to maintain an exact execution state.
+4. **Task Verification**: After completing each task, verify and test that it strictly satisfies the requirements in `PROJECT_PLAN.md`.
+5. **Full File Reading Confirmation**: Acknowledge full file reading without skipping any content whenever files are examined.
+
+---
+
+## 2. Overall Milestones & Status
+
+| Milestone / Phase | Planned Deliverables | Status | Completion Date |
+|---|---|---|---|
+| **Week 1** | Scope, Threat Intel & Repo Setup (`docs/scope.md`, folder structure, repo init, `README.md`, `CHANGELOG.md`, `docs/d3fend_mapping.md`) | In Progress | - |
+| **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | Not Started | - |
+| **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Not Started | - |
+| **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Not Started | - |
+| **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Not Started | - |
+| **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Not Started | - |
+| **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Not Started | - |
+| **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Not Started | - |
+| **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | Not Started | - |
+
+---
+
+## 3. Detailed Weekly Task Breakdown
+
+### Week 1 — Scope, Threat Intel & Repo Setup
+- [ ] **Task 1.1**: Read and annotate threat intel sources per scenario (CISA, Red Canary, DFIR Report).
+- [ ] **Task 1.2**: Finalise the 20 sub-techniques across 2 scenarios (Scenario A: AD Intrusion, Scenario B: Ransomware Precursor).
+- [ ] **Task 1.3**: Write `docs/scope.md` — document technique selection rationale with intel citations; note lab limitations (e.g., T1566.001 email delivery).
+- [ ] **Task 1.4**: Initialise Git repository with the full required folder structure (Section 2 of `PROJECT_PLAN.md`).
+- [ ] **Task 1.5**: Write `README.md` skeleton with architecture diagram placeholder and project metrics table structure.
+- [ ] **Task 1.6**: Set up branch protection guidelines and `.github/` workflow base.
+- [ ] **Task 1.7**: Set up `CHANGELOG.md` with initial release tracking entry.
+- [ ] **Task 1.8**: Create `docs/d3fend_mapping.md` skeleton.
+- [ ] **Verification**: Verify all directories and skeleton files are in place; test git tree and validate documents against requirements.
+
+---
+
+### Week 2 — Lab Build & Telemetry
+- [ ] Write `Vagrantfile` and Ansible playbooks for all VMs (`wazuh.yml`, `windows_endpoint.yml`, `domain_controller.yml`, `linux_target.yml`).
+- [ ] Provision Wazuh all-in-one; verify indexer + dashboard accessibility.
+- [ ] Deploy Sysmon on Windows VMs with Olaf Hartong modular config (`infra/scripts/install_sysmon.ps1`).
+- [ ] Configure `auditd` on Ubuntu with appropriate ruleset (`infra/scripts/configure_auditd.sh`).
+- [ ] Enable PowerShell Script Block Logging and process command-line auditing (`infra/scripts/enable_pslogging.ps1`).
+- [ ] Enable Advanced Audit Policy: Audit File System (for T1486 / EID 4663).
+- [ ] Verify all agents are reporting to Wazuh.
+- [ ] Capture 2–4 hours of benign baseline activity into `tests/fixtures/baseline/`.
+- [ ] Verify log flow for all event IDs in the Section 3.5 checklist.
+
+---
+
+### Week 3 — Attack Emulation Harness & Log Corpus
+- [ ] Install and configure Atomic Red Team on Kali.
+- [ ] Write `emulation/atomic_mappings.md` mapping each technique to Atomic test IDs.
+- [ ] Run 20 sub-techniques in isolation; verify telemetry capture.
+- [ ] Capture T1566.001 post-delivery execution logs.
+- [ ] Capture T1486 EID 11 and EID 4663 mass file telemetry.
+- [ ] Generate 20 positive fixtures (`tests/fixtures/T<ID>_positive.json`).
+- [ ] Generate 20 negative fixtures (`tests/fixtures/T<ID>_negative.json`).
+- [ ] Script Scenario A end-to-end emulation (`emulation/scenarios/scenario_a_ad_intrusion.sh`).
+- [ ] Script Scenario B end-to-end emulation (`emulation/scenarios/scenario_b_ransomware_precursor.sh`).
+
+---
+
+### Week 4 — Detections v1 (First 10 Rules + Runbooks)
+- [ ] Write 10 Sigma rules in `rules/sigma/windows/` with full metadata (UUID, tags, status, logsource).
+- [ ] Deploy each rule to Wazuh and confirm true-positive triggering on fixtures.
+- [ ] Write 10 triage runbooks in `runbooks/` with KQL queries, escalation criteria, and D3FEND mappings.
+- [ ] Update `docs/d3fend_mapping.md` for all 10 rules.
+
+---
+
+### Week 4.5 — Threat Hunting Playbooks
+- [ ] Author `playbooks/hunt_credential_access.md` covering Scenario A.
+- [ ] Author `playbooks/hunt_ransomware_precursor.md` covering Scenario B.
+- [ ] Verify structure: Hypothesis, ATT&CK, Data sources, KQL/Sigma queries, Triage decision tree, Blind spots.
+
+---
+
+### Week 5 — Detection-as-Code CI/CD Pipeline
+- [ ] Implement `scripts/convert_sigma.py` (pySigma for KQL/SPL, Jinja2 for Wazuh XML).
+- [ ] Implement `scripts/replay_logs.py` (JSON fixture replay engine).
+- [ ] Implement `tests/test_detections.py` (pytest positive/negative test suite).
+- [ ] Write `.github/workflows/ci.yml` (all 6 stages: lint, sigma check, convert, positive test, negative test, artifact upload).
+- [ ] Write `docs/sigma_to_wazuh_notes.md` detailing field mappings and transliteration limits.
+- [ ] Verify CI pipeline locally: test positive pass, negative pass, and intentionally broken rule failure.
+
+---
+
+### Week 6 — Tuning, Expansion & Shadow Deployment
+- [ ] Replay rules against benign baseline corpus; document in `docs/fp_report.md`.
+- [ ] Tune rules exceeding 5% FP rate.
+- [ ] Implement shadow/experimental deployment promotion process (level 3 -> 6 -> 10-12).
+- [ ] Author remaining 10-15 Sigma rules to reach 20-25 total.
+- [ ] Author runbooks and D3FEND mappings for all new rules.
+- [ ] Develop `scripts/generate_baseline.py` for synthetic benign activity simulation.
+
+---
+
+### Week 7 — Purple-Team Iterations & MTTD Measurement
+- [ ] Execute 7 evasion classes (Obfuscation, LOLBins, Renamed binaries, Parent spoofing, AMSI bypass, Timestomping, if_sid gaps).
+- [ ] Record findings in `docs/bypass_log.md`.
+- [ ] Harden rules and verify with evasion-variant fixtures.
+- [ ] Measure and log MTTD in `docs/mttd_metrics.md`.
+- [ ] Export ATT&CK Navigator layer to `docs/coverage/navigator_layer.json`.
+
+---
+
+### Week 8 — Polish, Metrics & Publication
+- [ ] Create Wazuh dashboard definitions / screenshots.
+- [ ] Configure alert routing policy.
+- [ ] Write final project report in `docs/report.md`.
+- [ ] Draft technical blog post and video walkthrough script.
+- [ ] Update `CHANGELOG.md` with detection debt register.
+- [ ] Finalize `README.md` with architecture diagram and live metrics table.
+- [ ] Tag git release `v1.0`.
+
+---
+
+## 4. Current Work Log
+- **2026-10-19**: 
+  - Read `PROJECT_PLAN.md` in full (798 lines, 38,453 bytes) without skipping any content.
+  - Created `Project_progress.md` tracking all 8 weeks, execution rules, and deliverables.
+  - Initiating Week 1 execution: Threat Intel Scoping & Repository Structure initialization.
