@@ -1,0 +1,13 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "UtcTime": "2026-10-19T04:15:30.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "ScriptBlockText": "Get-Process | Where-Object { $_.CPU -gt 10 } | Select-Object Name, CPU, WorkingSet",
+    "ScriptBlockId": "f9e8d7c6-b5a4-3210-fedc-ba0987654321",
+    "MessageNumber": 1,
+    "MessageTotal": 1,
+    "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+  }
+}

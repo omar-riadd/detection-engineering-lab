@@ -1,0 +1,15 @@
+{
+  "EventID": 11,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:21:30.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:21:30.000Z",
+    "ProcessId": 4120,
+    "Image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\WINWORD.EXE",
+    "TargetFilename": "C:\\Users\\targetuser\\Documents\\financials_2026.docx",
+    "CreationUtcTime": "2026-10-19T04:21:30.000Z",
+    "User": "CORP\\targetuser"
+  }
+}

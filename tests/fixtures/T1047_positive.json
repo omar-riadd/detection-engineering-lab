@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:22:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1047,technique_name=WMI Execution",
+    "UtcTime": "2026-10-19T04:22:15.000Z",
+    "ProcessId": 10450,
+    "Image": "C:\\Windows\\System32\\wbem\\WMIC.exe",
+    "CommandLine": "wmic.exe process call create \"cmd.exe /c whoami > C:\\Users\\Public\\wmi_out.txt\"",
+    "CurrentDirectory": "C:\\Windows\\system32\\",
+    "User": "CORP\\corpadmin",
+    "ParentProcessId": 4120,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "ParentCommandLine": "cmd.exe"
+  }
+}

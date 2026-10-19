@@ -1,0 +1,17 @@
+{
+  "EventID": 4624,
+  "Channel": "Security",
+  "UtcTime": "2026-10-19T04:20:00.000Z",
+  "Computer": "DC01.corp.local",
+  "EventData": {
+    "TargetUserName": "corpadmin",
+    "TargetDomainName": "CORP",
+    "LogonType": 3,
+    "LogonProcessName": "NtLmSsp",
+    "AuthenticationPackageName": "NTLM",
+    "WorkstationName": "ATTACKER-KALI",
+    "IpAddress": "192.168.56.1",
+    "IpPort": "44320",
+    "ProcessName": "-"
+  }
+}

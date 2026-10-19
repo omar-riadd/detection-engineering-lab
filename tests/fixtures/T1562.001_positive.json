@@ -1,0 +1,13 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "UtcTime": "2026-10-19T04:21:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "ScriptBlockText": "Set-MpPreference -DisableRealtimeMonitoring $true -DisableBehaviorMonitoring $true -DisableScriptScanning $true",
+    "ScriptBlockId": "33445566-7788-99aa-bbcc-ddeeff001122",
+    "MessageNumber": 1,
+    "MessageTotal": 1,
+    "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+  }
+}

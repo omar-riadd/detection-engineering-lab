@@ -1,0 +1,17 @@
+{
+  "EventID": 8,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:16:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:16:00.000Z",
+    "SourceProcessId": 680,
+    "SourceImage": "C:\\Windows\\System32\\csrss.exe",
+    "TargetProcessId": 1420,
+    "TargetImage": "C:\\Windows\\System32\\svchost.exe",
+    "NewThreadId": 2104,
+    "StartAddress": "0x00007FF9B4201000",
+    "StartFunction": "CtrlRoutine"
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "EventID": 4624,
+  "Channel": "Security",
+  "UtcTime": "2026-10-19T04:20:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "TargetUserName": "targetuser",
+    "TargetDomainName": "CORP",
+    "LogonType": 2,
+    "LogonProcessName": "User32",
+    "AuthenticationPackageName": "Negotiate",
+    "WorkstationName": "WIN10-CLIENT01",
+    "IpAddress": "127.0.0.1",
+    "IpPort": "0",
+    "ProcessName": "C:\\Windows\\System32\\winlogon.exe"
+  }
+}

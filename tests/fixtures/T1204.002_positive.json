@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:15:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1204.002,technique_name=Malicious File Execution",
+    "UtcTime": "2026-10-19T04:15:15.000Z",
+    "ProcessId": 5912,
+    "Image": "C:\\Windows\\System32\\wscript.exe",
+    "CommandLine": "wscript.exe \"C:\\Users\\targetuser\\Downloads\\urgent_invoice_payload.vbs\"",
+    "CurrentDirectory": "C:\\Users\\targetuser\\Downloads\\",
+    "User": "CORP\\targetuser",
+    "ParentProcessId": 2840,
+    "ParentImage": "C:\\Windows\\explorer.exe",
+    "ParentCommandLine": "C:\\Windows\\Explorer.EXE"
+  }
+}

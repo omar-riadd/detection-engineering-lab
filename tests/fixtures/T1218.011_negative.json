@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:15:45.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:15:45.000Z",
+    "ProcessId": 3204,
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "CommandLine": "rundll32.exe shell32.dll,Control_RunDLL timedate.cpl",
+    "CurrentDirectory": "C:\\Windows\\system32\\",
+    "User": "CORP\\targetuser",
+    "ParentProcessId": 2840,
+    "ParentImage": "C:\\Windows\\explorer.exe",
+    "ParentCommandLine": "C:\\Windows\\Explorer.EXE"
+  }
+}

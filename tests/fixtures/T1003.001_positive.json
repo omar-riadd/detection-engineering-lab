@@ -1,0 +1,16 @@
+{
+  "EventID": 10,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:16:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1003.001,technique_name=LSASS Memory Dump",
+    "UtcTime": "2026-10-19T04:16:15.000Z",
+    "SourceProcessId": 7240,
+    "SourceImage": "C:\\Users\\Public\\procdump64.exe",
+    "TargetProcessId": 684,
+    "TargetImage": "C:\\Windows\\System32\\lsass.exe",
+    "GrantedAccess": "0x1010",
+    "CallTrace": "C:\\Windows\\SYSTEM32\\ntdll.dll+9d424|C:\\Windows\\System32\\KERNELBASE.dll+27112"
+  }
+}

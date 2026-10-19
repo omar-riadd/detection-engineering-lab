@@ -1,0 +1,17 @@
+{
+  "EventID": 8,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:16:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1055.012,technique_name=Process Hollowing",
+    "UtcTime": "2026-10-19T04:16:00.000Z",
+    "SourceProcessId": 6120,
+    "SourceImage": "C:\\Windows\\System32\\rundll32.exe",
+    "TargetProcessId": 1420,
+    "TargetImage": "C:\\Windows\\System32\\svchost.exe",
+    "NewThreadId": 8844,
+    "StartAddress": "0x00007FF728A11000",
+    "StartFunction": "EntryPoint"
+  }
+}

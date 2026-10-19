@@ -1,0 +1,15 @@
+{
+  "EventID": 11,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:15:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1566.001,technique_name=Spearphishing Attachment",
+    "UtcTime": "2026-10-19T04:15:00.000Z",
+    "ProcessId": 4820,
+    "Image": "C:\\Program Files\\Microsoft Office\\root\\Office16\\OUTLOOK.EXE",
+    "TargetFilename": "C:\\Users\\targetuser\\Downloads\\urgent_invoice_payload.vbs",
+    "CreationUtcTime": "2026-10-19T04:15:00.000Z",
+    "User": "CORP\\targetuser"
+  }
+}

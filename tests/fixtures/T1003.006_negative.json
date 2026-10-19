@@ -1,0 +1,15 @@
+{
+  "EventID": 4662,
+  "Channel": "Security",
+  "UtcTime": "2026-10-19T04:16:30.000Z",
+  "Computer": "DC01.corp.local",
+  "EventData": {
+    "SubjectUserName": "DC01$",
+    "SubjectDomainName": "CORP",
+    "ObjectServer": "DS",
+    "ObjectType": "%{bf9679f0-0de6-11d0-a285-00aa003049e2}",
+    "ObjectName": "CN=Configuration,DC=corp,DC=local",
+    "AccessMask": "0x10",
+    "Properties": "{bf9679a0-0de6-11d0-a285-00aa003049e2}"
+  }
+}

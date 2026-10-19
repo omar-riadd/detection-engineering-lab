@@ -1,0 +1,16 @@
+{
+  "EventID": 13,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:20:45.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1547.001,technique_name=Run Key Persistence",
+    "UtcTime": "2026-10-19T04:20:45.000Z",
+    "ProcessId": 4120,
+    "EventType": "SetValue",
+    "Image": "C:\\Windows\\System32\\reg.exe",
+    "TargetObject": "HKLM\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\SecurityHealthServiceUpdate",
+    "Details": "C:\\Users\\Public\\updater.exe",
+    "User": "CORP\\corpadmin"
+  }
+}

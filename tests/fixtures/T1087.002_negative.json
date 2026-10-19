@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:17:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:17:00.000Z",
+    "ProcessId": 2980,
+    "Image": "C:\\Windows\\System32\\whoami.exe",
+    "CommandLine": "whoami",
+    "CurrentDirectory": "C:\\Users\\targetuser\\",
+    "User": "CORP\\targetuser",
+    "ParentProcessId": 4120,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "ParentCommandLine": "cmd.exe"
+  }
+}

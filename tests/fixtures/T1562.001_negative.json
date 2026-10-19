@@ -1,0 +1,13 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "UtcTime": "2026-10-19T04:21:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "ScriptBlockText": "Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, AntivirusEnabled",
+    "ScriptBlockId": "11223344-5566-7788-99aa-bbccddeeff00",
+    "MessageNumber": 1,
+    "MessageTotal": 1,
+    "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+  }
+}

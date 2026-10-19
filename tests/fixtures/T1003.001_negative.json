@@ -1,0 +1,16 @@
+{
+  "EventID": 10,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:16:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:16:15.000Z",
+    "SourceProcessId": 1420,
+    "SourceImage": "C:\\Windows\\System32\\svchost.exe",
+    "TargetProcessId": 684,
+    "TargetImage": "C:\\Windows\\System32\\lsass.exe",
+    "GrantedAccess": "0x1400",
+    "CallTrace": "C:\\Windows\\SYSTEM32\\ntdll.dll+9d424|C:\\Windows\\System32\\sspicli.dll+5140"
+  }
+}

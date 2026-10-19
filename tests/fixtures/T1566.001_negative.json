@@ -1,0 +1,15 @@
+{
+  "EventID": 11,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:15:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:15:00.000Z",
+    "ProcessId": 3120,
+    "Image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    "TargetFilename": "C:\\Users\\targetuser\\Downloads\\quarterly_report.pdf",
+    "CreationUtcTime": "2026-10-19T04:15:00.000Z",
+    "User": "CORP\\targetuser"
+  }
+}

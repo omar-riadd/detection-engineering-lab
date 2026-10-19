@@ -1,0 +1,14 @@
+{
+  "EventID": 5140,
+  "Channel": "Security",
+  "UtcTime": "2026-10-19T04:16:45.000Z",
+  "Computer": "DC01.corp.local",
+  "EventData": {
+    "SubjectUserName": "corpadmin",
+    "SubjectDomainName": "CORP",
+    "ShareName": "\\\\*\\ADMIN$",
+    "ShareLocalPath": "C:\\Windows",
+    "IpAddress": "192.168.56.20",
+    "IpPort": "51240"
+  }
+}

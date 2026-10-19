@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:17:15.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:17:15.000Z",
+    "ProcessId": 3100,
+    "Image": "C:\\Windows\\System32\\ipconfig.exe",
+    "CommandLine": "ipconfig /all",
+    "CurrentDirectory": "C:\\Windows\\system32\\",
+    "User": "CORP\\targetuser",
+    "ParentProcessId": 4120,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "ParentCommandLine": "cmd.exe"
+  }
+}

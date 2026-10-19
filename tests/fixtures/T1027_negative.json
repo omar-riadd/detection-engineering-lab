@@ -1,0 +1,13 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "UtcTime": "2026-10-19T04:22:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "ScriptBlockText": "Write-Output 'Executing cleartext standard system health check...'",
+    "ScriptBlockId": "55667788-99aa-bbcc-ddee-ff0011223344",
+    "MessageNumber": 1,
+    "MessageTotal": 1,
+    "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "EventID": 4698,
+  "Channel": "Security",
+  "UtcTime": "2026-10-19T04:20:30.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "SubjectUserName": "SYSTEM",
+    "SubjectDomainName": "NT AUTHORITY",
+    "TaskName": "\\Microsoft\\Windows\\WindowsUpdate\\Scheduled Start",
+    "TaskContent": "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task><Actions><Exec><Command>C:\\Windows\\system32\\usoclient.exe</Command><Arguments>StartScan</Arguments></Exec></Actions></Task>"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "EventID": 11,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:21:30.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1486,technique_name=Data Encrypted for Impact",
+    "UtcTime": "2026-10-19T04:21:30.000Z",
+    "ProcessId": 9840,
+    "Image": "C:\\Users\\Public\\ransomware.exe",
+    "TargetFilename": "C:\\Users\\targetuser\\Documents\\financials_2026.docx.lockbit",
+    "CreationUtcTime": "2026-10-19T04:21:30.000Z",
+    "User": "CORP\\targetuser"
+  }
+}

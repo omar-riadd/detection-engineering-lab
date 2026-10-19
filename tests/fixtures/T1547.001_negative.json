@@ -1,0 +1,16 @@
+{
+  "EventID": 13,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:20:45.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-19T04:20:45.000Z",
+    "ProcessId": 1420,
+    "EventType": "SetValue",
+    "Image": "C:\\Windows\\System32\\svchost.exe",
+    "TargetObject": "HKLM\\System\\CurrentControlSet\\Services\\W32Time\\TimeProviders\\NtpClient\\SpecialPollInterval",
+    "Details": "3600",
+    "User": "NT AUTHORITY\\LOCAL SERVICE"
+  }
+}

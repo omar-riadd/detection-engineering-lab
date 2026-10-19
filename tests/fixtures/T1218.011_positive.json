@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-19T04:15:45.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1218.011,technique_name=Rundll32 Proxy",
+    "UtcTime": "2026-10-19T04:15:45.000Z",
+    "ProcessId": 6120,
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "CommandLine": "rundll32.exe C:\\Users\\Public\\malware.dll,DllRegisterServer",
+    "CurrentDirectory": "C:\\Users\\Public\\",
+    "User": "CORP\\targetuser",
+    "ParentProcessId": 5912,
+    "ParentImage": "C:\\Windows\\System32\\wscript.exe",
+    "ParentCommandLine": "wscript.exe C:\\Users\\targetuser\\Downloads\\urgent_invoice_payload.vbs"
+  }
+}

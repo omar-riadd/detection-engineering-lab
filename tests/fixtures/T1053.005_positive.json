@@ -1,0 +1,12 @@
+{
+  "EventID": 4698,
+  "Channel": "Security",
+  "UtcTime": "2026-10-19T04:20:30.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "SubjectUserName": "corpadmin",
+    "SubjectDomainName": "CORP",
+    "TaskName": "\\CorpMaintenanceTask",
+    "TaskContent": "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task><Actions><Exec><Command>powershell.exe</Command><Arguments>-WindowStyle Hidden -Enc aQB4ACAAKABOAGUAdwAtAE8AYgBqAGUAYwB0ACAA...</Arguments></Exec></Actions></Task>"
+  }
+}
