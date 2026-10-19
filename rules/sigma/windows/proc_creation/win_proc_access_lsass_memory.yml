@@ -28,11 +28,11 @@ detection:
       - '0x1038'
       - '0x1410'
   filter_system_callers:
-    SourceImage|endswith:
-      - '\svchost.exe'
-      - '\csrss.exe'
-      - '\winlogon.exe'
-      - '\services.exe'
+    SourceImage:
+      - 'C:\Windows\System32\svchost.exe'
+      - 'C:\Windows\System32\csrss.exe'
+      - 'C:\Windows\System32\winlogon.exe'
+      - 'C:\Windows\System32\services.exe'
   condition: selection_target and selection_access and not filter_system_callers
 falsepositives:
   - Endpoint Detection and Response (EDR) or Antivirus agents inspecting credentials processes

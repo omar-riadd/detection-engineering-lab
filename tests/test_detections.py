@@ -34,11 +34,12 @@ def get_rule_map():
 
 RULE_MAP = get_rule_map()
 
-# Discover positive fixtures
+# Discover positive fixtures (supports standard and evasion variants)
 POSITIVE_FIXTURES = sorted(glob.glob('tests/fixtures/*_positive.json'))
 POSITIVE_PARAMS = []
 for pf in POSITIVE_FIXTURES:
-    tech = os.path.basename(pf).replace('_positive.json', '')
+    base = os.path.basename(pf).replace('_positive.json', '')
+    tech = base.split('_')[0]
     if tech in RULE_MAP:
         POSITIVE_PARAMS.append((tech, pf))
 
@@ -46,7 +47,8 @@ for pf in POSITIVE_FIXTURES:
 NEGATIVE_FIXTURES = sorted(glob.glob('tests/fixtures/*_negative.json'))
 NEGATIVE_PARAMS = []
 for nf in NEGATIVE_FIXTURES:
-    tech = os.path.basename(nf).replace('_negative.json', '')
+    base = os.path.basename(nf).replace('_negative.json', '')
+    tech = base.split('_')[0]
     if tech in RULE_MAP:
         for rf, rdata in RULE_MAP[tech]:
             NEGATIVE_PARAMS.append((tech, rf, nf))

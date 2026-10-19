@@ -1,0 +1,15 @@
+{
+  "EventID": 4104,
+  "Channel": "Microsoft-Windows-PowerShell/Operational",
+  "win": {
+    "system": {
+      "eventID": 4104,
+      "channel": "Microsoft-Windows-PowerShell/Operational",
+      "providerName": "Microsoft-Windows-PowerShell"
+    },
+    "eventdata": {
+      "scriptBlockText": "[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)"
+    }
+  },
+  "ScriptBlockText": "[Ref].Assembly.GetType('System.Management.Automation.AmsiUtils').GetField('amsiInitFailed','NonPublic,Static').SetValue($null,$true)"
+}

@@ -1,0 +1,21 @@
+{
+  "EventID": 3,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "win": {
+    "system": {
+      "eventID": 3,
+      "channel": "Microsoft-Windows-Sysmon/Operational",
+      "providerName": "Microsoft-Windows-Sysmon"
+    },
+    "eventdata": {
+      "image": "C:\\Windows\\System32\\certutil.exe",
+      "initiated": "true",
+      "destinationIp": "198.51.100.42",
+      "destinationPort": "443"
+    }
+  },
+  "Image": "C:\\Windows\\System32\\certutil.exe",
+  "Initiated": "true",
+  "DestinationIp": "198.51.100.42",
+  "DestinationPort": 443
+}

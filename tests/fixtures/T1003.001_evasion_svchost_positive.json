@@ -1,0 +1,20 @@
+{
+  "EventID": 10,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "win": {
+    "system": {
+      "eventID": 10,
+      "channel": "Microsoft-Windows-Sysmon/Operational",
+      "providerName": "Microsoft-Windows-Sysmon"
+    },
+    "eventdata": {
+      "sourceImage": "C:\\Users\\Public\\svchost.exe",
+      "targetImage": "C:\\Windows\\System32\\lsass.exe",
+      "grantedAccess": "0x1010",
+      "callTrace": "C:\\Users\\Public\\svchost.exe+14a2|UNKNOWN(00007FFA21B30000)"
+    }
+  },
+  "SourceImage": "C:\\Users\\Public\\svchost.exe",
+  "TargetImage": "C:\\Windows\\System32\\lsass.exe",
+  "GrantedAccess": "0x1010"
+}

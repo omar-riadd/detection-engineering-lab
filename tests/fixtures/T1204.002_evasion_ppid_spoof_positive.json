@@ -1,0 +1,20 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "win": {
+    "system": {
+      "eventID": 1,
+      "channel": "Microsoft-Windows-Sysmon/Operational",
+      "providerName": "Microsoft-Windows-Sysmon"
+    },
+    "eventdata": {
+      "image": "C:\\Windows\\System32\\wscript.exe",
+      "parentImage": "C:\\Windows\\System32\\spoolsv.exe",
+      "commandLine": "wscript.exe \"C:\\Users\\omar\\Downloads\\spoofed_attachment.vbs\"",
+      "user": "CORP\\omar"
+    }
+  },
+  "Image": "C:\\Windows\\System32\\wscript.exe",
+  "ParentImage": "C:\\Windows\\System32\\spoolsv.exe",
+  "CommandLine": "wscript.exe \"C:\\Users\\omar\\Downloads\\spoofed_attachment.vbs\""
+}

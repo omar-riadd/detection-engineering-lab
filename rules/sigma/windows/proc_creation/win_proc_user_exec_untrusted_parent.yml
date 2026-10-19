@@ -30,6 +30,9 @@ detection:
       - '\winrar.exe'
       - '\7zFM.exe'
       - '\7zG.exe'
+      - '\services.exe'
+      - '\spoolsv.exe'
+      - '\svchost.exe'
   selection_cli:
     CommandLine|contains:
       - '\Downloads\'

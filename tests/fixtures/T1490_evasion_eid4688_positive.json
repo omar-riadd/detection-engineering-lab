@@ -1,0 +1,20 @@
+{
+  "EventID": 4688,
+  "Channel": "Security",
+  "win": {
+    "system": {
+      "eventID": 4688,
+      "channel": "Security",
+      "providerName": "Microsoft-Windows-Security-Auditing"
+    },
+    "eventdata": {
+      "newProcessName": "C:\\Windows\\System32\\vssadmin.exe",
+      "parentProcessName": "C:\\Windows\\System32\\cmd.exe",
+      "commandLine": "vssadmin.exe delete shadows /all /quiet",
+      "subjectUserName": "Administrator"
+    }
+  },
+  "NewProcessName": "C:\\Windows\\System32\\vssadmin.exe",
+  "ParentProcessName": "C:\\Windows\\System32\\cmd.exe",
+  "CommandLine": "vssadmin.exe delete shadows /all /quiet"
+}

@@ -1,0 +1,212 @@
+{
+  "name": "Detection Engineering Portfolio - ATT&CK Coverage & Evasion Layer",
+  "versions": {
+    "attack": "14",
+    "navigator": "4.5",
+    "layer": "4.5"
+  },
+  "domain": "enterprise-attack",
+  "description": "Comprehensive MITRE ATT&CK coverage, validation status, and purple-team evasion hardening across Active Directory Intrusion (Scenario A) and Ransomware Precursor (Scenario B) chains.",
+  "filters": {
+    "platforms": [
+      "Windows",
+      "Linux"
+    ]
+  },
+  "sorting": 3,
+  "layout": {
+    "layout": "side",
+    "aggregateFunction": "average",
+    "showID": true,
+    "showName": true,
+    "showAggregateScores": true,
+    "countUnscored": false
+  },
+  "hideDisabled": false,
+  "gradient": {
+    "colors": [
+      "#ffffff",
+      "#ffa726",
+      "#66bb6a",
+      "#2e7d32"
+    ],
+    "minValue": 0,
+    "maxValue": 100
+  },
+  "legendItems": [
+    {
+      "label": "Evasion-Hardened & Purple-Team Validated (High Confidence)",
+      "color": "#2e7d32"
+    },
+    {
+      "label": "Active Sigma Detection with Regression Fixture (Medium-High Confidence)",
+      "color": "#66bb6a"
+    },
+    {
+      "label": "Contextual Detection / Supplemental Telemetry",
+      "color": "#ffa726"
+    }
+  ],
+  "techniques": [
+    {
+      "techniqueID": "T1566.001",
+      "tactic": "initial-access",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: win_file_susp_download_file_drop.yml. Evasion tested against double extensions and script droppers. D3FEND: D3-FSA (File System Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1204.002",
+      "tactic": "execution",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: win_proc_user_exec_untrusted_parent.yml. Evasion tested against PPID spoofing via system services. D3FEND: D3-PMA (Process Modification Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1059.001",
+      "tactic": "execution",
+      "score": 98,
+      "color": "#2e7d32",
+      "comment": "Rule: posh_pm_susp_script_block.yml. Evasion tested against Base64 encoding, alternate cradles, and in-memory AMSI bypass. D3FEND: D3-SEA (Script Execution Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1218.011",
+      "tactic": "defense-evasion",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_proc_rundll32_susp_execution.yml. Detects Rundll32 executing untrusted DLLs from writable user directories. D3FEND: D3-PBA (Process Binary Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1055.012",
+      "tactic": "defense-evasion",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_proc_hollowing_remote_thread.yml. Detects remote thread creation targeting critical system binaries. D3FEND: D3-PSA (Process Spawn Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1003.001",
+      "tactic": "credential-access",
+      "score": 98,
+      "color": "#2e7d32",
+      "comment": "Rule: win_proc_access_lsass_memory.yml. Evasion tested against renamed binaries (svchost masquerading). D3FEND: D3-CAI (Credential Access Interception).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1003.006",
+      "tactic": "credential-access",
+      "score": 90,
+      "color": "#66bb6a",
+      "comment": "Rule: win_sec_dc_replication_access.yml. Detects unauthorized DCSync directory replication requests on DC (EID 4662). D3FEND: D3-CAI.",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1021.002",
+      "tactic": "lateral-movement",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_sec_net_lateral_smb_admin_share.yml. Detects network access to IPC$, C$, and ADMIN$ shares across endpoints. D3FEND: D3-LMA (Lateral Movement Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1087.002",
+      "tactic": "discovery",
+      "score": 80,
+      "color": "#66bb6a",
+      "comment": "Rule: win_proc_domain_account_recon.yml. Detects Active Directory domain user enumeration via net user /domain. D3FEND: D3-DAA (Domain Account Access).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1482",
+      "tactic": "discovery",
+      "score": 80,
+      "color": "#66bb6a",
+      "comment": "Rule: win_proc_domain_trust_discovery.yml. Detects Active Directory domain and forest trust enumeration via nltest. D3FEND: D3-DTA (Domain Trust Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1078.002",
+      "tactic": "defense-evasion",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_sec_anomalous_domain_logon.yml. Detects remote network logons (EID 4624 LogonType 3) using privileged domain accounts. D3FEND: D3-LAA (Logon Authentication Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1021.001",
+      "tactic": "lateral-movement",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_sec_susp_rdp_lateral_logon.yml. Detects inbound Remote Desktop Protocol sessions (EID 4624 LogonType 10). D3FEND: D3-LMA (Lateral Movement Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1053.005",
+      "tactic": "persistence",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_schtask_suspicious_creation.yml. Detects creation of scheduled tasks executing script interpreters or unsigned payloads. D3FEND: D3-SJA (Scheduled Job Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1547.001",
+      "tactic": "persistence",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_registry_run_keys_persistence.yml. Detects registry modifications to Run and RunOnce autostart keys. D3FEND: D3-BRA (Boot Record Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1490",
+      "tactic": "impact",
+      "score": 98,
+      "color": "#2e7d32",
+      "comment": "Rules: win_proc_inhibit_system_recovery.yml & win_proc_vssadmin_resize_shadowstorage.yml. Evasion tested against multi-parent if_sid scoping (EID 4688 vs Sysmon 1). D3FEND: D3-FSA.",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1562.001",
+      "tactic": "defense-evasion",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: posh_tamper_defender_mp_preference.yml. Evasion tested against AMSI memory patches and PowerShell Defender disabling. D3FEND: D3-SPA (Security Policy Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1486",
+      "tactic": "impact",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_file_mass_ransomware_activity.yml. Detects mass file creation with known ransomware extensions and rapid I/O handles. D3FEND: D3-FSA (File System Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1041",
+      "tactic": "exfiltration",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: win_sysmon_net_susp_c2_exfil.yml. Evasion tested against LOLBin substitution (certutil/bitsadmin over port 443). D3FEND: D3-NTA (Network Traffic Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1027",
+      "tactic": "defense-evasion",
+      "score": 90,
+      "color": "#2e7d32",
+      "comment": "Rule: posh_pm_obfuscated_script_block.yml. Detects base64 string decoding and dynamic reflection execution. D3FEND: D3-SEA (Script Execution Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1047",
+      "tactic": "execution",
+      "score": 85,
+      "color": "#66bb6a",
+      "comment": "Rule: win_proc_wmi_susp_command_exec.yml. Detects process call create execution commands invoked via wmic.exe. D3FEND: D3-PMA (Process Modification Analysis).",
+      "enabled": true
+    }
+  ]
+}

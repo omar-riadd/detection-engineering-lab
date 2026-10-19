@@ -42,7 +42,7 @@ FIELD_MAPPING = {
 
 # Parent SID Scoping Rules for Wazuh analysisd
 PARENT_SIDS = {
-    'process_creation': 60103,
+    'process_creation': '60103, 18100',
     'process_access': 60112,
     'file_event': 60113,
     'create_remote_thread': 60110,

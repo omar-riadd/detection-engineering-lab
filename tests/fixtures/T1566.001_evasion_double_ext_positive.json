@@ -1,0 +1,19 @@
+{
+  "EventID": 11,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "win": {
+    "system": {
+      "eventID": 11,
+      "channel": "Microsoft-Windows-Sysmon/Operational",
+      "providerName": "Microsoft-Windows-Sysmon"
+    },
+    "eventdata": {
+      "image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "targetFilename": "C:\\Users\\omar\\Downloads\\Q3_Financial_Audit.pdf.exe",
+      "creationUtcTime": "2026-10-19 02:15:00.000"
+    }
+  },
+  "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+  "TargetFilename": "C:\\Users\\omar\\Downloads\\Q3_Financial_Audit.pdf.exe",
+  "CreationUtcTime": "2026-10-19 02:15:00.000"
+}

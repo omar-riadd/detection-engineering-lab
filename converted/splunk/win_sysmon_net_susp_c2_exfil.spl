@@ -1,2 +1,2 @@
 # Suspicious Outbound C2 Network Connection via LOLBin or Utility - ATT&CK: T1041
-index=windows EventID="3" (Image="*\curl.exe" OR Image="*\certutil.exe" OR Image="*\bitsadmin.exe") Initiated="true" NOT (Image="*\chrome.exe" OR Image="*\firefox.exe" OR Image="*\msedge.exe") NOT (DestinationPort="80" OR DestinationPort="443") | table _time, host, user, Image, CommandLine
+index=windows EventID="3" (Image="*\certutil.exe" OR Image="*\bitsadmin.exe") (Image="*\curl.exe") Initiated="true" NOT (Image="*\chrome.exe" OR Image="*\firefox.exe" OR Image="*\msedge.exe") NOT (DestinationPort="80" OR DestinationPort="443") | table _time, host, user, Image, CommandLine

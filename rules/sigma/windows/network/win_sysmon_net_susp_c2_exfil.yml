@@ -22,11 +22,13 @@ logsource:
 detection:
   selection_event:
     EventID: 3
-  selection_binary:
+  selection_lolbins:
     Image|endswith:
-      - '\curl.exe'
       - '\certutil.exe'
       - '\bitsadmin.exe'
+  selection_curl:
+    Image|endswith:
+      - '\curl.exe'
   selection_direction:
     Initiated: 'true'
   filter_web_browsers:
@@ -34,11 +36,11 @@ detection:
       - '\chrome.exe'
       - '\firefox.exe'
       - '\msedge.exe'
-  filter_standard_ports:
+  filter_curl_standard_ports:
     DestinationPort:
       - 80
       - 443
-  condition: selection_event and selection_binary and selection_direction and not filter_web_browsers and not filter_standard_ports
+  condition: selection_event and selection_direction and not filter_web_browsers and (selection_lolbins or (selection_curl and not filter_curl_standard_ports))
 falsepositives:
   - Enterprise software updates or developers using curl for custom internal non-standard API endpoints
 level: high

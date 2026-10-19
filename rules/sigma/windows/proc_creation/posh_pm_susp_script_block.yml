@@ -25,16 +25,27 @@ detection:
       - 'DownloadString'
       - 'DownloadFile'
       - 'DownloadData'
+      - 'Invoke-WebRequest'
+      - 'iwr'
+      - 'Start-BitsTransfer'
+      - 'FromBase64String'
   selection_execution:
     ScriptBlockText|contains:
       - 'IEX'
       - 'Invoke-Expression'
       - '[System.Reflection.Assembly]::Load'
+      - 'GetString'
+  selection_amsi_bypass:
+    ScriptBlockText|contains:
+      - 'AmsiUtils'
+      - 'amsiInitFailed'
+      - 'AmsiScanBuffer'
+      - 'amsiContext'
   filter_known_admin:
     ScriptBlockText|contains:
       - 'Chocolatey'
       - 'Install-PackageProvider'
-  condition: selection_cradle and selection_execution and not filter_known_admin
+  condition: ((selection_cradle and selection_execution) or selection_amsi_bypass) and not filter_known_admin
 falsepositives:
   - Software installation scripts (e.g., Chocolatey bootstrap, AWS CLI install)
   - Legitimate enterprise automation scripts downloading trusted internal updates

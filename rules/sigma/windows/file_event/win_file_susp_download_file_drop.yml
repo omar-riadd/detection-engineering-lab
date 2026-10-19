@@ -41,6 +41,12 @@ detection:
       - '\firefox.exe'
       - '\winrar.exe'
       - '\7zFM.exe'
+      - '\powershell.exe'
+      - '\cmd.exe'
+      - '\certutil.exe'
+      - '\curl.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
   filter_benign:
     TargetFilename|endswith:
       - '.pdf'

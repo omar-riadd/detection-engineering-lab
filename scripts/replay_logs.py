@@ -45,6 +45,30 @@ def get_field_value(event, field_name):
                 if k.lower() == field_name.lower():
                     return v
 
+    # 4. Common field aliases across Windows event channels (e.g., EID 4688 vs Sysmon EID 1)
+    field_aliases = {
+        'image': ['NewProcessName', 'ProcessName', 'ImagePath'],
+        'parentimage': ['ParentProcessName'],
+        'commandline': ['ProcessCommandLine'],
+        'user': ['SubjectUserName', 'TargetUserName'],
+    }
+    for alias in field_aliases.get(field_name.lower(), []):
+        if alias in event:
+            return event[alias]
+        for k, v in event.items():
+            if k.lower() == alias.lower():
+                return v
+        if isinstance(event_data, dict):
+            for k, v in event_data.items():
+                if k.lower() == alias.lower():
+                    return v
+        if isinstance(win_data, dict):
+            ed = win_data.get('eventdata', {})
+            if isinstance(ed, dict):
+                for k, v in ed.items():
+                    if k.lower() == alias.lower():
+                        return v
+
     return None
 
 def match_field_pattern(actual_val, expected_pattern, modifier=''):
@@ -160,7 +184,8 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
         pos_fixtures = sorted(glob.glob(os.path.join(fixtures_dir, '*_positive.json')))
         print(f"\n[+] Executing Positive Regression Tests ({len(pos_fixtures)} fixtures)...")
         for pf in pos_fixtures:
-            tech_id = os.path.basename(pf).replace('_positive.json', '')
+            base = os.path.basename(pf).replace('_positive.json', '')
+            tech_id = base.split('_')[0]
             if tech_id not in rules_by_tech:
                 continue
 
@@ -170,14 +195,15 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
 
             fired = any(evaluate_sigma_rule(rdata, event) for rf, rdata in rule_list)
             total_tests += 1
+            variant_name = os.path.basename(pf).replace('.json', '')
             if fired:
                 passed_tests += 1
                 if verbose:
                     matching = [rdata.get('title') for rf, rdata in rule_list if evaluate_sigma_rule(rdata, event)]
-                    print(f"  [PASS] {tech_id}: True Positive confirmed ({', '.join(matching)})")
+                    print(f"  [PASS] {variant_name} ({tech_id}): True Positive confirmed ({', '.join(matching)})")
             else:
-                failures.append(f"FAILED Positive test for {tech_id}: None of {len(rule_list)} rules fired on attack fixture")
-                print(f"  [FAIL] {tech_id}: Expected ALERT but rule did NOT fire!")
+                failures.append(f"FAILED Positive test for {variant_name} ({tech_id}): None of {len(rule_list)} rules fired on attack fixture")
+                print(f"  [FAIL] {variant_name} ({tech_id}): Expected ALERT but rule did NOT fire!")
 
     # 2. Negative Tests (Benign logs MUST NOT trigger rule)
     if test_type in ('all', 'negative'):

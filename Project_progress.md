@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 6 — Completed | Week 7 — In Progress  
-> **Current Task:** Week 7 — Purple-Team Iterations & MTTD Measurement (`docs/bypass_log.md`, Rule Hardening, `docs/mttd_metrics.md`, Navigator Layer)  
+> **Status:** Week 7 — Completed | Week 8 — In Progress  
+> **Current Task:** Week 8 — Polish, Metrics & Publication (Wazuh Dashboards, Executive Report `docs/report.md`, Blog/Demo Outline, `README.md` Finalization, Release `v1.0`)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -29,8 +29,8 @@
 | **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Completed | 2026-10-19 |
 | **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Completed | 2026-10-19 |
 | **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Completed | 2026-10-19 |
-| **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | In Progress | - |
-| **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | Not Started | - |
+| **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Completed | 2026-10-19 |
+| **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | In Progress | - |
 
 ---
 
@@ -116,11 +116,28 @@
 ---
 
 ### Week 7 — Purple-Team Iterations & MTTD Measurement
-- [ ] Execute 7 evasion classes (Obfuscation, LOLBins, Renamed binaries, Parent spoofing, AMSI bypass, Timestomping, if_sid gaps).
-- [ ] Record findings in `docs/bypass_log.md`.
-- [ ] Harden rules and verify with evasion-variant fixtures.
-- [ ] Measure and log MTTD in `docs/mttd_metrics.md`.
-- [ ] Export ATT&CK Navigator layer to `docs/coverage/navigator_layer.json`.
+- [x] **Task 7.1**: Emulate all 7 adversarial evasion classes across target rules:
+  1. String obfuscation & encoding (`powershell.exe -enc`, Base64 decoding, alternative downloaders: `Invoke-WebRequest`, `iwr`, `Start-BitsTransfer`)
+  2. LOLBins substitution (`certutil.exe -urlcache` over standard HTTPS port 443 instead of `curl` on non-standard ports)
+  3. Renamed binaries (`mimikatz.exe` / `procdump.exe` renamed to `svchost.exe` outside `System32` requesting LSASS memory access)
+  4. Parent process spoofing (PPID spoofing via `spoolsv.exe` / `services.exe` targeting user staging folders)
+  5. In-memory AMSI bypass (`amsiInitFailed` reflection / `AmsiScanBuffer` memory patching)
+  6. Staged dropper & disguised double extensions (`powershell.exe` dropping `invoice.pdf.exe` with timestomping)
+  7. `if_sid` scoping gap abuse (bypassing Sysmon-only Wazuh rules via Windows Security Event ID 4688)
+- [x] **Task 7.2**: Author `docs/bypass_log.md` logging all 7 bypass attempts, technical failure analyses, hardening fixes, and post-hardening verification.
+- [x] **Task 7.3**: Harden affected Sigma rules (`posh_pm_susp_script_block.yml`, `win_sysmon_net_susp_c2_exfil.yml`, `win_proc_access_lsass_memory.yml`, `win_proc_user_exec_untrusted_parent.yml`, `win_file_susp_download_file_drop.yml`, `win_proc_inhibit_system_recovery.yml`).
+- [x] **Task 7.4**: Author 7 positive evasion-variant regression fixtures in `tests/fixtures/`:
+  - `T1059.001_evasion_encoded_positive.json`
+  - `T1041_evasion_certutil_positive.json`
+  - `T1003.001_evasion_svchost_positive.json`
+  - `T1204.002_evasion_ppid_spoof_positive.json`
+  - `T1059.001_evasion_amsi_positive.json`
+  - `T1566.001_evasion_double_ext_positive.json`
+  - `T1490_evasion_eid4688_positive.json`
+- [x] **Task 7.5**: Update CI test harness (`scripts/replay_logs.py` and `tests/test_detections.py`) to support evasion variant fixtures and Windows event field aliases.
+- [x] **Task 7.6**: Measure and document Mean Time to Detect (MTTD) benchmarks across all 20 techniques in `docs/mttd_metrics.md` (average MTTD 6.96s vs < 60s target).
+- [x] **Task 7.7**: Export ATT&CK Navigator layer to `docs/coverage/navigator_layer.json` with scores, colors, D3FEND mappings, and evasion testing annotations.
+- [x] **Verification**: 48/48 unit tests passing via `pytest tests/`, 27/27 positive fixtures passing, 20/20 negative fixtures passing, 0 false positives across 1,207 baseline corpus events. Deliverables complete.
 
 ---
 
@@ -170,12 +187,20 @@
     - Authored 10 SOC analyst triage runbooks in `runbooks/` matching the standard template with KQL investigation queries, escalation criteria, known false positives, ATT&CK, and D3FEND mappings.
     - Updated `docs/d3fend_mapping.md` linking each Scenario A technique to its authored Sigma rule and triage runbook.
     - Executed discrimination test suite verifying 100% true-positive firing against positive test fixtures and 0% false-positive firing against negative fixtures.
-    - Committed Week 4 deliverables to Git repository.
+    - Committed Week 4 deliverables to Git repository (`4260a32`).
   - Completed Week 4.5:
     - Authored `playbooks/hunt_credential_access.md` covering Scenario A with hypothesis, ATT&CK mapping, telemetry requirements, broad KQL query, high-confidence Sigma hunt, triage tree, and blind spot analysis.
     - Authored `playbooks/hunt_ransomware_precursor.md` covering Scenario B with hypothesis, ATT&CK mapping, telemetry requirements, broad KQL query, high-confidence Sigma hunt, triage tree, and blind spot analysis.
     - Automated structural verification for all required sections, code fences, and data sources.
-    - Committed Week 4.5 playbooks to Git repository.
+    - Committed Week 4.5 playbooks to Git repository (`bced95d`).
+  - Completed Week 5:
+    - Implemented `scripts/convert_sigma.py` (custom Jinja2 template transpiler for Wazuh XML, multi-SIEM transpilation for KQL and SPL).
+    - Implemented `scripts/replay_logs.py` (JSON fixture replay engine supporting positive, negative, and baseline evaluation).
+    - Implemented `tests/test_detections.py` (pytest unit test suite with parametrized positive and negative regression fixtures).
+    - Configured `.github/workflows/ci.yml` (all 6 stages: YAML lint, Sigma validation, conversion, positive regression test, negative regression test, artifact upload).
+    - Authored `docs/sigma_to_wazuh_notes.md` detailing the transpiler architecture, field mappings, and parent SID scoping.
+    - Verified CI pipeline locally and verified intentionally broken rule fails CI build.
+    - Committed Week 5 deliverables to Git repository (`10328ec`).
   - Completed Week 6:
     - Replayed all detection rules against the full 1,200-event benign baseline corpus; recorded 0.00% FP rate across all techniques in `docs/fp_report.md`.
     - Formulated systematic false positive tuning framework and shadow/experimental deployment promotion policy (Level 3 -> 6 -> 10-12).
@@ -186,6 +211,16 @@
     - Transpiled all 21 Sigma rules into 21 Wazuh XML rules in `rules/wazuh/`, a consolidated `local_rules.xml`, 21 Sentinel KQL queries in `converted/kql/`, and 21 Splunk SPL queries in `converted/splunk/`.
     - Expanded `scripts/generate_baseline.py` to simulate benign edge case telemetry (Edge PDF downloads, admin diagnostic queries, localhost RDP).
     - Executed Pytest regression test suite: 41/41 unit tests passed with 100% precision and sensitivity.
-    - Committed Week 6 deliverables to Git repository.
-  - Initiating Week 7: Purple-Team Iterations & MTTD Measurement — Simulating 7 adversarial evasion classes, authoring `docs/bypass_log.md`, hardening bypassed rules, measuring and documenting MTTD in `docs/mttd_metrics.md`, and generating ATT&CK Navigator layer `docs/coverage/navigator_layer.json`.
+    - Committed Week 6 deliverables to Git repository (`b90bf40`).
+  - Completed Week 7:
+    - Emulated all 7 adversarial evasion classes across detection rules (obfuscated Base64, LOLBins substitution via certutil over 443, renamed binary svchost memory dumping, parent process spoofing via spoolsv, in-memory AMSI reflection bypass, staged dropper with double extensions, and if_sid scoping gaps).
+    - Authored `docs/bypass_log.md` with structured bypass log table, technical case studies, and verification results.
+    - Hardened affected Sigma rules and authored 7 positive evasion-variant fixtures (`tests/fixtures/*_evasion_*_positive.json`).
+    - Updated `scripts/replay_logs.py` and `tests/test_detections.py` to support evasion variant fixtures and Windows event field aliases.
+    - Measured and documented Mean Time to Detect (MTTD) benchmarks across all 20 techniques in `docs/mttd_metrics.md` (average MTTD 6.96s vs < 60s target).
+    - Exported ATT&CK Navigator layer to `docs/coverage/navigator_layer.json` with scores, colors, D3FEND mappings, and evasion testing annotations.
+    - Transpiled hardened rules to Wazuh XML, KQL, and SPL.
+    - Executed Pytest regression test suite: 48/48 unit tests passed in 0.13s, with 0 false positives across 1,207 baseline events.
+  - Initiating Week 8: Polish, Metrics & Publication — Wazuh dashboards, alert routing, final executive project report in `docs/report.md`, blog post and demo video scripts, `CHANGELOG.md` debt register, and `README.md` finalization with `v1.0` release tag.
+
 

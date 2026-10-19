@@ -1,7 +1,8 @@
 // Suspicious PowerShell In-Memory Script Block Execution
 // Techniques: T1059.001
 Event
-| where ScriptBlockText has_any ("Net.WebClient", "DownloadString", "DownloadFile", "DownloadData")
-| where ScriptBlockText has_any ("IEX", "Invoke-Expression", "[System.Reflection.Assembly]::Load")
+| where ScriptBlockText has_any ("Net.WebClient", "DownloadString", "DownloadFile", "DownloadData", "Invoke-WebRequest", "iwr", "Start-BitsTransfer", "FromBase64String")
+| where ScriptBlockText has_any ("IEX", "Invoke-Expression", "[System.Reflection.Assembly]::Load", "GetString")
+| where ScriptBlockText has_any ("AmsiUtils", "amsiInitFailed", "AmsiScanBuffer", "amsiContext")
 | where not(ScriptBlockText has_any ("Chocolatey", "Install-PackageProvider"))
 | project TimeGenerated, DeviceName, AccountName

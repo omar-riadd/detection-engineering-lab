@@ -2,7 +2,7 @@
 // Techniques: T1204.002
 DeviceProcessEvents
 | where (FileName endswith "\wscript.exe" or FileName endswith "\cscript.exe" or FileName endswith "\mshta.exe")
-| where (InitiatingProcessFileName endswith "\explorer.exe" or InitiatingProcessFileName endswith "\winrar.exe" or InitiatingProcessFileName endswith "\7zFM.exe" or InitiatingProcessFileName endswith "\7zG.exe")
+| where (InitiatingProcessFileName endswith "\explorer.exe" or InitiatingProcessFileName endswith "\winrar.exe" or InitiatingProcessFileName endswith "\7zFM.exe" or InitiatingProcessFileName endswith "\7zG.exe" or InitiatingProcessFileName endswith "\services.exe" or InitiatingProcessFileName endswith "\spoolsv.exe" or InitiatingProcessFileName endswith "\svchost.exe")
 | where ProcessCommandLine has_any ("\Downloads\", "\Temp\", "\AppData\Local\Temp\")
 | where not(ProcessCommandLine has_any ("C:\Windows\System32\Printing_Admin_Scripts\"))
 | project TimeGenerated, DeviceName, AccountName
