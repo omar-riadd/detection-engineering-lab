@@ -1,0 +1,2 @@
+# Persistence via Windows Registry Run or RunOnce Autostart Key - ATT&CK: T1547.001
+index=windows EventID="13" (TargetObject="*\Software\Microsoft\Windows\CurrentVersion\Run*" OR TargetObject="*\Software\Microsoft\Windows\CurrentVersion\RunOnce*") NOT (TargetObject="*TimeProviders*" OR TargetObject="*W32Time*" OR TargetObject="*TimeZoneInformation*") | table _time, host, user, Image, CommandLine

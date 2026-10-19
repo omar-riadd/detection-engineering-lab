@@ -1,0 +1,2 @@
+# Remote Desktop Protocol (RDP) Inbound Interactive Session - ATT&CK: T1021.001
+index=windows EventID="4624" LogonType="10" NOT (IpAddress="127.0.0.1" OR IpAddress="::1" OR IpAddress="-") | table _time, host, user, Image, CommandLine

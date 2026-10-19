@@ -1,0 +1,36 @@
+title: Suspicious WMI Process Call Execution via WMIC CLI
+id: 4600d719-4810-4809-2039-601736018020
+status: experimental
+description: |
+  Detects command-line execution of wmic.exe invoking 'process call create' to spawn child processes locally or remotely.
+  Used by adversaries for lateral movement, privilege elevation, and evasion of direct parent-child process tree monitoring.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1047/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1047
+  - attack.execution
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_binary:
+    Image|endswith: '\WMIC.exe'
+  selection_process_call:
+    CommandLine|contains:
+      - 'process call create'
+      - 'process call'
+  filter_hardware_recon:
+    CommandLine|contains:
+      - 'os get'
+      - 'cpu get'
+      - 'diskdrive get'
+      - 'computersystem get'
+  condition: selection_binary and selection_process_call and not filter_hardware_recon
+falsepositives:
+  - Legacy enterprise systems management agents using WMIC for application maintenance
+level: high

@@ -1,0 +1,2 @@
+# Impair Defenses via PowerShell Set-MpPreference Tampering - ATT&CK: T1562.001
+index=windows (ScriptBlockText="*Set-MpPreference*") (ScriptBlockText="*DisableRealtimeMonitoring*" OR ScriptBlockText="*DisableBehaviorMonitoring*" OR ScriptBlockText="*DisableScriptScanning*" OR ScriptBlockText="*DisableIOAVProtection*") NOT (ScriptBlockText="*Get-MpComputerStatus*" OR ScriptBlockText="*Get-MpPreference*") | table _time, host, user, Image, CommandLine

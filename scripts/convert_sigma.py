@@ -147,14 +147,26 @@ def determine_parent_sid(sigma_data):
 
     return PARENT_SIDS.get(category, PARENT_SIDS['default'])
 
-def convert_to_wazuh(sigma_data, rule_id):
-    """Converts a Sigma rule dict to Wazuh XML string."""
+def convert_to_wazuh(sigma_data, rule_id, shadow_mode=True):
+    """
+    Converts a Sigma rule dict to Wazuh XML string.
+    Implements shadow/experimental deployment mode:
+    - experimental rules deploy at level 3 (informational) for 7 days
+    - test rules deploy at level 6 (medium)
+    - stable rules deploy at full production level (10-12)
+    """
     title = sigma_data.get('title', 'Unknown Detection Rule')
     rule_uuid = sigma_data.get('id', '')
     status = sigma_data.get('status', 'experimental')
     desc = sigma_data.get('description', '').replace('\n', ' ').strip()
     level = sigma_data.get('level', 'medium')
-    wazuh_level = LEVEL_MAPPING.get(level, 6)
+
+    if shadow_mode and status == 'experimental':
+        wazuh_level = 3  # Shadow mode level 3 (informational)
+    elif shadow_mode and status == 'test':
+        wazuh_level = 6  # Testing promotion level 6
+    else:
+        wazuh_level = LEVEL_MAPPING.get(level, 10)
     
     tags = sigma_data.get('tags', [])
     attack_tags = [t.replace('attack.', '').upper() for t in tags if t.startswith('attack.t')]
@@ -335,6 +347,8 @@ def main():
     parser.add_argument('--wazuh', default='rules/wazuh/', help="Output directory for Wazuh XML rules")
     parser.add_argument('--kql', default='converted/kql/', help="Output directory for KQL queries")
     parser.add_argument('--splunk', default='converted/splunk/', help="Output directory for SPL queries")
+    parser.add_argument('--shadow-mode', dest='shadow_mode', action='store_true', default=True, help="Enable shadow deployment: deploy experimental rules at level 3")
+    parser.add_argument('--production', dest='shadow_mode', action='store_false', help="Deploy rules at full production severity")
     args = parser.parse_args()
 
     os.makedirs(args.wazuh, exist_ok=True)
@@ -346,7 +360,7 @@ def main():
         print(f"No Sigma rules found in {args.input}")
         sys.exit(1)
 
-    print(f"Found {len(rule_files)} Sigma rule(s) to convert.")
+    print(f"Found {len(rule_files)} Sigma rule(s) to convert (Shadow Mode: {args.shadow_mode}).")
     
     start_rule_id = 100100
     converted_count = 0
@@ -365,7 +379,7 @@ def main():
         rule_id = start_rule_id + idx
 
         # 1. Convert to Wazuh XML
-        wazuh_xml = convert_to_wazuh(sigma_data, rule_id)
+        wazuh_xml = convert_to_wazuh(sigma_data, rule_id, shadow_mode=args.shadow_mode)
         wazuh_file = os.path.join(args.wazuh, f"{base_name}.xml")
         with open(wazuh_file, 'w', encoding='utf-8') as wf:
             wf.write(wazuh_xml)

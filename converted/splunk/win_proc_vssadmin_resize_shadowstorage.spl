@@ -1,0 +1,2 @@
+# Shadow Storage Resize via Vssadmin to Inhibit System Recovery - ATT&CK: T1490
+index=windows Image="*\vssadmin.exe" (CommandLine="*resize*" OR CommandLine="*shadowstorage*") NOT (CommandLine="*list shadowstorage*") | table _time, host, user, Image, CommandLine

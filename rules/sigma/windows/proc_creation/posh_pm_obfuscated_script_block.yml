@@ -1,0 +1,38 @@
+title: Obfuscated PowerShell Script Block with Base64 Decoding
+id: 359fc608-3709-4798-1928-590625907019
+status: experimental
+description: |
+  Detects PowerShell script block log events (Event ID 4104) containing base64 decoding methods
+  ([System.Convert]::FromBase64String) chained with dynamic evaluation expressions (Invoke-Expression / IEX).
+  Adversaries encode commands in Base64 to conceal malicious intentions and evade string-matching controls.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1027/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1027
+  - attack.defense_evasion
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection_base64:
+    ScriptBlockText|contains:
+      - 'FromBase64String'
+      - '[System.Convert]::FromBase64String'
+  selection_eval:
+    ScriptBlockText|contains:
+      - 'IEX'
+      - 'Invoke-Expression'
+      - 'GetString'
+  filter_benign_diagnostics:
+    ScriptBlockText|contains:
+      - 'standard system health check'
+      - 'Clear-History'
+  condition: selection_base64 and selection_eval and not filter_benign_diagnostics
+falsepositives:
+  - Complex administrative deployment scripts (e.g., Chocolatey, Boxstarter) decoding binary payloads
+level: high

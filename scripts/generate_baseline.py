@@ -285,6 +285,110 @@ def generate_baseline_events(num_events: int = 500, start_time: datetime = None)
     return events
 
 
+def generate_edge_case_events():
+    """Generates benign edge case events that test detection boundary conditions."""
+    edge_cases = []
+    base_time = datetime.now(timezone.utc) - timedelta(hours=2)
+
+    # 1. Edge Case: IT admin listing vssadmin (NOT deleting)
+    edge_cases.append({
+        "EventID": 1,
+        "Channel": "Microsoft-Windows-Sysmon/Operational",
+        "UtcTime": (base_time + timedelta(minutes=5)).isoformat().replace("+00:00", "Z"),
+        "Computer": "DC01.corp.local",
+        "EventData": {
+            "Image": "C:\\Windows\\System32\\vssadmin.exe",
+            "CommandLine": "vssadmin.exe list writers",
+            "User": "CORP\\corpadmin",
+            "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+        }
+    })
+
+    # 2. Edge Case: Admin querying WMI hardware specs (NOT process call create)
+    edge_cases.append({
+        "EventID": 1,
+        "Channel": "Microsoft-Windows-Sysmon/Operational",
+        "UtcTime": (base_time + timedelta(minutes=10)).isoformat().replace("+00:00", "Z"),
+        "Computer": "WIN10-CLIENT01.corp.local",
+        "EventData": {
+            "Image": "C:\\Windows\\System32\\wbem\\WMIC.exe",
+            "CommandLine": "wmic.exe os get Caption,Version,OSArchitecture",
+            "User": "CORP\\jdoe",
+            "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+        }
+    })
+
+    # 3. Edge Case: Localhost RDP connection
+    edge_cases.append({
+        "EventID": 4624,
+        "Channel": "Security",
+        "UtcTime": (base_time + timedelta(minutes=15)).isoformat().replace("+00:00", "Z"),
+        "Computer": "WIN10-CLIENT01.corp.local",
+        "EventData": {
+            "TargetUserName": "jdoe",
+            "TargetDomainName": "CORP",
+            "LogonType": 10,
+            "IpAddress": "127.0.0.1",
+            "WorkstationName": "WIN10-CLIENT01"
+        }
+    })
+
+    # 4. Edge Case: Standard Windows Update scheduled task created by SYSTEM
+    edge_cases.append({
+        "EventID": 4698,
+        "Channel": "Security",
+        "UtcTime": (base_time + timedelta(minutes=20)).isoformat().replace("+00:00", "Z"),
+        "Computer": "DC01.corp.local",
+        "EventData": {
+            "SubjectUserName": "SYSTEM",
+            "TaskName": "\\Microsoft\\Windows\\WindowsUpdate\\Scheduled Start",
+            "TaskContent": "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task><Actions><Exec><Command>usoclient.exe</Command></Exec></Actions></Task>"
+        }
+    })
+
+    # 5. Edge Case: Defender diagnostic query (NOT Set-MpPreference disabling)
+    edge_cases.append({
+        "EventID": 4104,
+        "Channel": "Microsoft-Windows-PowerShell/Operational",
+        "UtcTime": (base_time + timedelta(minutes=25)).isoformat().replace("+00:00", "Z"),
+        "Computer": "WIN10-CLIENT01.corp.local",
+        "EventData": {
+            "ScriptBlockText": "Get-MpComputerStatus | Select-Object AntivirusEnabled, RealTimeProtectionEnabled",
+            "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+        }
+    })
+
+    # 6. Edge Case: Chrome downloading normal PDF invoice
+    edge_cases.append({
+        "EventID": 11,
+        "Channel": "Microsoft-Windows-Sysmon/Operational",
+        "UtcTime": (base_time + timedelta(minutes=30)).isoformat().replace("+00:00", "Z"),
+        "Computer": "WIN10-CLIENT01.corp.local",
+        "EventData": {
+            "Image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+            "TargetFilename": "C:\\Users\\jdoe\\Downloads\\Q3_Report.pdf",
+            "User": "CORP\\jdoe"
+        }
+    })
+
+    # 7. Edge Case: Standard Curl to corporate web service on Port 443
+    edge_cases.append({
+        "EventID": 3,
+        "Channel": "Microsoft-Windows-Sysmon/Operational",
+        "UtcTime": (base_time + timedelta(minutes=35)).isoformat().replace("+00:00", "Z"),
+        "Computer": "WIN10-CLIENT01.corp.local",
+        "EventData": {
+            "Image": "C:\\Windows\\System32\\curl.exe",
+            "DestinationPort": 443,
+            "DestinationIp": "142.250.190.46",
+            "Initiated": "true",
+            "User": "CORP\\jdoe"
+        }
+    })
+
+    return edge_cases
+
+
 def main():
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     events = generate_baseline_events(num_events=600)
@@ -292,6 +396,12 @@ def main():
     corpus_file = os.path.join(OUTPUT_DIR, "benign_baseline_corpus.json")
     with open(corpus_file, "w", encoding="utf-8") as f:
         json.dump(events, f, indent=2)
+
+    # Edge cases corpus
+    edge_cases = generate_edge_case_events()
+    edge_file = os.path.join(OUTPUT_DIR, "benign_edge_cases_corpus.json")
+    with open(edge_file, "w", encoding="utf-8") as ef:
+        json.dump(edge_cases, ef, indent=2)
 
     # Partitioned files for targeted category testing
     partitions = {
@@ -305,12 +415,14 @@ def main():
         with open(p_path, "w", encoding="utf-8") as pf:
             json.dump(partition_events, pf, indent=2)
 
-    print(f"[+] Successfully generated benign baseline corpus:")
-    print(f"    - Total events: {len(events)}")
+    print(f"[+] Successfully generated benign baseline corpus & edge cases:")
+    print(f"    - Total baseline events: {len(events)}")
+    print(f"    - Edge case events: {len(edge_cases)}")
     print(f"    - Sysmon events: {len(partitions['baseline_sysmon.json'])}")
     print(f"    - Security events: {len(partitions['baseline_security.json'])}")
     print(f"    - PowerShell events: {len(partitions['baseline_powershell.json'])}")
     print(f"    - Corpus path: {corpus_file}")
+    print(f"    - Edge cases path: {edge_file}")
 
 
 if __name__ == "__main__":

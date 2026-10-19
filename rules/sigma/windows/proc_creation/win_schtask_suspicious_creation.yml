@@ -1,0 +1,44 @@
+title: Scheduled Task Creation Executing Script Interpreter or Payload
+id: d93f6042-7143-4132-b3c2-f340693a1013
+status: experimental
+description: |
+  Detects the creation of a new scheduled task (Windows Security Event ID 4698) where the task action
+  executes a script interpreter (powershell.exe, cmd.exe, wscript.exe) or executes a binary from a writable user path.
+  Adversaries establish scheduled tasks to maintain persistence or schedule ransomware detonators.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1053/005/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1053.005
+  - attack.persistence
+  - attack.execution
+logsource:
+  product: windows
+  service: security
+detection:
+  selection_event:
+    EventID: 4698
+  selection_payload:
+    TaskContent|contains:
+      - 'powershell'
+      - 'cmd.exe'
+      - 'wscript'
+      - 'cscript'
+      - 'rundll32'
+      - 'regsvr32'
+      - 'Users\Public'
+      - 'AppData\Local\Temp'
+  filter_system:
+    SubjectUserName:
+      - 'SYSTEM'
+      - 'LOCAL SERVICE'
+      - 'NETWORK SERVICE'
+  condition: selection_event and selection_payload and not filter_system
+falsepositives:
+  - Software deployment agents (SCCM, Tanium, Intune) creating maintenance tasks
+  - Enterprise backup solutions scheduling automated scripts
+level: high

@@ -1,0 +1,9 @@
+// Suspicious Outbound C2 Network Connection via LOLBin or Utility
+// Techniques: T1041
+DeviceNetworkEvents
+| where EventID == "3"
+| where (FileName endswith "\curl.exe" or FileName endswith "\certutil.exe" or FileName endswith "\bitsadmin.exe")
+| where Initiated == "true"
+| where (FileName !endswith "\chrome.exe" or FileName !endswith "\firefox.exe" or FileName !endswith "\msedge.exe")
+| where DestinationPort !in ("80", "443")
+| project TimeGenerated, DeviceName, AccountName

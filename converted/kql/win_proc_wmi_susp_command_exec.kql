@@ -1,0 +1,7 @@
+// Suspicious WMI Process Call Execution via WMIC CLI
+// Techniques: T1047
+DeviceProcessEvents
+| where FileName endswith "\WMIC.exe"
+| where ProcessCommandLine has_any ("process call create", "process call")
+| where not(ProcessCommandLine has_any ("os get", "cpu get", "diskdrive get", "computersystem get"))
+| project TimeGenerated, DeviceName, AccountName

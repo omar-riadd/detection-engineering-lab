@@ -1,0 +1,42 @@
+title: Ransomware File Encryption Activity with Known Extension
+id: 137da486-1587-4576-f706-3784037e5017
+status: experimental
+description: |
+  Detects file creation events (Sysmon Event ID 11) appending recognized ransomware extensions
+  (.lockbit, .conti, .encrypted, .crypted, .blackbasta, .ryuk) to user documents.
+  Indicates an active encryption payload detonating on the endpoint.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1486/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1486
+  - attack.impact
+logsource:
+  product: windows
+  category: file_event
+detection:
+  selection_event:
+    EventID: 11
+  selection_extensions:
+    TargetFilename|endswith:
+      - '.lockbit'
+      - '.conti'
+      - '.encrypted'
+      - '.crypted'
+      - '.blackbasta'
+      - '.ryuk'
+  filter_benign:
+    TargetFilename|endswith:
+      - '.docx'
+      - '.xlsx'
+      - '.pptx'
+      - '.pdf'
+      - '.tmp'
+  condition: selection_event and selection_extensions and not filter_benign
+falsepositives:
+  - Legitimate third-party file encryption software (e.g., AxCrypt, BitLocker to go) if using identical extension names
+level: critical

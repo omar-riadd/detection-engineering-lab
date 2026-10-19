@@ -1,0 +1,2 @@
+# Suspicious WMI Process Call Execution via WMIC CLI - ATT&CK: T1047
+index=windows Image="*\WMIC.exe" (CommandLine="*process call create*" OR CommandLine="*process call*") NOT (CommandLine="*os get*" OR CommandLine="*cpu get*" OR CommandLine="*diskdrive get*" OR CommandLine="*computersystem get*") | table _time, host, user, Image, CommandLine

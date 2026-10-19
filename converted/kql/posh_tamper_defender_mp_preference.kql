@@ -1,0 +1,7 @@
+// Impair Defenses via PowerShell Set-MpPreference Tampering
+// Techniques: T1562.001
+Event
+| where ScriptBlockText has_any ("Set-MpPreference")
+| where ScriptBlockText has_any ("DisableRealtimeMonitoring", "DisableBehaviorMonitoring", "DisableScriptScanning", "DisableIOAVProtection")
+| where not(ScriptBlockText has_any ("Get-MpComputerStatus", "Get-MpPreference"))
+| project TimeGenerated, DeviceName, AccountName

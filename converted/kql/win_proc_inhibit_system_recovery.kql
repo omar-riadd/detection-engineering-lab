@@ -1,0 +1,11 @@
+// Inhibit System Recovery via Vssadmin, Wbadmin, or Bcdedit
+// Techniques: T1490
+DeviceProcessEvents
+| where FileName endswith "\vssadmin.exe"
+| where ProcessCommandLine has_any ("delete", "shadows")
+| where FileName endswith "\wbadmin.exe"
+| where ProcessCommandLine has_any ("delete", "catalog")
+| where FileName endswith "\bcdedit.exe"
+| where ProcessCommandLine has_any ("recoveryenabled", "ignoreallfailures")
+| where not(ProcessCommandLine has_any ("list shadows", "list writers"))
+| project TimeGenerated, DeviceName, AccountName

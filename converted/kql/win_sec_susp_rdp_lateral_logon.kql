@@ -1,0 +1,7 @@
+// Remote Desktop Protocol (RDP) Inbound Interactive Session
+// Techniques: T1021.001
+SecurityEvent
+| where EventID == "4624"
+| where LogonType == "10"
+| where IpAddress !in ("127.0.0.1", "::1", "-")
+| project TimeGenerated, DeviceName, AccountName

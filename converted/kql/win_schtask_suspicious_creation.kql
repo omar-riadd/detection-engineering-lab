@@ -1,0 +1,7 @@
+// Scheduled Task Creation Executing Script Interpreter or Payload
+// Techniques: T1053.005
+SecurityEvent
+| where EventID == "4698"
+| where TaskContent has_any ("powershell", "cmd.exe", "wscript", "cscript", "rundll32", "regsvr32", "Users\Public", "AppData\Local\Temp")
+| where AccountName !in ("SYSTEM", "LOCAL SERVICE", "NETWORK SERVICE")
+| project TimeGenerated, DeviceName, AccountName

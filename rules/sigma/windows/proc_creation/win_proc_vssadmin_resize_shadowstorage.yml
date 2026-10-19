@@ -1,0 +1,34 @@
+title: Shadow Storage Resize via Vssadmin to Inhibit System Recovery
+id: 5711e820-5921-4910-3140-712847129021
+status: experimental
+description: |
+  Detects the execution of vssadmin.exe attempting to resize volume shadow copy storage to an absurdly low limit (e.g. 401MB)
+  or unbound maximum. Adversaries (such as LockBit, Conti, and Ryuk affiliates) utilize shadowstorage resizing to force
+  the operating system to purge all existing Volume Shadow Copies without raising standard 'delete shadows' alert signatures.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1490/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1490
+  - attack.impact
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_binary:
+    Image|endswith: '\vssadmin.exe'
+  selection_flags:
+    CommandLine|contains|all:
+      - 'resize'
+      - 'shadowstorage'
+  filter_list:
+    CommandLine|contains:
+      - 'list shadowstorage'
+  condition: selection_binary and selection_flags and not filter_list
+falsepositives:
+  - Enterprise storage administrators deliberately reallocating Volume Shadow Storage quotas on file servers
+level: critical

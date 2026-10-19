@@ -1,0 +1,38 @@
+title: Impair Defenses via PowerShell Set-MpPreference Tampering
+id: 026c9375-0476-4465-e6f5-2673926d4016
+status: experimental
+description: |
+  Detects PowerShell script block execution (Event ID 4104) or command lines executing Set-MpPreference
+  to disable Microsoft Defender real-time monitoring, behavior monitoring, script scanning, or IOAV protection.
+  Adversaries tamper with endpoint antivirus defenses prior to running malware loaders or ransomware.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1562/001/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1562.001
+  - attack.defense_evasion
+logsource:
+  product: windows
+  service: powershell
+detection:
+  selection_cmdlet:
+    ScriptBlockText|contains:
+      - 'Set-MpPreference'
+  selection_disable:
+    ScriptBlockText|contains:
+      - 'DisableRealtimeMonitoring'
+      - 'DisableBehaviorMonitoring'
+      - 'DisableScriptScanning'
+      - 'DisableIOAVProtection'
+  filter_get:
+    ScriptBlockText|contains:
+      - 'Get-MpComputerStatus'
+      - 'Get-MpPreference'
+  condition: selection_cmdlet and selection_disable and not filter_get
+falsepositives:
+  - Rare enterprise automation scripts configuring temporary exclusions for performance-sensitive builds
+level: critical

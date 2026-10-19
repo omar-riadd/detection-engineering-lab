@@ -1,0 +1,9 @@
+// Anomalous Remote Network Logon with Privileged Domain Account
+// Techniques: T1078.002
+SecurityEvent
+| where EventID == "4624"
+| where LogonType == "3"
+| where TargetUserName in ("corpadmin", "Administrator")
+| where TargetUserName !endswith "$"
+| where IpAddress !in ("127.0.0.1", "::1")
+| project TimeGenerated, DeviceName, AccountName

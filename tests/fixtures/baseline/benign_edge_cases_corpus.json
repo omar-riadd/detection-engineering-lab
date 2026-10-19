@@ -1,0 +1,84 @@
+[
+  {
+    "EventID": 1,
+    "Channel": "Microsoft-Windows-Sysmon/Operational",
+    "UtcTime": "2026-10-18T23:57:02.326602Z",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "Image": "C:\\Windows\\System32\\vssadmin.exe",
+      "CommandLine": "vssadmin.exe list writers",
+      "User": "CORP\\corpadmin",
+      "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+    }
+  },
+  {
+    "EventID": 1,
+    "Channel": "Microsoft-Windows-Sysmon/Operational",
+    "UtcTime": "2026-10-19T00:02:02.326602Z",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "Image": "C:\\Windows\\System32\\wbem\\WMIC.exe",
+      "CommandLine": "wmic.exe os get Caption,Version,OSArchitecture",
+      "User": "CORP\\jdoe",
+      "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+    }
+  },
+  {
+    "EventID": 4624,
+    "Channel": "Security",
+    "UtcTime": "2026-10-19T00:07:02.326602Z",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "TargetUserName": "jdoe",
+      "TargetDomainName": "CORP",
+      "LogonType": 10,
+      "IpAddress": "127.0.0.1",
+      "WorkstationName": "WIN10-CLIENT01"
+    }
+  },
+  {
+    "EventID": 4698,
+    "Channel": "Security",
+    "UtcTime": "2026-10-19T00:12:02.326602Z",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "SubjectUserName": "SYSTEM",
+      "TaskName": "\\Microsoft\\Windows\\WindowsUpdate\\Scheduled Start",
+      "TaskContent": "<?xml version=\"1.0\" encoding=\"UTF-16\"?><Task><Actions><Exec><Command>usoclient.exe</Command></Exec></Actions></Task>"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T00:17:02.326602Z",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-MpComputerStatus | Select-Object AntivirusEnabled, RealTimeProtectionEnabled",
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 11,
+    "Channel": "Microsoft-Windows-Sysmon/Operational",
+    "UtcTime": "2026-10-19T00:22:02.326602Z",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "Image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "TargetFilename": "C:\\Users\\jdoe\\Downloads\\Q3_Report.pdf",
+      "User": "CORP\\jdoe"
+    }
+  },
+  {
+    "EventID": 3,
+    "Channel": "Microsoft-Windows-Sysmon/Operational",
+    "UtcTime": "2026-10-19T00:27:02.326602Z",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "Image": "C:\\Windows\\System32\\curl.exe",
+      "DestinationPort": 443,
+      "DestinationIp": "142.250.190.46",
+      "Initiated": "true",
+      "User": "CORP\\jdoe"
+    }
+  }
+]

@@ -1,0 +1,39 @@
+title: Anomalous Remote Network Logon with Privileged Domain Account
+id: b71d4e20-5921-4f10-91a0-d128471e9011
+status: experimental
+description: |
+  Detects remote network logon events (Windows Security Event ID 4624, LogonType 3) targeting
+  domain controllers or critical servers utilizing privileged domain accounts from non-workstation origins.
+  Grounded in CISA AA23-075A and Black Basta initial access broker credential abuse.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1078/002/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1078.002
+  - attack.defense_evasion
+  - attack.initial_access
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    LogonType: 3
+    TargetUserName:
+      - 'corpadmin'
+      - 'Administrator'
+  filter_machine:
+    TargetUserName|endswith: '$'
+  filter_local:
+    IpAddress:
+      - '127.0.0.1'
+      - '::1'
+  condition: selection and not filter_machine and not filter_local
+falsepositives:
+  - Authorized administrative maintenance connecting over network management interfaces
+  - Automated deployment tools with dedicated administrative credentials
+level: high

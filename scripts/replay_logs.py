@@ -132,7 +132,7 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
         print(f"No Sigma rules found in {rules_dir}")
         return False
 
-    # Map technique ID to rule
+    # Map technique ID to list of rules
     rules_by_tech = {}
     for rf in rule_files:
         with open(rf, 'r', encoding='utf-8') as f:
@@ -141,7 +141,7 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
         for t in tags:
             if t.startswith('attack.t'):
                 tech_id = t.replace('attack.', '').upper()
-                rules_by_tech[tech_id] = (rf, data)
+                rules_by_tech.setdefault(tech_id, []).append((rf, data))
 
     print("=" * 70)
     print("DETECTION ENGINEERING LOG REPLAY TEST HARNESS")
@@ -164,18 +164,19 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
             if tech_id not in rules_by_tech:
                 continue
 
-            rf, rule_data = rules_by_tech[tech_id]
+            rule_list = rules_by_tech[tech_id]
             with open(pf, 'r', encoding='utf-8') as f:
                 event = json.load(f)
 
-            fired = evaluate_sigma_rule(rule_data, event)
+            fired = any(evaluate_sigma_rule(rdata, event) for rf, rdata in rule_list)
             total_tests += 1
             if fired:
                 passed_tests += 1
                 if verbose:
-                    print(f"  [PASS] {tech_id}: True Positive confirmed ({rule_data.get('title')})")
+                    matching = [rdata.get('title') for rf, rdata in rule_list if evaluate_sigma_rule(rdata, event)]
+                    print(f"  [PASS] {tech_id}: True Positive confirmed ({', '.join(matching)})")
             else:
-                failures.append(f"FAILED Positive test for {tech_id} ({rule_data.get('title')}): Rule did not fire on attack fixture")
+                failures.append(f"FAILED Positive test for {tech_id}: None of {len(rule_list)} rules fired on attack fixture")
                 print(f"  [FAIL] {tech_id}: Expected ALERT but rule did NOT fire!")
 
     # 2. Negative Tests (Benign logs MUST NOT trigger rule)
@@ -187,18 +188,19 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
             if tech_id not in rules_by_tech:
                 continue
 
-            rf, rule_data = rules_by_tech[tech_id]
+            rule_list = rules_by_tech[tech_id]
             with open(nf, 'r', encoding='utf-8') as f:
                 event = json.load(f)
 
-            fired = evaluate_sigma_rule(rule_data, event)
+            any_fired = any(evaluate_sigma_rule(rdata, event) for rf, rdata in rule_list)
             total_tests += 1
-            if not fired:
+            if not any_fired:
                 passed_tests += 1
                 if verbose:
-                    print(f"  [PASS] {tech_id}: True Negative confirmed (Benign log ignored)")
+                    print(f"  [PASS] {tech_id}: True Negative confirmed (Benign log ignored by all {len(rule_list)} rules)")
             else:
-                failures.append(f"FAILED Negative test for {tech_id} ({rule_data.get('title')}): Rule falsely fired on benign fixture")
+                fired_titles = [rdata.get('title') for rf, rdata in rule_list if evaluate_sigma_rule(rdata, event)]
+                failures.append(f"FAILED Negative test for {tech_id}: False Positive fired ({', '.join(fired_titles)})")
                 print(f"  [FAIL] {tech_id}: False Positive! Rule fired on benign log!")
 
     # 3. Baseline Corpus Replay
@@ -212,10 +214,11 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
                 events = corpus if isinstance(corpus, list) else [corpus]
                 fp_count = 0
                 for ev in events:
-                    for tech_id, (rf, rule_data) in rules_by_tech.items():
-                        if evaluate_sigma_rule(rule_data, ev):
-                            fp_count += 1
-                            failures.append(f"Baseline FP: Rule {tech_id} triggered on benign baseline event ID {ev.get('EventID')}")
+                    for tech_id, rule_list in rules_by_tech.items():
+                        for rf, rule_data in rule_list:
+                            if evaluate_sigma_rule(rule_data, ev):
+                                fp_count += 1
+                                failures.append(f"Baseline FP: Rule {rule_data.get('title')} ({tech_id}) triggered on benign baseline event ID {ev.get('EventID')}")
                 print(f"  Replayed {len(events)} baseline events. Total False Positives: {fp_count}")
 
     print("\n" + "=" * 70)

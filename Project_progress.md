@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 5 — Completed | Week 6 — In Progress  
-> **Current Task:** Week 6 — Tuning, Expansion & Shadow Deployment (FP Measurement, `docs/fp_report.md`, Expansion to 20-25 Rules)  
+> **Status:** Week 6 — Completed | Week 7 — In Progress  
+> **Current Task:** Week 7 — Purple-Team Iterations & MTTD Measurement (`docs/bypass_log.md`, Rule Hardening, `docs/mttd_metrics.md`, Navigator Layer)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -28,8 +28,8 @@
 | **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Completed | 2026-10-19 |
 | **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Completed | 2026-10-19 |
 | **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Completed | 2026-10-19 |
-| **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | In Progress | - |
-| **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Not Started | - |
+| **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Completed | 2026-10-19 |
+| **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | In Progress | - |
 | **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | Not Started | - |
 
 ---
@@ -105,12 +105,13 @@
 ---
 
 ### Week 6 — Tuning, Expansion & Shadow Deployment
-- [ ] Replay rules against benign baseline corpus; document in `docs/fp_report.md`.
-- [ ] Tune rules exceeding 5% FP rate.
-- [ ] Implement shadow/experimental deployment promotion process (level 3 -> 6 -> 10-12).
-- [ ] Author remaining 10-15 Sigma rules to reach 20-25 total.
-- [ ] Author runbooks and D3FEND mappings for all new rules.
-- [ ] Develop `scripts/generate_baseline.py` for synthetic benign activity simulation.
+- [x] **Task 6.1**: Replay rules against benign baseline corpus; document in `docs/fp_report.md` (measured 0.00% FP rate across 1,200 events).
+- [x] **Task 6.2**: Establish tuning threshold criteria (< 2% portfolio target, mandatory tuning on > 5% FP rate).
+- [x] **Task 6.3**: Implement shadow/experimental deployment promotion process (level 3 -> 6 -> 10-12) via `--shadow-mode` in `scripts/convert_sigma.py`.
+- [x] **Task 6.4**: Author remaining 11 Sigma rules in `rules/sigma/windows/` covering Scenario B to reach 21 rules total (T1078.002, T1021.001, T1053.005, T1547.001, T1490 x2, T1562.001, T1486, T1041, T1027, T1047).
+- [x] **Task 6.5**: Author 10 triage runbooks in `runbooks/` and update `docs/d3fend_mapping.md` for all Scenario B rules (reaching 20 runbooks total).
+- [x] **Task 6.6**: Enhance `scripts/generate_baseline.py` to simulate benign edge cases (Edge downloads, admin queries, localhost RDP).
+- [x] **Verification**: All 21 rules transpiled to Wazuh XML, KQL, and SPL; pytest passes 41/41 unit test cases; 0 false positives on baseline corpus; deliverables complete.
 
 ---
 
@@ -175,14 +176,16 @@
     - Authored `playbooks/hunt_ransomware_precursor.md` covering Scenario B with hypothesis, ATT&CK mapping, telemetry requirements, broad KQL query, high-confidence Sigma hunt, triage tree, and blind spot analysis.
     - Automated structural verification for all required sections, code fences, and data sources.
     - Committed Week 4.5 playbooks to Git repository.
-  - Completed Week 5:
-    - Authored `docs/sigma_to_wazuh_notes.md` detailing the architectural difference between stream-based ingestion engines (Wazuh `analysisd`) and query-based SIEMs, complete field mapping table, parent SID scoping, and transpilation strategy.
-    - Implemented `scripts/convert_sigma.py` using custom Jinja2 templates and PCRE2 pattern compilation for Wazuh XML, and multi-SIEM translation to Sentinel KQL and Splunk SPL.
-    - Successfully transpiled all 10 Sigma rules into individual XML files in `rules/wazuh/`, a combined `rules/wazuh/local_rules.xml`, 10 KQL queries in `converted/kql/`, and 10 SPL queries in `converted/splunk/`.
-    - Implemented `scripts/replay_logs.py` log replay engine supporting positive attack logs, negative benign logs, and multi-event baseline corpus.
-    - Created `tests/test_detections.py` pytest regression test suite with parametrized true-positive and true-negative tests; verified 20/20 test cases passing with 100% precision and sensitivity.
-    - Verified that intentionally broken detection rules demonstrably fail CI build as required by detection-as-code principles.
-    - Updated `.github/workflows/ci.yml` supporting complete 6-stage pipeline.
-    - Committed Week 5 deliverables to Git repository.
-  - Initiating Week 6: Tuning, Expansion & Shadow Deployment — Measuring baseline FP rates, authoring `docs/fp_report.md`, implementing shadow deployment promotion workflow, expanding detections to 20-25 rules across Scenario B, and authoring corresponding runbooks.
+  - Completed Week 6:
+    - Replayed all detection rules against the full 1,200-event benign baseline corpus; recorded 0.00% FP rate across all techniques in `docs/fp_report.md`.
+    - Formulated systematic false positive tuning framework and shadow/experimental deployment promotion policy (Level 3 -> 6 -> 10-12).
+    - Integrated shadow deployment mode into `scripts/convert_sigma.py` with CLI flags (`--shadow-mode` / `--production`).
+    - Expanded Sigma detections to 21 rules covering all 20 techniques across Scenario A and Scenario B (added T1078.002, T1021.001, T1053.005, T1547.001, T1490 x2, T1562.001, T1486, T1041, T1027, T1047).
+    - Authored 10 new SOC analyst triage runbooks in `runbooks/` matching the standard template with KQL investigation queries and D3FEND mappings (reaching 20 runbooks total).
+    - Updated `docs/d3fend_mapping.md` linking all Scenario B techniques to their authored Sigma rules and triage runbooks.
+    - Transpiled all 21 Sigma rules into 21 Wazuh XML rules in `rules/wazuh/`, a consolidated `local_rules.xml`, 21 Sentinel KQL queries in `converted/kql/`, and 21 Splunk SPL queries in `converted/splunk/`.
+    - Expanded `scripts/generate_baseline.py` to simulate benign edge case telemetry (Edge PDF downloads, admin diagnostic queries, localhost RDP).
+    - Executed Pytest regression test suite: 41/41 unit tests passed with 100% precision and sensitivity.
+    - Committed Week 6 deliverables to Git repository.
+  - Initiating Week 7: Purple-Team Iterations & MTTD Measurement — Simulating 7 adversarial evasion classes, authoring `docs/bypass_log.md`, hardening bypassed rules, measuring and documenting MTTD in `docs/mttd_metrics.md`, and generating ATT&CK Navigator layer `docs/coverage/navigator_layer.json`.
 

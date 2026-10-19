@@ -1,0 +1,34 @@
+title: Remote Desktop Protocol (RDP) Inbound Interactive Session
+id: c82e5f31-6032-4021-a2b1-e239582f0012
+status: experimental
+description: |
+  Detects remote interactive logon sessions (Windows Security Event ID 4624, LogonType 10)
+  originating from remote non-loopback IP addresses. Adversaries leverage RDP for interactive lateral
+  movement, staging payloads, and executing ransomware precursor scripts across endpoints.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1021/001/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1021.001
+  - attack.lateral_movement
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4624
+    LogonType: 10
+  filter_local:
+    IpAddress:
+      - '127.0.0.1'
+      - '::1'
+      - '-'
+  condition: selection and not filter_local
+falsepositives:
+  - Authorized remote desktop sessions by enterprise helpdesk or IT system administrators
+  - Virtual desktop infrastructure (VDI) user connections
+level: high

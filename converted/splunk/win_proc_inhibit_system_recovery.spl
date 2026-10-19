@@ -1,0 +1,2 @@
+# Inhibit System Recovery via Vssadmin, Wbadmin, or Bcdedit - ATT&CK: T1490
+index=windows Image="*\vssadmin.exe" (CommandLine="*delete*" OR CommandLine="*shadows*") Image="*\wbadmin.exe" (CommandLine="*delete*" OR CommandLine="*catalog*") Image="*\bcdedit.exe" (CommandLine="*recoveryenabled*" OR CommandLine="*ignoreallfailures*") NOT (CommandLine="*list shadows*" OR CommandLine="*list writers*") | table _time, host, user, Image, CommandLine

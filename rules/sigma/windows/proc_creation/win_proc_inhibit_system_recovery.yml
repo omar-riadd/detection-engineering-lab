@@ -1,0 +1,44 @@
+title: Inhibit System Recovery via Vssadmin, Wbadmin, or Bcdedit
+id: f15b8264-9365-4354-d5e4-1562815c3015
+status: experimental
+description: |
+  Detects command execution patterns designed to destroy volume shadow copies, invalidate Windows backup catalogs,
+  or disable boot recovery configurations. Ransomware strains (Conti, Black Basta, LockBit) systematically execute
+  vssadmin, wbadmin, and bcdedit commands to inhibit recovery before deploying encryption payloads.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://thedfirreport.com/
+  - https://attack.mitre.org/techniques/T1490/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1490
+  - attack.impact
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_vssadmin:
+    Image|endswith: '\vssadmin.exe'
+    CommandLine|contains:
+      - 'delete'
+      - 'shadows'
+  selection_wbadmin:
+    Image|endswith: '\wbadmin.exe'
+    CommandLine|contains:
+      - 'delete'
+      - 'catalog'
+  selection_bcdedit:
+    Image|endswith: '\bcdedit.exe'
+    CommandLine|contains:
+      - 'recoveryenabled'
+      - 'ignoreallfailures'
+  filter_list:
+    CommandLine|contains:
+      - 'list shadows'
+      - 'list writers'
+  condition: (selection_vssadmin or selection_wbadmin or selection_bcdedit) and not filter_list
+falsepositives:
+  - Rare legitimate disk management or authorized backup software configuration scripts
+level: critical

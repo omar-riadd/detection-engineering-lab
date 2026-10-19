@@ -1,0 +1,2 @@
+# Anomalous Remote Network Logon with Privileged Domain Account - ATT&CK: T1078.002
+index=windows EventID="4624" LogonType="3" (TargetUserName="corpadmin" OR TargetUserName="Administrator") NOT TargetUserName="*$" NOT (IpAddress="127.0.0.1" OR IpAddress="::1") | table _time, host, user, Image, CommandLine

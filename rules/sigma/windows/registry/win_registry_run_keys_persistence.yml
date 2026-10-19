@@ -1,0 +1,37 @@
+title: Persistence via Windows Registry Run or RunOnce Autostart Key
+id: e04a7153-8254-4243-c4d3-0451704b2014
+status: experimental
+description: |
+  Detects modifications to Registry Run or RunOnce keys (Sysmon Event ID 13).
+  Threat actors write malicious executable or script loader paths to these autostart locations
+  to execute upon user sign-in or system boot. Grounded in LockBit and Conti persistence TTPs.
+references:
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://redcanary.com/threat-detection-report/
+  - https://attack.mitre.org/techniques/T1547/001/
+author: Detection Engineering Team
+date: 2026-10-19
+modified: 2026-10-19
+tags:
+  - attack.t1547.001
+  - attack.persistence
+logsource:
+  product: windows
+  category: registry_set
+detection:
+  selection_event:
+    EventID: 13
+  selection_keys:
+    TargetObject|contains:
+      - '\Software\Microsoft\Windows\CurrentVersion\Run'
+      - '\Software\Microsoft\Windows\CurrentVersion\RunOnce'
+  filter_benign_system:
+    TargetObject|contains:
+      - 'TimeProviders'
+      - 'W32Time'
+      - 'TimeZoneInformation'
+  condition: selection_event and selection_keys and not filter_benign_system
+falsepositives:
+  - Legitimate enterprise applications adding startup helper utilities during authorized installations
+  - Antivirus and EDR software updating tray icon startup commands
+level: high

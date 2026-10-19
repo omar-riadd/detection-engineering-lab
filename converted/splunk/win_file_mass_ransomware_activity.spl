@@ -1,0 +1,2 @@
+# Ransomware File Encryption Activity with Known Extension - ATT&CK: T1486
+index=windows EventID="11" (TargetFilename="*.lockbit" OR TargetFilename="*.conti" OR TargetFilename="*.encrypted" OR TargetFilename="*.crypted" OR TargetFilename="*.blackbasta" OR TargetFilename="*.ryuk") NOT (TargetFilename="*.docx" OR TargetFilename="*.xlsx" OR TargetFilename="*.pptx" OR TargetFilename="*.pdf" OR TargetFilename="*.tmp") | table _time, host, user, Image, CommandLine

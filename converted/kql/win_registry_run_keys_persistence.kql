@@ -1,0 +1,7 @@
+// Persistence via Windows Registry Run or RunOnce Autostart Key
+// Techniques: T1547.001
+DeviceProcessEvents
+| where EventID == "13"
+| where TargetObject has_any ("\Software\Microsoft\Windows\CurrentVersion\Run", "\Software\Microsoft\Windows\CurrentVersion\RunOnce")
+| where not(TargetObject has_any ("TimeProviders", "W32Time", "TimeZoneInformation"))
+| project TimeGenerated, DeviceName, AccountName

@@ -1,0 +1,2 @@
+# Scheduled Task Creation Executing Script Interpreter or Payload - ATT&CK: T1053.005
+index=windows EventID="4698" (TaskContent="*powershell*" OR TaskContent="*cmd.exe*" OR TaskContent="*wscript*" OR TaskContent="*cscript*" OR TaskContent="*rundll32*" OR TaskContent="*regsvr32*" OR TaskContent="*Users\Public*" OR TaskContent="*AppData\Local\Temp*") NOT (SubjectUserName="SYSTEM" OR SubjectUserName="LOCAL SERVICE" OR SubjectUserName="NETWORK SERVICE") | table _time, host, user, Image, CommandLine

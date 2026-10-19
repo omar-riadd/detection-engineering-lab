@@ -1,0 +1,7 @@
+// Ransomware File Encryption Activity with Known Extension
+// Techniques: T1486
+DeviceFileEvents
+| where EventID == "11"
+| where (FileName endswith ".lockbit" or FileName endswith ".conti" or FileName endswith ".encrypted" or FileName endswith ".crypted" or FileName endswith ".blackbasta" or FileName endswith ".ryuk")
+| where (FileName !endswith ".docx" or FileName !endswith ".xlsx" or FileName !endswith ".pptx" or FileName !endswith ".pdf" or FileName !endswith ".tmp")
+| project TimeGenerated, DeviceName, AccountName

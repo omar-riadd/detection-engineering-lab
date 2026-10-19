@@ -1,0 +1,7 @@
+// Obfuscated PowerShell Script Block with Base64 Decoding
+// Techniques: T1027
+Event
+| where ScriptBlockText has_any ("FromBase64String", "[System.Convert]::FromBase64String")
+| where ScriptBlockText has_any ("IEX", "Invoke-Expression", "GetString")
+| where not(ScriptBlockText has_any ("standard system health check", "Clear-History"))
+| project TimeGenerated, DeviceName, AccountName

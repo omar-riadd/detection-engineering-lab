@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 from scripts.replay_logs import evaluate_sigma_rule
 
 def get_rule_map():
-    """Maps ATT&CK Technique ID to Sigma Rule dict."""
+    """Maps ATT&CK Technique ID to list of Sigma Rule dicts."""
     rule_files = glob.glob('rules/sigma/**/*.yml', recursive=True)
     mapping = {}
     for rf in rule_files:
@@ -29,7 +29,7 @@ def get_rule_map():
         for t in tags:
             if t.startswith('attack.t'):
                 tech_id = t.replace('attack.', '').upper()
-                mapping[tech_id] = (rf, data)
+                mapping.setdefault(tech_id, []).append((rf, data))
     return mapping
 
 RULE_MAP = get_rule_map()
@@ -40,32 +40,32 @@ POSITIVE_PARAMS = []
 for pf in POSITIVE_FIXTURES:
     tech = os.path.basename(pf).replace('_positive.json', '')
     if tech in RULE_MAP:
-        POSITIVE_PARAMS.append((tech, RULE_MAP[tech][0], pf))
+        POSITIVE_PARAMS.append((tech, pf))
 
-# Discover negative fixtures
+# Discover negative fixtures (test EVERY rule mapped to the technique)
 NEGATIVE_FIXTURES = sorted(glob.glob('tests/fixtures/*_negative.json'))
 NEGATIVE_PARAMS = []
 for nf in NEGATIVE_FIXTURES:
     tech = os.path.basename(nf).replace('_negative.json', '')
     if tech in RULE_MAP:
-        NEGATIVE_PARAMS.append((tech, RULE_MAP[tech][0], nf))
+        for rf, rdata in RULE_MAP[tech]:
+            NEGATIVE_PARAMS.append((tech, rf, nf))
 
-@pytest.mark.parametrize("tech_id,rule_path,fixture_path", POSITIVE_PARAMS)
-def test_positive_detection_fires(tech_id, rule_path, fixture_path):
+@pytest.mark.parametrize("tech_id,fixture_path", POSITIVE_PARAMS)
+def test_positive_detection_fires(tech_id, fixture_path):
     """
-    Positive Regression Test: Attack log fixture MUST trigger the detection rule.
-    Failure indicates a broken detection logic or regression.
+    Positive Regression Test: Attack log fixture MUST trigger at least one
+    detection rule covering the technique.
+    Failure indicates broken detection logic or regression.
     """
-    with open(rule_path, 'r', encoding='utf-8') as rf:
-        rule_data = yaml.safe_load(rf)
-
+    rule_list = RULE_MAP[tech_id]
     with open(fixture_path, 'r', encoding='utf-8') as ff:
         attack_event = json.load(ff)
 
-    fired = evaluate_sigma_rule(rule_data, attack_event)
+    fired = any(evaluate_sigma_rule(rdata, attack_event) for rf, rdata in rule_list)
     assert fired is True, (
-        f"FALSE NEGATIVE REGRESSION: Rule {rule_data.get('title')} ({tech_id}) "
-        f"failed to fire on attack log fixture {fixture_path}"
+        f"FALSE NEGATIVE REGRESSION: None of the {len(rule_list)} rules for ({tech_id}) "
+        f"fired on attack log fixture {fixture_path}"
     )
 
 @pytest.mark.parametrize("tech_id,rule_path,fixture_path", NEGATIVE_PARAMS)

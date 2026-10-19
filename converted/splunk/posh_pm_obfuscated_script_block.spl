@@ -1,0 +1,2 @@
+# Obfuscated PowerShell Script Block with Base64 Decoding - ATT&CK: T1027
+index=windows (ScriptBlockText="*FromBase64String*" OR ScriptBlockText="*[System.Convert]::FromBase64String*") (ScriptBlockText="*IEX*" OR ScriptBlockText="*Invoke-Expression*" OR ScriptBlockText="*GetString*") NOT (ScriptBlockText="*standard system health check*" OR ScriptBlockText="*Clear-History*") | table _time, host, user, Image, CommandLine
