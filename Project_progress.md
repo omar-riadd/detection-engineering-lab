@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 4 — Completed | Week 4.5 — In Progress  
-> **Current Task:** Week 4.5 — Threat Hunting Playbooks (Scenario A: Credential Access, Scenario B: Ransomware Precursor)  
+> **Status:** Week 4.5 — Completed | Week 5 — In Progress  
+> **Current Task:** Week 5 — Detection-as-Code CI/CD Pipeline (`convert_sigma.py`, `replay_logs.py`, `test_detections.py`, `ci.yml`)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -26,8 +26,8 @@
 | **Week 2** | Lab Build & Telemetry (Vagrant + Ansible, Wazuh, Sysmon, auditd, baseline fixtures in `tests/fixtures/baseline/`) | Completed | 2026-10-19 |
 | **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Completed | 2026-10-19 |
 | **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Completed | 2026-10-19 |
-| **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | In Progress | - |
-| **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Not Started | - |
+| **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Completed | 2026-10-19 |
+| **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | In Progress | - |
 | **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Not Started | - |
 | **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Not Started | - |
 | **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | Not Started | - |
@@ -87,9 +87,9 @@
 ---
 
 ### Week 4.5 — Threat Hunting Playbooks
-- [ ] Author `playbooks/hunt_credential_access.md` covering Scenario A.
-- [ ] Author `playbooks/hunt_ransomware_precursor.md` covering Scenario B.
-- [ ] Verify structure: Hypothesis, ATT&CK, Data sources, KQL/Sigma queries, Triage decision tree, Blind spots.
+- [x] **Task 4.5.1**: Author `playbooks/hunt_credential_access.md` covering Scenario A (Hypothesis, ATT&CK, Data sources, KQL broad hunt, Sigma narrow hunt, Triage decision tree, Blind spots).
+- [x] **Task 4.5.2**: Author `playbooks/hunt_ransomware_precursor.md` covering Scenario B (Hypothesis, ATT&CK, Data sources, KQL broad hunt, Sigma narrow hunt, Triage decision tree, Blind spots).
+- [x] **Verification**: Both threat hunting playbooks validated against structural and syntax requirements; committed to Git repository. Deliverable complete.
 
 ---
 
@@ -169,5 +169,10 @@
     - Updated `docs/d3fend_mapping.md` linking each Scenario A technique to its authored Sigma rule and triage runbook.
     - Executed discrimination test suite verifying 100% true-positive firing against positive test fixtures and 0% false-positive firing against negative fixtures.
     - Committed Week 4 deliverables to Git repository.
-  - Initiating Week 4.5: Threat Hunting Playbooks — Authoring 2 hypothesis-driven threat hunting playbooks (`playbooks/hunt_credential_access.md` and `playbooks/hunt_ransomware_precursor.md`).
+  - Completed Week 4.5:
+    - Authored `playbooks/hunt_credential_access.md` covering Scenario A with hypothesis, ATT&CK mapping, telemetry requirements, broad KQL query, high-confidence Sigma hunt, triage tree, and blind spot analysis.
+    - Authored `playbooks/hunt_ransomware_precursor.md` covering Scenario B with hypothesis, ATT&CK mapping, telemetry requirements, broad KQL query, high-confidence Sigma hunt, triage tree, and blind spot analysis.
+    - Automated structural verification for all required sections, code fences, and data sources.
+    - Committed Week 4.5 playbooks to Git repository.
+  - Initiating Week 5: Detection-as-Code CI/CD Pipeline — Developing `scripts/convert_sigma.py`, `scripts/replay_logs.py`, `tests/test_detections.py`, `docs/sigma_to_wazuh_notes.md`, and `.github/workflows/ci.yml`.
 
