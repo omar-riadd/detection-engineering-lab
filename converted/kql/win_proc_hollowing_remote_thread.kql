@@ -1,0 +1,7 @@
+// Remote Thread Injection into System Processes (Process Hollowing)
+// Techniques: T1055.012
+DeviceProcessEvents
+| where (TargetImage endswith "\svchost.exe" or TargetImage endswith "\notepad.exe" or TargetImage endswith "\spoolsv.exe")
+| where (SourceImage endswith "\rundll32.exe" or SourceImage endswith "\cmd.exe" or SourceImage endswith "\powershell.exe" or SourceImage endswith "\wscript.exe" or SourceImage endswith "\cscript.exe")
+| where SourceImage !endswith "\csrss.exe"
+| project TimeGenerated, DeviceName, AccountName

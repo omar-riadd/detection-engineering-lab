@@ -1,0 +1,2 @@
+# Remote Thread Injection into System Processes (Process Hollowing) - ATT&CK: T1055.012
+index=windows (TargetImage="*\svchost.exe" OR TargetImage="*\notepad.exe" OR TargetImage="*\spoolsv.exe") (SourceImage="*\rundll32.exe" OR SourceImage="*\cmd.exe" OR SourceImage="*\powershell.exe" OR SourceImage="*\wscript.exe" OR SourceImage="*\cscript.exe") NOT SourceImage="*\csrss.exe" | table _time, host, user, Image, CommandLine

@@ -1,0 +1,2 @@
+# Suspicious Rundll32 Execution from Writable User Path - ATT&CK: T1218.011
+index=windows Image="*\rundll32.exe" (CommandLine="*C:\Users\Public\*" OR CommandLine="*\AppData\Local\Temp\*" OR CommandLine="*\AppData\Roaming\*" OR CommandLine="*\Downloads\*" OR CommandLine="*C:\PerfLogs\*" OR CommandLine="*C:\Windows\Temp\*") NOT (CommandLine="*shell32.dll,Control_RunDLL*" OR CommandLine="*dfshim.dll,ShOpenVerbShortcut*") | table _time, host, user, Image, CommandLine

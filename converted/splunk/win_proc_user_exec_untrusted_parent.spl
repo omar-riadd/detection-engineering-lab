@@ -1,0 +1,2 @@
+# User Execution of Script Interpreter from Untrusted Interactive Parent - ATT&CK: T1204.002
+index=windows (Image="*\wscript.exe" OR Image="*\cscript.exe" OR Image="*\mshta.exe") (ParentImage="*\explorer.exe" OR ParentImage="*\winrar.exe" OR ParentImage="*\7zFM.exe" OR ParentImage="*\7zG.exe") (CommandLine="*\Downloads\*" OR CommandLine="*\Temp\*" OR CommandLine="*\AppData\Local\Temp\*") NOT (CommandLine="*C:\Windows\System32\Printing_Admin_Scripts\*") | table _time, host, user, Image, CommandLine

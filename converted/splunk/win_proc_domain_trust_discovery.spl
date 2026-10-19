@@ -1,0 +1,2 @@
+# Active Directory Domain Trust Discovery via Nltest - ATT&CK: T1482
+index=windows Image="*\nltest.exe" (CommandLine="*/domain_trusts*" OR CommandLine="*/all_trusts*") | table _time, host, user, Image, CommandLine

@@ -1,0 +1,9 @@
+// Lateral Movement via Administrative SMB Network Share Access
+// Techniques: T1021.002
+SecurityEvent
+| where EventID == "5140"
+| where (ShareName endswith "\ADMIN$" or ShareName endswith "\C$")
+| where IpAddress !in ("127.0.0.1", "::1")
+| where AccountName !endswith "$"
+| where not(ShareName has_any ("SYSVOL", "NETLOGON"))
+| project TimeGenerated, DeviceName, AccountName

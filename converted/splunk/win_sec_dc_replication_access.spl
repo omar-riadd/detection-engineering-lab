@@ -1,0 +1,2 @@
+# Active Directory DCSync Credential Replication Request - ATT&CK: T1003.006
+index=windows EventID="4662" (Properties="*1131f6aa-9c07-11d1-f79f-00c04fc2dcd2*" OR Properties="*1131f6ad-9c07-11d1-f79f-00c04fc2dcd2*" OR Properties="*89e4b325-9444-11d1-ae62-00c04fc2dcd2*") NOT SubjectUserName="*$" NOT (SubjectUserName="MSOL_" OR SubjectUserName="AzureADConnect") | table _time, host, user, Image, CommandLine

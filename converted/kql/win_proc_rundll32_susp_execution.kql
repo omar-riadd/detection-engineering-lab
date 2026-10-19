@@ -1,0 +1,7 @@
+// Suspicious Rundll32 Execution from Writable User Path
+// Techniques: T1218.011
+DeviceProcessEvents
+| where FileName endswith "\rundll32.exe"
+| where ProcessCommandLine has_any ("C:\Users\Public\", "\AppData\Local\Temp\", "\AppData\Roaming\", "\Downloads\", "C:\PerfLogs\", "C:\Windows\Temp\")
+| where not(ProcessCommandLine has_any ("shell32.dll,Control_RunDLL", "dfshim.dll,ShOpenVerbShortcut"))
+| project TimeGenerated, DeviceName, AccountName

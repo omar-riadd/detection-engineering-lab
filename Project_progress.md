@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 4.5 — Completed | Week 5 — In Progress  
-> **Current Task:** Week 5 — Detection-as-Code CI/CD Pipeline (`convert_sigma.py`, `replay_logs.py`, `test_detections.py`, `ci.yml`)  
+> **Status:** Week 5 — Completed | Week 6 — In Progress  
+> **Current Task:** Week 6 — Tuning, Expansion & Shadow Deployment (FP Measurement, `docs/fp_report.md`, Expansion to 20-25 Rules)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -27,8 +27,8 @@
 | **Week 3** | Attack Emulation Harness & Log Corpus (Atomic mappings, 20 positive + 20 negative JSON fixtures, scenario scripts) | Completed | 2026-10-19 |
 | **Week 4** | Detections v1 (10 Sigma rules, 10 runbooks, D3FEND mappings, true-positive validation) | Completed | 2026-10-19 |
 | **Week 4.5** | Threat Hunting Playbooks (2 hypothesis-driven hunting playbooks: Credential Access & Ransomware Precursor) | Completed | 2026-10-19 |
-| **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | In Progress | - |
-| **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Not Started | - |
+| **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Completed | 2026-10-19 |
+| **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | In Progress | - |
 | **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Not Started | - |
 | **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | Not Started | - |
 
@@ -94,12 +94,13 @@
 ---
 
 ### Week 5 — Detection-as-Code CI/CD Pipeline
-- [ ] Implement `scripts/convert_sigma.py` (pySigma for KQL/SPL, Jinja2 for Wazuh XML).
-- [ ] Implement `scripts/replay_logs.py` (JSON fixture replay engine).
-- [ ] Implement `tests/test_detections.py` (pytest positive/negative test suite).
-- [ ] Write `.github/workflows/ci.yml` (all 6 stages: lint, sigma check, convert, positive test, negative test, artifact upload).
-- [ ] Write `docs/sigma_to_wazuh_notes.md` detailing field mappings and transliteration limits.
-- [ ] Verify CI pipeline locally: test positive pass, negative pass, and intentionally broken rule failure.
+- [x] **Task 5.1**: Implement `scripts/convert_sigma.py` (custom Jinja2 template transpiler for Wazuh XML, multi-SIEM transpilation for KQL and SPL).
+- [x] **Task 5.2**: Implement `scripts/replay_logs.py` (JSON fixture replay engine supporting positive, negative, and baseline evaluation).
+- [x] **Task 5.3**: Implement `tests/test_detections.py` (pytest unit test suite with parametrized positive and negative regression fixtures).
+- [x] **Task 5.4**: Configure `.github/workflows/ci.yml` (all 6 stages: YAML lint, Sigma validation, conversion, positive regression test, negative regression test, artifact upload).
+- [x] **Task 5.5**: Write `docs/sigma_to_wazuh_notes.md` detailing the transpiler architecture, field mappings, and parent SID scoping.
+- [x] **Task 5.6**: Verify CI pipeline locally: test positive pass (10/10), negative pass (10/10), and deliberately broken rule failure detection.
+- [x] **Verification**: All 10 Sigma rules compiled into native Wazuh XML rules, KQL queries, and SPL queries; pytest passes 20/20 test cases; broken rule demonstrably breaks build; deliverables complete.
 
 ---
 
@@ -174,5 +175,14 @@
     - Authored `playbooks/hunt_ransomware_precursor.md` covering Scenario B with hypothesis, ATT&CK mapping, telemetry requirements, broad KQL query, high-confidence Sigma hunt, triage tree, and blind spot analysis.
     - Automated structural verification for all required sections, code fences, and data sources.
     - Committed Week 4.5 playbooks to Git repository.
-  - Initiating Week 5: Detection-as-Code CI/CD Pipeline — Developing `scripts/convert_sigma.py`, `scripts/replay_logs.py`, `tests/test_detections.py`, `docs/sigma_to_wazuh_notes.md`, and `.github/workflows/ci.yml`.
+  - Completed Week 5:
+    - Authored `docs/sigma_to_wazuh_notes.md` detailing the architectural difference between stream-based ingestion engines (Wazuh `analysisd`) and query-based SIEMs, complete field mapping table, parent SID scoping, and transpilation strategy.
+    - Implemented `scripts/convert_sigma.py` using custom Jinja2 templates and PCRE2 pattern compilation for Wazuh XML, and multi-SIEM translation to Sentinel KQL and Splunk SPL.
+    - Successfully transpiled all 10 Sigma rules into individual XML files in `rules/wazuh/`, a combined `rules/wazuh/local_rules.xml`, 10 KQL queries in `converted/kql/`, and 10 SPL queries in `converted/splunk/`.
+    - Implemented `scripts/replay_logs.py` log replay engine supporting positive attack logs, negative benign logs, and multi-event baseline corpus.
+    - Created `tests/test_detections.py` pytest regression test suite with parametrized true-positive and true-negative tests; verified 20/20 test cases passing with 100% precision and sensitivity.
+    - Verified that intentionally broken detection rules demonstrably fail CI build as required by detection-as-code principles.
+    - Updated `.github/workflows/ci.yml` supporting complete 6-stage pipeline.
+    - Committed Week 5 deliverables to Git repository.
+  - Initiating Week 6: Tuning, Expansion & Shadow Deployment — Measuring baseline FP rates, authoring `docs/fp_report.md`, implementing shadow deployment promotion workflow, expanding detections to 20-25 rules across Scenario B, and authoring corresponding runbooks.
 

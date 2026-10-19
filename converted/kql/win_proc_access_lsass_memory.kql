@@ -1,0 +1,7 @@
+// Suspicious Process Access Request Targeting LSASS Memory
+// Techniques: T1003.001
+DeviceProcessEvents
+| where TargetImage endswith "\lsass.exe"
+| where GrantedAccess has_any ("0x1010", "0x1F0FFF", "0x1038", "0x1410")
+| where (SourceImage !endswith "\svchost.exe" or SourceImage !endswith "\csrss.exe" or SourceImage !endswith "\winlogon.exe" or SourceImage !endswith "\services.exe")
+| project TimeGenerated, DeviceName, AccountName

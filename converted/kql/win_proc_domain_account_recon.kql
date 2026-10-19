@@ -1,0 +1,7 @@
+// Active Directory Domain Account Reconnaissance via Net CLI
+// Techniques: T1087.002
+DeviceProcessEvents
+| where (FileName endswith "\net.exe" or FileName endswith "\net1.exe")
+| where ProcessCommandLine has_any ("/domain")
+| where ProcessCommandLine has_any ("user", "group", "accounts")
+| project TimeGenerated, DeviceName, AccountName

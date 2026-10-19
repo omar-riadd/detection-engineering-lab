@@ -1,0 +1,6 @@
+// Active Directory Domain Trust Discovery via Nltest
+// Techniques: T1482
+DeviceProcessEvents
+| where FileName endswith "\nltest.exe"
+| where ProcessCommandLine has_any ("/domain_trusts", "/all_trusts")
+| project TimeGenerated, DeviceName, AccountName

@@ -1,0 +1,8 @@
+// Active Directory DCSync Credential Replication Request
+// Techniques: T1003.006
+SecurityEvent
+| where EventID == "4662"
+| where Properties has_any ("1131f6aa-9c07-11d1-f79f-00c04fc2dcd2", "1131f6ad-9c07-11d1-f79f-00c04fc2dcd2", "89e4b325-9444-11d1-ae62-00c04fc2dcd2")
+| where AccountName !endswith "$"
+| where AccountName !in ("MSOL_", "AzureADConnect")
+| project TimeGenerated, DeviceName, AccountName

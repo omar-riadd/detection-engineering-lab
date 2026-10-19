@@ -1,0 +1,8 @@
+// Suspicious File Drop in User Downloads or Staging Directory
+// Techniques: T1566.001
+DeviceFileEvents
+| where FileName has_any ("\Downloads\", "\AppData\Local\Temp\")
+| where (FileName endswith ".vbs" or FileName endswith ".js" or FileName endswith ".hta" or FileName endswith ".lnk" or FileName endswith ".iso" or FileName endswith ".ps1" or FileName endswith ".exe")
+| where (FileName endswith "\OUTLOOK.EXE" or FileName endswith "\thunderbird.exe" or FileName endswith "\chrome.exe" or FileName endswith "\msedge.exe" or FileName endswith "\firefox.exe" or FileName endswith "\winrar.exe" or FileName endswith "\7zFM.exe")
+| where (FileName !endswith ".pdf" or FileName !endswith ".docx" or FileName !endswith ".xlsx" or FileName !endswith ".tmp")
+| project TimeGenerated, DeviceName, AccountName

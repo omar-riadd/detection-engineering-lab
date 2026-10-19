@@ -1,0 +1,2 @@
+# Active Directory Domain Account Reconnaissance via Net CLI - ATT&CK: T1087.002
+index=windows (Image="*\net.exe" OR Image="*\net1.exe") (CommandLine="*/domain*") (CommandLine="*user*" OR CommandLine="*group*" OR CommandLine="*accounts*") | table _time, host, user, Image, CommandLine

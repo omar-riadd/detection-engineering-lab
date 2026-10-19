@@ -1,0 +1,2 @@
+# Suspicious PowerShell In-Memory Script Block Execution - ATT&CK: T1059.001
+index=windows (ScriptBlockText="*Net.WebClient*" OR ScriptBlockText="*DownloadString*" OR ScriptBlockText="*DownloadFile*" OR ScriptBlockText="*DownloadData*") (ScriptBlockText="*IEX*" OR ScriptBlockText="*Invoke-Expression*" OR ScriptBlockText="*[System.Reflection.Assembly]::Load*") NOT (ScriptBlockText="*Chocolatey*" OR ScriptBlockText="*Install-PackageProvider*") | table _time, host, user, Image, CommandLine
