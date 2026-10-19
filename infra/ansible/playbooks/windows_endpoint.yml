@@ -1,0 +1,63 @@
+---
+# Windows Endpoint Telemetry & Configuration Playbook
+# Configures Windows 10/11 Target Endpoint with Sysmon, PowerShell Logging, and Wazuh
+# Reference: PROJECT_PLAN.md - Section 3
+
+- name: Provision Windows 10 Target Endpoint
+  hosts: win10
+  gather_facts: false
+  vars:
+    wazuh_manager_ip: "192.168.56.10"
+    target_username: "targetuser"
+    target_password: "Password123!"
+
+  tasks:
+    - name: Create lab operational user account
+      ansible.windows.win_user:
+        name: "{{ target_username }}"
+        password: "{{ target_password }}"
+        state: present
+        groups:
+          - Users
+      ignore_errors: yes
+
+    - name: Create staging directory for telemetry setup
+      ansible.windows.win_file:
+        path: C:\LabSetup
+        state: directory
+
+    - name: Copy PowerShell logging script
+      ansible.windows.win_copy:
+        src: ../../scripts/enable_pslogging.ps1
+        dest: C:\LabSetup\enable_pslogging.ps1
+
+    - name: Copy Sysmon installation script
+      ansible.windows.win_copy:
+        src: ../../scripts/install_sysmon.ps1
+        dest: C:\LabSetup\install_sysmon.ps1
+
+    - name: Execute PowerShell logging and Audit Policy configuration
+      ansible.windows.win_powershell:
+        script: |
+          & C:\LabSetup\enable_pslogging.ps1
+
+    - name: Execute Sysmon and Wazuh agent installation
+      ansible.windows.win_powershell:
+        script: |
+          & C:\LabSetup\install_sysmon.ps1 -WazuhManager "{{ wazuh_manager_ip }}"
+
+    - name: Verify Sysmon service is running
+      ansible.windows.win_service:
+        name: Sysmon
+        state: started
+      ignore_errors: yes
+
+    - name: Ensure target user Downloads directory exists for T1566.001 staging
+      ansible.windows.win_file:
+        path: "C:\\Users\\{{ target_username }}\\Downloads"
+        state: directory
+      ignore_errors: yes
+
+    - name: Endpoint telemetry status banner
+      ansible.builtin.debug:
+        msg: "Windows 10 Endpoint telemetry configured. Sysmon, Advanced Audit Policies, and Wazuh Agent are active."

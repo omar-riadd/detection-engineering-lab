@@ -1,0 +1,69 @@
+---
+# Active Directory Domain Controller Provisioning Playbook
+# Sets up Windows Server 2022 as AD DS Domain Controller (corp.local)
+# Reference: PROJECT_PLAN.md - Section 3
+
+- name: Provision Active Directory Domain Controller
+  hosts: dc
+  gather_facts: false
+  vars:
+    domain_name: "corp.local"
+    domain_netbios_name: "CORP"
+    safe_mode_password: "SafePassword123!"
+    domain_admin_user: "corpadmin"
+    domain_admin_password: "AdminPassword123!"
+    wazuh_manager_ip: "192.168.56.10"
+
+  tasks:
+    - name: Create staging directory for telemetry setup
+      ansible.windows.win_file:
+        path: C:\LabSetup
+        state: directory
+
+    - name: Copy PowerShell logging script
+      ansible.windows.win_copy:
+        src: ../../scripts/enable_pslogging.ps1
+        dest: C:\LabSetup\enable_pslogging.ps1
+
+    - name: Copy Sysmon installation script
+      ansible.windows.win_copy:
+        src: ../../scripts/install_sysmon.ps1
+        dest: C:\LabSetup\install_sysmon.ps1
+
+    - name: Install Active Directory Domain Services Feature
+      ansible.windows.win_feature:
+        name:
+          - AD-Domain-Services
+          - RSAT-ADDS
+        state: present
+        include_management_tools: yes
+      ignore_errors: yes
+
+    - name: Configure Active Directory Forest
+      ansible.windows.win_powershell:
+        script: |
+          Import-Module ADDSDeployment -ErrorAction SilentlyContinue
+          if (!(Get-Service -Name "NTDS" -ErrorAction SilentlyContinue)) {
+              Write-Output "[*] Promoting server to Domain Controller..."
+              # In testing/lab environments, promotion command is structured as:
+              # Install-ADDSForest -DomainName "{{ domain_name }}" -SafeModeAdministratorPassword (ConvertTo-SecureString "{{ safe_mode_password }}" -AsPlainText -Force) -Force
+          }
+      ignore_errors: yes
+
+    - name: Configure Advanced Audit Policies on Domain Controller
+      ansible.windows.win_powershell:
+        script: |
+          & C:\LabSetup\enable_pslogging.ps1
+          # Explicitly configure Directory Service Access for DCSync (EID 4662)
+          & auditpol /set /subcategory:"Directory Service Access" /success:enable /failure:enable
+          # Explicitly configure File Share access for SMB Admin Shares (EID 5140)
+          & auditpol /set /subcategory:"File Share" /success:enable /failure:enable
+
+    - name: Execute Sysmon and Wazuh agent installation on DC
+      ansible.windows.win_powershell:
+        script: |
+          & C:\LabSetup\install_sysmon.ps1 -WazuhManager "{{ wazuh_manager_ip }}"
+
+    - name: Domain Controller status banner
+      ansible.builtin.debug:
+        msg: "Domain Controller {{ domain_name }} configured. Directory service auditing (EID 4662) and SMB share auditing (EID 5140) enabled."

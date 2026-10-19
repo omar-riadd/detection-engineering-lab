@@ -1,0 +1,128 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+#
+# Detection Engineering Portfolio Lab - Vagrantfile
+# Architecture: Wazuh All-In-One, Windows Server 2022 DC, Windows 10 Endpoint, Ubuntu Target
+# Reference: PROJECT_PLAN.md - Section 3
+
+Vagrant.configure("2") do |config|
+  # Global VirtualBox Provider Defaults
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+    vb.linked_clone = true
+    vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+    vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
+  end
+
+  # =========================================================================
+  # 1. Wazuh All-In-One (SIEM Manager, Indexer & Dashboard)
+  # =========================================================================
+  config.vm.define "wazuh" do |wazuh|
+    wazuh.vm.box = "generic/ubuntu2204"
+    wazuh.vm.hostname = "wazuh-siem.corp.local"
+    wazuh.vm.network "private_network", ip: "192.168.56.10"
+
+    # Forward Wazuh Dashboard (HTTPS) & API
+    wazuh.vm.network "forwarded_port", guest: 443, host: 8443, id: "wazuh_dashboard"
+    wazuh.vm.network "forwarded_port", guest: 55000, host: 55000, id: "wazuh_api"
+    wazuh.vm.network "forwarded_port", guest: 1514, host: 1514, protocol: "tcp", id: "wazuh_events_tcp"
+    wazuh.vm.network "forwarded_port", guest: 1515, host: 1515, protocol: "tcp", id: "wazuh_enrollment"
+
+    wazuh.vm.provider "virtualbox" do |vb|
+      vb.name = "DetectionLab-Wazuh"
+      vb.memory = 4096
+      vb.cpus = 2
+    end
+
+    wazuh.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/playbooks/wazuh.yml"
+      ansible.compatibility_mode = "2.0"
+    end
+  end
+
+  # =========================================================================
+  # 2. Windows Server 2022 Domain Controller (AD DS)
+  # =========================================================================
+  config.vm.define "dc" do |dc|
+    dc.vm.box = "gusztavvargadr/windows-server-2022-standard"
+    dc.vm.hostname = "dc01"
+    dc.vm.communicator = "winrm"
+    dc.winrm.username = "vagrant"
+    dc.winrm.password = "vagrant"
+    dc.vm.network "private_network", ip: "192.168.56.30"
+
+    dc.vm.provider "virtualbox" do |vb|
+      vb.name = "DetectionLab-DC01"
+      vb.memory = 2048
+      vb.cpus = 2
+    end
+
+    dc.vm.provision "shell", path: "scripts/enable_pslogging.ps1"
+    dc.vm.provision "shell", path: "scripts/install_sysmon.ps1"
+
+    dc.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/playbooks/domain_controller.yml"
+      ansible.compatibility_mode = "2.0"
+      ansible.extra_vars = {
+        ansible_user: "vagrant",
+        ansible_password: "vagrant",
+        ansible_connection: "winrm",
+        ansible_winrm_server_cert_validation: "ignore"
+      }
+    end
+  end
+
+  # =========================================================================
+  # 3. Windows 10/11 Target Endpoint
+  # =========================================================================
+  config.vm.define "win10" do |win|
+    win.vm.box = "gusztavvargadr/windows-10"
+    win.vm.hostname = "win10-client"
+    win.vm.communicator = "winrm"
+    win.winrm.username = "vagrant"
+    win.winrm.password = "vagrant"
+    win.vm.network "private_network", ip: "192.168.56.20"
+
+    win.vm.provider "virtualbox" do |vb|
+      vb.name = "DetectionLab-Win10"
+      vb.memory = 3072
+      vb.cpus = 2
+    end
+
+    win.vm.provision "shell", path: "scripts/enable_pslogging.ps1"
+    win.vm.provision "shell", path: "scripts/install_sysmon.ps1"
+
+    win.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/playbooks/windows_endpoint.yml"
+      ansible.compatibility_mode = "2.0"
+      ansible.extra_vars = {
+        ansible_user: "vagrant",
+        ansible_password: "vagrant",
+        ansible_connection: "winrm",
+        ansible_winrm_server_cert_validation: "ignore"
+      }
+    end
+  end
+
+  # =========================================================================
+  # 4. Linux Target (Ubuntu Server 22.04 with auditd)
+  # =========================================================================
+  config.vm.define "linux" do |linux|
+    linux.vm.box = "generic/ubuntu2204"
+    linux.vm.hostname = "linux-srv01.corp.local"
+    linux.vm.network "private_network", ip: "192.168.56.40"
+
+    linux.vm.provider "virtualbox" do |vb|
+      vb.name = "DetectionLab-Linux"
+      vb.memory = 1024
+      vb.cpus = 1
+    end
+
+    linux.vm.provision "shell", path: "scripts/configure_auditd.sh"
+
+    linux.vm.provision "ansible" do |ansible|
+      ansible.playbook = "ansible/playbooks/linux_target.yml"
+      ansible.compatibility_mode = "2.0"
+    end
+  end
+end

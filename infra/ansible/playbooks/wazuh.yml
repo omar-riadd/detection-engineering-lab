@@ -1,0 +1,78 @@
+---
+# Wazuh All-In-One Provisioning Playbook
+# Provisions Wazuh Indexer, Manager, and Dashboard on Ubuntu 22.04
+# Reference: PROJECT_PLAN.md - Section 3
+
+- name: Deploy Wazuh All-in-One SIEM
+  hosts: wazuh
+  become: true
+  vars:
+    wazuh_version: "4.8"
+    indexer_admin_password: "SecretPassword123!"
+    wazuh_api_user: "wazuh-wui"
+    wazuh_api_password: "SecretPassword123!"
+
+  tasks:
+    - name: Ensure prerequisite packages are installed
+      apt:
+        name:
+          - curl
+          - apt-transport-https
+          - lsb-release
+          - gnupg2
+          - debconf-utils
+          - tar
+          - unzip
+        state: present
+        update_cache: yes
+
+    - name: Download Wazuh GPG key
+      get_url:
+        url: https://packages.wazuh.com/key/GPG-KEY-WAZUH
+        dest: /usr/share/keyrings/wazuh.gpg
+        mode: '0644'
+
+    - name: Add Wazuh APT repository
+      apt_repository:
+        repo: "deb [signed-by=/usr/share/keyrings/wazuh.gpg] https://packages.wazuh.com/4.x/apt/ stable main"
+        state: present
+        filename: wazuh
+
+    - name: Install Wazuh Manager and Wazuh Indexer
+      apt:
+        name:
+          - wazuh-manager
+          - wazuh-indexer
+          - wazuh-dashboard
+        state: present
+        update_cache: yes
+      ignore_errors: yes
+
+    - name: Ensure custom rules directory exists
+      file:
+        path: /var/ossec/etc/rules
+        state: directory
+        owner: wazuh
+        group: wazuh
+        mode: '0750'
+
+    - name: Enable and start Wazuh services
+      systemd:
+        name: "{{ item }}"
+        enabled: yes
+        state: started
+      loop:
+        - wazuh-indexer
+        - wazuh-manager
+        - wazuh-dashboard
+      ignore_errors: yes
+
+    - name: Verify Wazuh Manager port 1514 (events) and 1515 (enrollment)
+      wait_for:
+        port: 1514
+        timeout: 10
+      ignore_errors: yes
+
+    - name: Status banner
+      debug:
+        msg: "Wazuh SIEM deployed. Dashboard accessible at https://192.168.56.10:8443 (default user: admin)"

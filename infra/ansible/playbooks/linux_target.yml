@@ -1,0 +1,46 @@
+---
+# Linux Target Telemetry & Configuration Playbook
+# Configures Ubuntu Server 22.04 with auditd and Wazuh Agent
+# Reference: PROJECT_PLAN.md - Section 3
+
+- name: Provision Linux Target Server
+  hosts: linux
+  become: true
+  vars:
+    wazuh_manager_ip: "192.168.56.10"
+
+  tasks:
+    - name: Ensure target setup directory exists
+      file:
+        path: /opt/lab_setup
+        state: directory
+        mode: '0755'
+
+    - name: Copy auditd configuration script
+      copy:
+        src: ../../scripts/configure_auditd.sh
+        dest: /opt/lab_setup/configure_auditd.sh
+        mode: '0755'
+
+    - name: Execute auditd and Wazuh agent setup
+      command: /opt/lab_setup/configure_auditd.sh "{{ wazuh_manager_ip }}"
+      register: auditd_exec
+      changed_when: "'Auditd rules loaded' in auditd_exec.stdout"
+
+    - name: Verify auditd service status
+      systemd:
+        name: auditd
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: Verify wazuh-agent service status
+      systemd:
+        name: wazuh-agent
+        state: started
+        enabled: yes
+      ignore_errors: yes
+
+    - name: Linux target status banner
+      debug:
+        msg: "Linux target configured. Auditd rules loaded and Wazuh Agent enrolled with manager at {{ wazuh_manager_ip }}."

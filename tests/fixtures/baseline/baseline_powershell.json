@@ -1,0 +1,678 @@
+[
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:03:13+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Write-Host 'Checking enterprise network interface status...'; Get-NetIPAddress -AddressFamily IPv4",
+      "ScriptBlockId": "832052-abcd-4ef0-87ef-66722344",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:09:01+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "380746-abcd-4ef0-87ef-18883684",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:11:42+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "725380-abcd-4ef0-87ef-18526544",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:14:01+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "216970-abcd-4ef0-87ef-49392920",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:17:36+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "903035-abcd-4ef0-87ef-26879290",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:53:00+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "656932-abcd-4ef0-87ef-85017682",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T08:56:01+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "390782-abcd-4ef0-87ef-79967676",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:03:20+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Write-Host 'Checking enterprise network interface status...'; Get-NetIPAddress -AddressFamily IPv4",
+      "ScriptBlockId": "309044-abcd-4ef0-87ef-12735359",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:05:01+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Write-Host 'Checking enterprise network interface status...'; Get-NetIPAddress -AddressFamily IPv4",
+      "ScriptBlockId": "426147-abcd-4ef0-87ef-24508768",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:07:03+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "920652-abcd-4ef0-87ef-15512205",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:20:53+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "572398-abcd-4ef0-87ef-69421007",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:23:17+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "718439-abcd-4ef0-87ef-98742485",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:47:52+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Write-Host 'Checking enterprise network interface status...'; Get-NetIPAddress -AddressFamily IPv4",
+      "ScriptBlockId": "736553-abcd-4ef0-87ef-57287718",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T09:52:17+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "178957-abcd-4ef0-87ef-28892086",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:03:04+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "793169-abcd-4ef0-87ef-13460153",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:07:06+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "994217-abcd-4ef0-87ef-97874085",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:12:44+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "904711-abcd-4ef0-87ef-93446356",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:15:49+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "725185-abcd-4ef0-87ef-21402740",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:17:12+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "461939-abcd-4ef0-87ef-67702031",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:22:41+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "635280-abcd-4ef0-87ef-94989976",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:23:45+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "179013-abcd-4ef0-87ef-33776150",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:28:06+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "849014-abcd-4ef0-87ef-21318464",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:29:44+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "450905-abcd-4ef0-87ef-18846539",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:37:33+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "345369-abcd-4ef0-87ef-81673763",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:39:29+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "245121-abcd-4ef0-87ef-43554863",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:41:19+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "127965-abcd-4ef0-87ef-65686520",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:42:50+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "570392-abcd-4ef0-87ef-92590645",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:47:18+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "893435-abcd-4ef0-87ef-54629892",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T10:48:46+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "430926-abcd-4ef0-87ef-51617680",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:00:03+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "335134-abcd-4ef0-87ef-26288992",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:02:33+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Write-Host 'Checking enterprise network interface status...'; Get-NetIPAddress -AddressFamily IPv4",
+      "ScriptBlockId": "553633-abcd-4ef0-87ef-77493234",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:06:39+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "185168-abcd-4ef0-87ef-16101779",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:15:14+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "147440-abcd-4ef0-87ef-63765155",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:16:09+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "813449-abcd-4ef0-87ef-92012822",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:16:54+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "684929-abcd-4ef0-87ef-59070856",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:33:37+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Write-Host 'Checking enterprise network interface status...'; Get-NetIPAddress -AddressFamily IPv4",
+      "ScriptBlockId": "885386-abcd-4ef0-87ef-48851599",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:37:59+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "443856-abcd-4ef0-87ef-21641746",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:43:09+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "891401-abcd-4ef0-87ef-89968863",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:45:13+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "238353-abcd-4ef0-87ef-78886959",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:53:26+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "246942-abcd-4ef0-87ef-77631755",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:53:50+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "704095-abcd-4ef0-87ef-52802529",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:56:11+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "352673-abcd-4ef0-87ef-40245233",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T11:56:35+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "689704-abcd-4ef0-87ef-65388634",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:04:52+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-ChildItem -Path 'C:\\Users\\Public' -Recurse | Measure-Object -Property Length -Sum",
+      "ScriptBlockId": "244170-abcd-4ef0-87ef-94651342",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:13:12+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "960778-abcd-4ef0-87ef-63458386",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:18:53+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "238943-abcd-4ef0-87ef-21716836",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:21:51+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "363926-abcd-4ef0-87ef-43096758",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:23:39+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Test-Connection -ComputerName dc01.corp.local -Count 2 -Quiet",
+      "ScriptBlockId": "561607-abcd-4ef0-87ef-54927535",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:33:18+00:00",
+    "Computer": "WIN10-CLIENT01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Service | Where-Object { $_.Status -eq 'Running' } | Select-Object -First 10",
+      "ScriptBlockId": "123682-abcd-4ef0-87ef-56047142",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:47:55+00:00",
+    "Computer": "WIN10-CLIENT02.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Import-Module NetAdapter; Get-NetAdapter -Name * | Format-Table Name, Status, LinkSpeed",
+      "ScriptBlockId": "467856-abcd-4ef0-87ef-81441519",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:50:22+00:00",
+    "Computer": "DC01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "511776-abcd-4ef0-87ef-75694038",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  },
+  {
+    "EventID": 4104,
+    "Channel": "Microsoft-Windows-PowerShell/Operational",
+    "UtcTime": "2026-10-19T12:54:36+00:00",
+    "Computer": "SRV-FILE01.corp.local",
+    "EventData": {
+      "ScriptBlockText": "Get-Date; [System.TimeZoneInfo]::Local.DisplayName",
+      "ScriptBlockId": "899281-abcd-4ef0-87ef-16497381",
+      "MessageNumber": 1,
+      "MessageTotal": 1,
+      "Path": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+    }
+  }
+]
