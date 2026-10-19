@@ -1,8 +1,8 @@
 # Project Progress: Detection Engineering Portfolio
 
 > **Last Updated:** 2026-10-19  
-> **Status:** Week 7 — Completed | Week 8 — In Progress  
-> **Current Task:** Week 8 — Polish, Metrics & Publication (Wazuh Dashboards, Executive Report `docs/report.md`, Blog/Demo Outline, `README.md` Finalization, Release `v1.0`)  
+> **Status:** All Milestones (Weeks 1 through 8) Completed — Production-Ready Release v1.0  
+> **Current Task:** All Tasks Completed — Portfolio Verified & Published  
 > **Project Plan Reference:** [PROJECT_PLAN.md](PROJECT_PLAN.md)
 
 ---
@@ -30,7 +30,7 @@
 | **Week 5** | Detection-as-Code CI/CD Pipeline (GitHub Actions `ci.yml`, `convert_sigma.py`, `replay_logs.py`, `test_detections.py`) | Completed | 2026-10-19 |
 | **Week 6** | Tuning, Expansion & Shadow Deployment (Baseline FP measurement, `docs/fp_report.md`, expansion to 20-25 rules) | Completed | 2026-10-19 |
 | **Week 7** | Purple-Team Iterations & MTTD (`docs/bypass_log.md`, rule hardening, `docs/mttd_metrics.md`, ATT&CK Navigator layer) | Completed | 2026-10-19 |
-| **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | In Progress | - |
+| **Week 8** | Polish, Metrics & Publication (Wazuh dashboards, executive report, demo video/blog outline, `README.md` finalization, v1.0 tag) | Completed | 2026-10-19 |
 
 ---
 
@@ -142,13 +142,15 @@
 ---
 
 ### Week 8 — Polish, Metrics & Publication
-- [ ] Create Wazuh dashboard definitions / screenshots.
-- [ ] Configure alert routing policy.
-- [ ] Write final project report in `docs/report.md`.
-- [ ] Draft technical blog post and video walkthrough script.
-- [ ] Update `CHANGELOG.md` with detection debt register.
-- [ ] Finalize `README.md` with architecture diagram and live metrics table.
-- [ ] Tag git release `v1.0`.
+- [x] **Task 8.1**: Create Wazuh dashboard definitions (`infra/dashboards/wazuh_detection_dashboard.ndjson`) and documentation in `docs/dashboards.md` covering alert volume over time, ATT&CK coverage heatmap, FP vs TP trend, and MTTD gauge.
+- [x] **Task 8.2**: Configure Wazuh alert routing policy (`infra/wazuh/ossec_alert_routing.conf`) and documentation in `docs/alert_routing.md` routing Level >= 10/12 to dedicated indices, email notifications, and webhook alerts.
+- [x] **Task 8.3**: Author project final executive report (`docs/report.md`) covering executive summary, lab architecture, technique coverage table, FP/TP metrics, MTTD metrics, bypass log summary, D3FEND countermeasure coverage, and lessons learned.
+- [x] **Task 8.4**: Draft technical publication blog post in `docs/blog_post.md` (*"Building a Production-Grade Detection Engineering Lab: From Threat Intel to CI/CD & Purple-Team Hardening"*).
+- [x] **Task 8.5**: Author 3-minute video walkthrough storyboard and audio narration script in `docs/demo_walkthrough.md`.
+- [x] **Task 8.6**: Add active Detection Debt Register to `CHANGELOG.md` (`DEBT-001` through `DEBT-005`) and document releases `v0.1` and `v1.0`.
+- [x] **Task 8.7**: Polish `README.md` with live metrics table, architecture diagram, scenario listings, quick-start instructions, and links to all deliverables.
+- [x] **Task 8.8**: Tag release `v1.0` in Git repository and push all converted KQL/SPL rules.
+- [x] **Verification**: All regression tests pass 48/48, 0 baseline false positives, valid JSON/YAML across all assets, deliverables 100% complete.
 
 ---
 
@@ -221,6 +223,16 @@
     - Exported ATT&CK Navigator layer to `docs/coverage/navigator_layer.json` with scores, colors, D3FEND mappings, and evasion testing annotations.
     - Transpiled hardened rules to Wazuh XML, KQL, and SPL.
     - Executed Pytest regression test suite: 48/48 unit tests passed in 0.13s, with 0 false positives across 1,207 baseline events.
-  - Initiating Week 8: Polish, Metrics & Publication — Wazuh dashboards, alert routing, final executive project report in `docs/report.md`, blog post and demo video scripts, `CHANGELOG.md` debt register, and `README.md` finalization with `v1.0` release tag.
+  - Completed Week 8:
+    - Built Wazuh dashboard definitions (`infra/dashboards/wazuh_detection_dashboard.ndjson`) and visual documentation in `docs/dashboards.md` covering alert volume over time, ATT&CK coverage heatmap, FP vs TP trend, and MTTD gauge.
+    - Configured Wazuh alert routing policy (`infra/wazuh/ossec_alert_routing.conf`) and documentation in `docs/alert_routing.md` routing Level >= 10/12 to dedicated indices, email notifications, and webhook alerts.
+    - Authored project final executive report (`docs/report.md`) covering executive summary, lab architecture, technique coverage table, FP/TP metrics, MTTD metrics, bypass log summary, D3FEND countermeasure coverage, and lessons learned.
+    - Drafted technical publication blog post in `docs/blog_post.md` (*"Building a Production-Grade Detection Engineering Lab: From Threat Intel to CI/CD & Purple-Team Hardening"*).
+    - Authored 3-minute video walkthrough storyboard and audio narration script in `docs/demo_walkthrough.md`.
+    - Added active Detection Debt Register to `CHANGELOG.md` (`DEBT-001` through `DEBT-005`) and documented releases `v0.1` and `v1.0`.
+    - Polished `README.md` with live metrics table, architecture diagram, scenario listings, quick-start instructions, and links to all deliverables.
+    - Verified all 48 test cases passing, 0 baseline false positives, and tagged release `v1.0`.
+  - All Milestones (Weeks 1 through 8) Complete — Production-grade Detection Engineering portfolio finalized and ready for executive presentation and public deployment!
+
 
 
