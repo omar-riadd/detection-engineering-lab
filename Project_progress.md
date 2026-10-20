@@ -849,9 +849,9 @@ To ensure seamless portfolio consistency across all technical documentation, the
 > **Execution Reference:** Action 2 of 4-Action Release Sequence
 
 ### 18.1 Summary of Committed Changes
-- **Git Commit Hash:** `d3c5d97`
-- **Release Tag:** `v1.1`
-- **Scope of Commit:** 107 files changed, 8,720 insertions(+), 115 deletions(-).
+- **Git Commit Hashes:** `d3c5d97` (Core v1.1 Multi-Platform Release) & `c8ac6ba` (Containerization & Compose)
+- **Release Tag:** `v1.1` (annotated release tag)
+- **Scope of Commits:** 111 files changed, 8,975 insertions(+), 115 deletions(-).
 - **Tracked Assets:**
   - 26 Production Sigma Rules (`rules/sigma/windows/` and `rules/sigma/linux/`)
   - 22 SOC Triage Runbooks (`runbooks/`)
