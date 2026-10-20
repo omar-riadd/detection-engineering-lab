@@ -147,7 +147,7 @@ def evaluate_sigma_rule(sigma_data, event):
     except Exception as e:
         return False
 
-def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='all', verbose=False):
+def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='all', verbose=False, rule_filter=None):
     """
     Executes log replay test suite and prints evaluation results.
     """
@@ -155,6 +155,26 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
     if not rule_files:
         print(f"No Sigma rules found in {rules_dir}")
         return False
+
+    if rule_filter:
+        rf_clean = rule_filter.lower().strip()
+        matched_files = []
+        for rf in rule_files:
+            stem = os.path.splitext(os.path.basename(rf))[0].lower()
+            if rf_clean in stem or stem in rf_clean:
+                matched_files.append(rf)
+                continue
+            try:
+                with open(rf, 'r', encoding='utf-8') as f:
+                    data = yaml.safe_load(f)
+                rule_id = str(data.get('id', '')).lower()
+                tags = [t.lower() for t in data.get('tags', [])]
+                if rf_clean == rule_id or any(rf_clean in t for t in tags):
+                    matched_files.append(rf)
+            except Exception:
+                pass
+        if matched_files:
+            rule_files = matched_files
 
     # Map technique ID to list of rules
     rules_by_tech = {}
@@ -171,6 +191,8 @@ def replay(rules_dir='rules/sigma/', fixtures_dir='tests/fixtures/', test_type='
     print("DETECTION ENGINEERING LOG REPLAY TEST HARNESS")
     print("=" * 70)
     print(f"Loaded {len(rule_files)} Sigma rule(s) covering {len(rules_by_tech)} technique(s).")
+    if rule_filter:
+        print(f"Filter: {rule_filter}")
     print(f"Target Fixture Directory: {fixtures_dir}")
     print(f"Test Mode: {test_type.upper()}")
     print("-" * 70)
@@ -265,10 +287,11 @@ def main():
     parser.add_argument('--rules', default='rules/sigma/', help="Directory of Sigma rules")
     parser.add_argument('--fixtures', default='tests/fixtures/', help="Directory of JSON log fixtures")
     parser.add_argument('--type', choices=['positive', 'negative', 'baseline', 'all'], default='all', help="Type of tests to run")
+    parser.add_argument('--rule', default=None, help="Filter replay to a specific rule ID, stem name, or ATT&CK technique")
     parser.add_argument('-v', '--verbose', action='store_true', help="Verbose per-test output")
     args = parser.parse_args()
 
-    success = replay(args.rules, args.fixtures, args.type, args.verbose)
+    success = replay(args.rules, args.fixtures, args.type, args.verbose, rule_filter=args.rule)
     sys.exit(0 if success else 1)
 
 if __name__ == '__main__':

@@ -49,8 +49,33 @@ async def websocket_events(websocket: WebSocket):
 
 import time
 from datetime import datetime, timezone
-from api.models.db import TestRun, engine
+from api.models.db import TestRun, Rule, engine
 from sqlalchemy.orm import Session
+
+def _resolve_pytest_filter(rule_id: str | None) -> str | None:
+    """
+    Resolves a rule UUID or identifier to a pytest -k filter expression.
+    Matches against rule file stem and/or MITRE ATT&CK technique IDs.
+    """
+    if not rule_id:
+        return None
+    try:
+        with Session(engine) as session:
+            rule_obj = session.get(Rule, rule_id)
+            if rule_obj:
+                terms = []
+                if rule_obj.file_path:
+                    terms.append(Path(rule_obj.file_path).stem)
+                if rule_obj.techniques:
+                    for t in rule_obj.techniques.split("|"):
+                        clean_t = t.strip()
+                        if clean_t:
+                            terms.append(clean_t)
+                if terms:
+                    return " or ".join(terms)
+    except Exception as e:
+        print(f"[RESOLVE_PYTEST_FILTER_ERROR] {e}")
+    return rule_id
 
 def _record_test_run(run_type: str, rule_id: str | None, exit_code: int, duration: float, output_text: str) -> int:
     try:
@@ -171,8 +196,9 @@ async def websocket_test_runner(websocket: WebSocket):
             if action == "run_all":
                 cmd = [python_exe, "-u", "-m", "pytest", "tests/", "-v", "--no-header", "--tb=short"]
             elif action == "run_tests" and rule_id:
+                filter_expr = _resolve_pytest_filter(rule_id)
                 cmd = [python_exe, "-u", "-m", "pytest", "tests/", "-v", "--no-header", "--tb=short",
-                       "-k", rule_id]
+                       "-k", filter_expr]
             else:
                 await websocket.send_json({"type": "error", "data": f"Unknown action: {action}"})
                 continue
@@ -216,9 +242,9 @@ async def websocket_replay(websocket: WebSocket):
                 # --type all --verbose: replay every fixture against every rule
                 cmd = [python_exe, "-u", "scripts/replay_logs.py", "--type", "all", "--verbose"]
             elif action == "replay" and rule_id:
-                # replay_logs.py cannot filter by rule ID; fall back to pytest -k
-                cmd = [python_exe, "-u", "-m", "pytest", "tests/", "-v", "--no-header",
-                       "--tb=short", "-k", rule_id]
+                # replay_logs.py supports --rule with UUID, stem name, or technique
+                cmd = [python_exe, "-u", "scripts/replay_logs.py", "--type", "all", "--verbose",
+                       "--rule", rule_id]
             else:
                 await websocket.send_json({"type": "error", "data": f"Unknown action: {action}"})
                 continue

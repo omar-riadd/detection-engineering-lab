@@ -967,6 +967,36 @@ The end-to-end functionality across all 7 operational workspaces was systematica
 
 ---
 
+## 21. Single-Rule Test Runner & Replay Engine Resolution (Exit Code 5 Fix)
+
+> **Date Completed:** 2026-10-21  
+> **Status:** Fixed & 100% Verified  
+> **Issue Identified:** Pytest Exit Code 5 when running Replay Engine or Test Runner on an individual rule from the UI.
+
+### 21.1 Root Cause Analysis
+1. In `ui/src/routes/ReplayPage.svelte` and `RuleDetailPage.svelte`, selecting a single rule sends the rule's primary key UUID (e.g. `137da486-1587-4576-f706-3784037e5017`) as `rule_id` over the WebSocket.
+2. In `api/routers/websocket.py`:
+   - `/ws/test-runner` executed `pytest tests/ -v -k <rule_id>`
+   - `/ws/replay` fell back to `pytest tests/ -v -k <rule_id>`
+3. In pytest, `-k <expr>` filters by test case name. Tests in `tests/test_detections.py` are parameterized as `[<tech_id>-<fixture_path>]` and `[<tech_id>-<rule_path>-<fixture_path>]`. Because the UUID string is never in the test function name, pytest deselected all 69 tests (`69 deselected, 0 selected`), resulting in **Exit Code 5** (`EXIT_NO_TESTS_COLLECTED`).
+
+### 21.2 Remediation & Engineering Implementation
+1. **Enhanced `scripts/replay_logs.py`**:
+   - Added `--rule` argument to CLI parser and `rule_filter` parameter to `replay()`.
+   - Filters rules by file stem, YAML UUID, or ATT&CK technique tag.
+   - Replays the exact positive, negative, and baseline fixtures for the targeted rule without needing pytest.
+2. **Enhanced `api/routers/websocket.py`**:
+   - Added `_resolve_pytest_filter(rule_id)` helper that resolves rule UUIDs into compound keyword expressions (`<rule_stem> or <technique_id>`) for `pytest -k`.
+   - Updated `/ws/replay` to invoke `scripts/replay_logs.py --rule <rule_id>` directly, streaming native log replay evaluation.
+   - Updated `/ws/test-runner` to invoke `pytest -k <resolved_filter>`, successfully collecting and running tests for the selected rule.
+3. **Container Rebuilt & Recreated**:
+   - Updated Docker image (`detectionengineering-detection-lab`) and verified in container:
+     - Single-rule Replay: `TEST RESULTS SUMMARY: 2/2 PASSED` (Exit code 0).
+     - Single-rule Pytest: `2 passed, 67 deselected` (Exit code 0).
+
+---
+
+
 
 
 
