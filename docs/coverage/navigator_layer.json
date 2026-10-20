@@ -207,6 +207,22 @@
       "color": "#66bb6a",
       "comment": "Rule: win_proc_wmi_susp_command_exec.yml. Detects process call create execution commands invoked via wmic.exe. D3FEND: D3-PMA (Process Modification Analysis).",
       "enabled": true
+    },
+    {
+      "techniqueID": "T1059.004",
+      "tactic": "execution",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: lnx_proc_reverse_shell.yml. Detects interactive reverse shell executions via bash/nc/python. D3FEND: D3-PSA (Process Spawn Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1053.003",
+      "tactic": "persistence",
+      "score": 90,
+      "color": "#66bb6a",
+      "comment": "Rule: lnx_auditd_susp_cron_job.yml. Detects unauthorized modification of scheduled cron jobs. D3FEND: D3-SJA (Scheduled Job Analysis).",
+      "enabled": true
     }
   ]
 }

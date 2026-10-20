@@ -1,0 +1,41 @@
+title: PowerShell CLI Download Cradle Execution
+id: 763471f8-59f2-4df4-9167-363ed53260cc
+status: stable
+description: |
+  Detects PowerShell command lines initiating remote payload downloads using .NET WebClient or built-in cmdlets
+  (DownloadString, DownloadFile, Invoke-WebRequest, iwr, Invoke-RestMethod, irm) referencing HTTP/HTTPS URLs.
+references:
+  - https://attack.mitre.org/techniques/T1059/001/
+  - https://redcanary.com/threat-detection-report/
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1059.001
+  - attack.execution
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_bin:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+  selection_method:
+    CommandLine|contains:
+      - 'Net.WebClient'
+      - 'DownloadString'
+      - 'DownloadFile'
+      - 'Invoke-WebRequest'
+      - 'iwr '
+      - 'Invoke-RestMethod'
+      - 'irm '
+  selection_url:
+    CommandLine|contains:
+      - 'http://'
+      - 'https://'
+  condition: selection_bin and selection_method and selection_url
+falsepositives:
+  - Administrative deployment scripts downloading approved software packages.
+level: high

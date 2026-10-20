@@ -1,0 +1,7 @@
+// PowerShell CLI Download Cradle Execution
+// Techniques: T1059.001
+DeviceProcessEvents
+| where (FileName endswith "\powershell.exe" or FileName endswith "\pwsh.exe")
+| where ProcessCommandLine has_any ("Net.WebClient", "DownloadString", "DownloadFile", "Invoke-WebRequest", "iwr ", "Invoke-RestMethod", "irm ")
+| where ProcessCommandLine has_any ("http://", "https://")
+| project TimeGenerated, DeviceName, AccountName

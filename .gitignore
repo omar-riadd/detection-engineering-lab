@@ -10,8 +10,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -44,3 +44,12 @@ ENV/
 .idea/
 *.swp
 *~
+
+# Detection Lab — SQLite read model (derived from YAML; disposable)
+detection_lab.db
+detection_lab.db-shm
+detection_lab.db-wal
+
+# Detection Lab — UI build artifacts
+ui/node_modules/
+ui/dist/

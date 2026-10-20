@@ -1,0 +1,43 @@
+title: Suspicious Child Process Spawning from Microsoft Office Application
+id: 687b5e3e-df95-4989-a342-5b2f3e03aeab
+status: stable
+description: |
+  Detects Microsoft Office applications (Word, Excel, PowerPoint, Outlook) spawning command interpreters or script engines
+  (cmd.exe, powershell.exe, wscript.exe, cscript.exe, mshta.exe, certutil.exe, rundll32.exe).
+  This behavior is a primary indicator of malicious macro execution or exploit payload launching.
+references:
+  - https://attack.mitre.org/techniques/T1566/001/
+  - https://attack.mitre.org/techniques/T1204/002/
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa21-116a
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1566.001
+  - attack.t1204.002
+  - attack.initial_access
+  - attack.execution
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_parent:
+    ParentImage|endswith:
+      - '\winword.exe'
+      - '\excel.exe'
+      - '\powerpnt.exe'
+      - '\outlook.exe'
+  selection_child:
+    Image|endswith:
+      - '\cmd.exe'
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\wscript.exe'
+      - '\cscript.exe'
+      - '\mshta.exe'
+      - '\certutil.exe'
+      - '\rundll32.exe'
+  condition: selection_parent and selection_child
+falsepositives:
+  - Legitimate custom enterprise ERP export macros or Office add-ins (should be filtered by path or signature).
+level: high

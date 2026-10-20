@@ -1,0 +1,2 @@
+# Suspicious Child Process Spawning from Microsoft Office Application - ATT&CK: T1566.001, T1204.002
+index=windows (ParentImage="*\winword.exe" OR ParentImage="*\excel.exe" OR ParentImage="*\powerpnt.exe" OR ParentImage="*\outlook.exe") (Image="*\cmd.exe" OR Image="*\powershell.exe" OR Image="*\pwsh.exe" OR Image="*\wscript.exe" OR Image="*\cscript.exe" OR Image="*\mshta.exe" OR Image="*\certutil.exe" OR Image="*\rundll32.exe") | table _time, host, user, Image, CommandLine

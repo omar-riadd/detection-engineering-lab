@@ -1,0 +1,33 @@
+title: Interactive Reverse Shell Execution via Common Utilities
+id: a5305303-c1d4-4e53-9713-3add7c6ac17b
+status: stable
+description: |
+  Detects interactive reverse shell executions on Linux via bash, sh, netcat, python, or perl using redirected file descriptors,
+  network pseudodevices (/dev/tcp, /dev/udp), or socket connections to establish command-and-control access.
+references:
+  - https://attack.mitre.org/techniques/T1059/004/
+  - https://attack.mitre.org/techniques/T1059/
+  - https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/Methodology%20and%20Resources/Reverse%20Shell%20Cheatsheet.md
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1059.004
+  - attack.execution
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_shell:
+    CommandLine|contains:
+      - '/dev/tcp/'
+      - '/dev/udp/'
+      - 'exec 5<>'
+      - 'pty.spawn'
+      - 'socket.socket'
+      - 'nc -e '
+      - 'ncat -e '
+  condition: selection_shell
+falsepositives:
+  - Penetration testing or purple-team exercises.
+level: critical

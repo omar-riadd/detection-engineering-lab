@@ -53,6 +53,18 @@ Every detection rule authored in this project maps directly to a formal D3FEND d
 
 ---
 
+### Scenario C — Complementary Windows & Linux Enterprise Intrusion Detections
+
+| ATT&CK Sub-Technique | ATT&CK Name | Detection Rule (Sigma) | Triage Runbook | D3FEND Countermeasure | D3FEND ID | Architectural Defense Type |
+|---|---|---|---|---|---|---|
+| **T1003.001** | LSASS Memory Dumping | [`win_proc_comsvcs_lsass_dump.yml`](../rules/sigma/windows/proc_creation/win_proc_comsvcs_lsass_dump.yml) | [`T1003.001-lsass-memory-dump.md`](../runbooks/T1003.001-lsass-memory-dump.md) | [Credential Access Interception](https://d3fend.mitre.org/technique/d3f:CredentialAccessInterception/) | **D3-CAI** | Harden / Detect |
+| **T1566.001** | Spearphishing Attachment | [`win_proc_office_spawn_child.yml`](../rules/sigma/windows/proc_creation/win_proc_office_spawn_child.yml) | [`T1566.001-spearphishing-attachment.md`](../runbooks/T1566.001-spearphishing-attachment.md) | [Process Spawn Analysis](https://d3fend.mitre.org/technique/d3f:ProcessSpawnAnalysis/) | **D3-PSA** | Isolate / Detect |
+| **T1059.001** | PowerShell Execution | [`win_proc_powershell_download_cradle.yml`](../rules/sigma/windows/proc_creation/win_proc_powershell_download_cradle.yml) | [`T1059.001-powershell-execution.md`](../runbooks/T1059.001-powershell-execution.md) | [Script Execution Analysis](https://d3fend.mitre.org/technique/d3f:ScriptExecutionAnalysis/) | **D3-SEA** | Detect / Verify |
+| **T1059.004** | Unix Shell | [`lnx_proc_reverse_shell.yml`](../rules/sigma/linux/lnx_proc_reverse_shell.yml) | [`T1059.004-unix-shell.md`](../runbooks/T1059.004-unix-shell.md) | [Process Spawn Analysis](https://d3fend.mitre.org/technique/d3f:ProcessSpawnAnalysis/) | **D3-PSA** | Isolate / Detect |
+| **T1053.003** | Scheduled Task/Job: Cron | [`lnx_auditd_susp_cron_job.yml`](../rules/sigma/linux/lnx_auditd_susp_cron_job.yml) | [`T1053.003-cron-persistence.md`](../runbooks/T1053.003-cron-persistence.md) | [Scheduled Job Analysis](https://d3fend.mitre.org/technique/d3f:ScheduledJobAnalysis/) | **D3-SJA** | Detect / Harden |
+
+---
+
 ## 3. Maintenance and Lifecycle
 
 As each Sigma rule is drafted, reviewed, or hardened through purple-team testing, this table will be updated to link directly to the corresponding Sigma rule file in `rules/sigma/` and triage runbook in `runbooks/`.

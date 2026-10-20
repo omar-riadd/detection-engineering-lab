@@ -17,8 +17,13 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Install dependencies
-        run: pip install pysigma sigma-cli pyyaml pytest jinja2
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Python dependencies
+        run: pip install pysigma sigma-cli pyyaml pytest jinja2 fastapi uvicorn sqlalchemy httpx watchdog
 
       - name: 1 - YAML lint
         run: |
@@ -42,15 +47,26 @@ jobs:
             --input rules/sigma/ \
             --wazuh rules/wazuh/ \
             --kql converted/kql/ \
-            --splunk converted/splunk/
+            --splunk converted/splunk/ \
+            --production
 
-      - name: 4 - Positive regression tests (attack logs MUST fire)
-        run: pytest tests/ -k "positive" -v
+      - name: 4 - Detection regression tests (pytest)
+        run: pytest tests/test_detections.py -v
 
-      - name: 5 - Negative regression tests (benign logs MUST NOT fire)
-        run: pytest tests/ -k "negative" -v
+      - name: 5 - FastAPI REST & CQRS integration tests (pytest)
+        run: pytest tests/test_api.py -v
 
-      - name: 6 - Upload converted rules as artifacts
+      - name: 6 - Full log replay harness regression test
+        run: python scripts/replay_logs.py --type all --verbose
+
+      - name: 7 - UI TypeScript diagnostics and production build
+        run: |
+          cd ui
+          npm ci
+          npx svelte-check
+          npm run build
+
+      - name: 8 - Upload converted rules as artifacts
         uses: actions/upload-artifact@v4
         with:
           name: converted-rules-${{ github.sha }}

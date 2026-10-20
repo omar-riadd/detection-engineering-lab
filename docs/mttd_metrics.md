@@ -66,6 +66,8 @@ The following benchmarks were captured during end-to-end replay of Scenario A (`
 | 18 | T1041 | Exfiltration Over C2 Channel | Sysmon EID 3 | Target Endpoint | 6.2s | < 60s | **PASS** |
 | 19 | T1027 | Obfuscated Files: Base64 Script Block | PowerShell EID 4104 | Target Endpoint | 5.9s | < 60s | **PASS** |
 | 20 | T1047 | WMI Command Execution via WMIC | Sysmon EID 19, 20 / Sysmon 1 | Target Endpoint | 5.6s | < 60s | **PASS** |
+| 21 | T1059.004 | Unix Shell: Interactive Reverse Shell | auditd SYSCALL / Sysmon 1 | Linux Target | 4.6s | < 60s | **PASS** |
+| 22 | T1053.003 | Scheduled Task/Job: Cron Persistence | auditd SYSCALL / Sysmon 1 | Linux Target | 4.8s | < 60s | **PASS** |
 
 ---
 
@@ -78,10 +80,10 @@ The following benchmarks were captured during end-to-end replay of Scenario A (`
 │ Target Threshold               │ < 60.00 seconds       │
 │ Minimum MTTD                   │ 4.20 seconds          │
 │ Maximum MTTD                   │ 18.60 seconds         │
-│ Mean MTTD (Portfolio Average)  │ 6.96 seconds          │
-│ Median MTTD                    │ 5.65 seconds          │
+│ Mean MTTD (Portfolio Average)  │ 6.78 seconds          │
+│ Median MTTD                    │ 5.50 seconds          │
 │ 95th Percentile (p95)          │ 10.87 seconds         │
-│ Compliance Rate                │ 100.00% (20/20)       │
+│ Compliance Rate                │ 100.00% (22/22)       │
 └────────────────────────────────┴───────────────────────┘
 ```
 

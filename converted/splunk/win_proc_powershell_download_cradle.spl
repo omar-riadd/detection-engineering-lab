@@ -1,0 +1,2 @@
+# PowerShell CLI Download Cradle Execution - ATT&CK: T1059.001
+index=windows (Image="*\powershell.exe" OR Image="*\pwsh.exe") (CommandLine="*Net.WebClient*" OR CommandLine="*DownloadString*" OR CommandLine="*DownloadFile*" OR CommandLine="*Invoke-WebRequest*" OR CommandLine="*iwr *" OR CommandLine="*Invoke-RestMethod*" OR CommandLine="*irm *") (CommandLine="*http://*" OR CommandLine="*https://*") | table _time, host, user, Image, CommandLine

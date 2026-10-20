@@ -1,0 +1,16 @@
+{
+  "EventID": 1,
+  "Channel": "Linux-Sysmon/Operational",
+  "UtcTime": "2026-10-21T01:30:00.000Z",
+  "Computer": "srv-ubuntu-prod01",
+  "EventData": {
+    "RuleName": "-",
+    "ProcessId": 1150,
+    "Image": "/usr/sbin/logrotate",
+    "CommandLine": "/usr/sbin/logrotate -f /etc/logrotate.conf",
+    "CurrentDirectory": "/etc",
+    "User": "root",
+    "ParentProcessId": 800,
+    "ParentImage": "/usr/sbin/cron"
+  }
+}

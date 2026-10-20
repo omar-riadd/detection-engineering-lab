@@ -1,0 +1,6 @@
+// Suspicious Child Process Spawning from Microsoft Office Application
+// Techniques: T1566.001, T1204.002
+DeviceProcessEvents
+| where (InitiatingProcessFileName endswith "\winword.exe" or InitiatingProcessFileName endswith "\excel.exe" or InitiatingProcessFileName endswith "\powerpnt.exe" or InitiatingProcessFileName endswith "\outlook.exe")
+| where (FileName endswith "\cmd.exe" or FileName endswith "\powershell.exe" or FileName endswith "\pwsh.exe" or FileName endswith "\wscript.exe" or FileName endswith "\cscript.exe" or FileName endswith "\mshta.exe" or FileName endswith "\certutil.exe" or FileName endswith "\rundll32.exe")
+| project TimeGenerated, DeviceName, AccountName

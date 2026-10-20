@@ -1,8 +1,8 @@
 # Detection Engineering Project Final Report: Threat-Informed Detection-as-Code Lifecycle
 
 > **Author:** Detection Engineering Team  
-> **Date:** 2026-10-19  
-> **Version:** 1.0  
+> **Date:** 2026-10-20  
+> **Version:** 1.1  
 > **Status:** Final Executive Report  
 > **Project Repository:** [detection-engineering-lab](https://github.com/omar-riadd/detection-engineering-lab)  
 > **Project Plan Reference:** [PROJECT_PLAN.md](../PROJECT_PLAN.md) — Section 5 (Week 8)  
@@ -28,16 +28,17 @@ Modern enterprise security operations face a dual crisis: alert fatigue driven b
 
 To resolve these challenges, this portfolio project engineered an end-to-end, production-grade **Detection-as-Code (DaC)** lifecycle grounded strictly in real-world cyber threat intelligence (CISA Advisories AA21-116A and AA23-075A, the Red Canary Threat Detection Report, and The DFIR Report). 
 
-Over an 8-week structured engineering cycle, the project delivered:
+Over an 8-week structured engineering cycle with multi-platform expansion, the project delivered:
 - **Reproducible Infrastructure-as-Code Lab:** A 4-VM enterprise Active Directory environment provisioned with Vagrant and Ansible, featuring Wazuh SIEM, Windows Server 2022 Domain Controller, Windows 10 endpoint with Sysmon and advanced script block auditing, and Ubuntu Linux with `auditd`.
-- **21 Production Sigma Rules:** Authored vendor-neutrally in YAML, covering 20 MITRE ATT&CK sub-techniques across two intrusion chains: **Scenario A (Active Directory Intrusion)** and **Scenario B (Ransomware Precursor)**.
+- **26 Production Sigma Rules:** Authored vendor-neutrally in YAML, covering 22 MITRE ATT&CK sub-techniques across three intrusion chains: **Scenario A (Active Directory Intrusion)**, **Scenario B (Ransomware Precursor)**, and **Scenario C (Multi-Platform Enterprise Intrusion)**.
 - **Automated CI/CD Validation Pipeline:** A 6-stage GitHub Actions pipeline that lints YAML syntax, validates schema with `sigma-cli`, transpiles Sigma to **Wazuh XML**, **Microsoft Sentinel KQL**, and **Splunk SPL**, and executes unit regression tests against positive attack fixtures and benign baselines.
+- **Interactive CQRS Operations UI:** A modern Svelte 5 + Tailwind CSS SPA backed by a FastAPI CQRS engine with SQLite WAL persistence and real-time WebSocket log replay.
 - **Exceptional Operational Metrics:**
-  - **True Positive (TP) Rate:** **100.00%** (27/27 attack and evasion fixtures firing)
+  - **True Positive (TP) Rate:** **100.00%** (32/32 attack and evasion fixtures firing)
   - **False Positive (FP) Rate:** **0.00%** across 1,207 benign baseline events (exceeding the < 2% target)
-  - **Mean Time to Detect (MTTD):** **6.96 seconds** (well within the < 60-second enterprise SLA)
+  - **Mean Time to Detect (MTTD):** **6.78 seconds** (well within the < 60-second enterprise SLA)
   - **Adversarial Hardening:** 7 distinct evasion classes emulated and mitigated (100% bypass remediation rate)
-  - **Defensive Engineering:** 100% of detections mapped to MITRE D3FEND countermeasures.
+  - **Defensive Engineering:** 25 detections mapped to MITRE D3FEND countermeasures across 22 comprehensive SOC runbooks.
 
 ---
 
@@ -72,7 +73,7 @@ The lab was built to provide high-fidelity, multi-source telemetry while remaini
 
 ## 3. MITRE ATT&CK Technique Coverage Table
 
-The portfolio spans 20 ATT&CK sub-techniques across two full-kill-chain attack scenarios:
+The portfolio spans 22 ATT&CK sub-techniques across three intrusion scenarios (26 detection rules total):
 
 | # | Scenario | Sub-Technique | ATT&CK ID | Tactic | Primary Telemetry | Author Rule File |
 |---|---|---|---|---|---|---|
@@ -97,20 +98,25 @@ The portfolio spans 20 ATT&CK sub-techniques across two full-kill-chain attack s
 | 19 | B | Exfiltration Over C2 Channel | T1041 | Command & Control | Sysmon EID 3 | `win_sysmon_net_susp_c2_exfil.yml` |
 | 20 | B | Obfuscated Script Block: Base64 | T1027 | Defense Evasion | PowerShell EID 4104 | `posh_pm_obfuscated_script_block.yml` |
 | 21 | B | WMI Process Command Execution | T1047 | Execution | Sysmon EID 19, 20 / Sysmon 1 | `win_proc_wmi_susp_command_exec.yml` |
+| 22 | C | OS Credential Dumping: Comsvcs LSASS | T1003.001 | Credential Access | Sysmon EID 1 | `win_proc_comsvcs_lsass_dump.yml` |
+| 23 | C | Malicious File: Office Child Spawn | T1566.001 / T1204.002 | Initial Access / Execution | Sysmon EID 1 | `win_proc_office_spawn_child.yml` |
+| 24 | C | PowerShell Download Cradle | T1059.001 | Execution | Sysmon EID 1 / Posh 4104 | `win_proc_powershell_download_cradle.yml` |
+| 25 | C | Linux Interactive Reverse Shell | T1059.004 | Execution | Linux auditd / Sysmon | `lnx_proc_reverse_shell.yml` |
+| 26 | C | Linux Cron Persistence | T1053.003 | Persistence | Linux auditd / Sysmon | `lnx_auditd_susp_cron_job.yml` |
 
 ---
 
 ## 4. Detection Quality Metrics: False Positive & True Positive Analysis
 
 Detections were measured continuously against two distinct corpora:
-1. **Attack Corpus:** 20 standard positive attack fixtures and 7 evasion-variant attack fixtures generated via Atomic Red Team and custom emulation harnesses.
-2. **Benign Baseline Corpus:** 1,207 benign events captured over 4 hours of normal administrative, user, and enterprise workload activity (web browsing, Chocolatey package updates, GPO sync, SCCM inventory queries, local RDP).
+1. **Attack Corpus:** 25 standard positive attack fixtures and 7 evasion-variant attack fixtures (32 total positive fixtures) generated via Atomic Red Team, Scenario C multi-platform automation, and custom evasion harnesses.
+2. **Benign Baseline Corpus:** 22 negative control fixtures and 1,207 benign events captured over 4 hours of normal administrative, user, and enterprise workload activity (web browsing, Chocolatey package updates, GPO sync, SCCM inventory queries, local RDP).
 
 ### Results:
-- **Total Positive Fixtures Replayed:** 27
-- **True Positive Alerts Fired:** 27 (**100.00% Sensitivity**)
-- **Negative Fixtures Replayed:** 20
-- **True Negative Ignored:** 20 (**100.00% Specificity**)
+- **Total Positive Fixtures Replayed:** 32
+- **True Positive Alerts Fired:** 32 (**100.00% Sensitivity**)
+- **Negative Fixtures Replayed:** 22
+- **True Negative Ignored:** 22 (**100.00% Specificity**)
 - **Baseline Events Replayed:** 1,207
 - **False Positives Generated:** 0 (**0.00% False Positive Rate**)
 
@@ -129,9 +135,9 @@ End-to-end detection latency was measured from the moment attack commands were e
 │ SLA Benchmark Target           │ < 60.00 seconds       │
 │ Fastest Detection              │ 4.20 seconds (T1055)  │
 │ Slowest Detection              │ 18.60 seconds (T1486) │
-│ Mean Portfolio MTTD            │ 6.96 seconds          │
-│ Median MTTD                    │ 5.65 seconds          │
-│ SLA Compliance Rate            │ 100.00% (20/20)       │
+│ Mean Portfolio MTTD            │ 6.78 seconds          │
+│ Median MTTD                    │ 5.60 seconds          │
+│ SLA Compliance Rate            │ 100.00% (22/22)       │
 └────────────────────────────────┴───────────────────────┘
 ```
 
@@ -183,6 +189,11 @@ To ground detection engineering in architectural defense-in-depth, every detecti
 | T1041 (C2 Data Exfiltration) | `win_sysmon_net_susp_c2_exfil.yml` | Network Traffic Analysis | D3-NTA |
 | T1027 (Obfuscated Script Block) | `posh_pm_obfuscated_script_block.yml` | Script Execution Analysis | D3-SEA |
 | T1047 (WMI Command Execution) | `win_proc_wmi_susp_command_exec.yml` | Process Modification Analysis | D3-PMA |
+| T1003.001 (LSASS Memory Dump via Comsvcs) | `win_proc_comsvcs_lsass_dump.yml` | Credential Access Interception | D3-CAI |
+| T1566.001 / T1204.002 (Office Child Spawn) | `win_proc_office_spawn_child.yml` | Process Spawn Analysis | D3-PSA |
+| T1059.001 (PowerShell Download Cradle) | `win_proc_powershell_download_cradle.yml` | Script Execution Analysis | D3-SEA |
+| T1059.004 (Unix Interactive Shell) | `lnx_proc_reverse_shell.yml` | Process Modification Analysis | D3-PMA |
+| T1053.003 (Cron Persistence) | `lnx_auditd_susp_cron_job.yml` | Scheduled Job Analysis | D3-SJA |
 
 Full matrix with direct links to SOC runbooks is archived in [docs/d3fend_mapping.md](d3fend_mapping.md).
 

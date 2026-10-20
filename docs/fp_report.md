@@ -45,6 +45,11 @@ $$\text{False Positive Rate (Fall-out)} = \frac{FP}{FP + TN} \times 100\%$$
 | `win_sysmon_net_susp_c2_exfil.yml` | T1041 | 1 | 0 | 0.00% | Experimental (Shadow) | Filtered web browsers (`chrome.exe`, `firefox.exe`, `msedge.exe`) and standard web ports (80, 443) |
 | `posh_pm_obfuscated_script_block.yml` | T1027 | 1 | 0 | 0.00% | Experimental (Shadow) | Filtered standard system diagnostic scripts and cleartext scripts |
 | `win_proc_wmi_susp_command_exec.yml` | T1047 | 1 | 0 | 0.00% | Experimental (Shadow) | Filtered hardware inventory discovery commands (`os get`, `cpu get`, `diskdrive get`) |
+| `win_proc_comsvcs_lsass_dump.yml` | T1003.001 | 1 | 0 | 0.00% | Stable | Scoped to rundll32 calling comsvcs.dll MiniDump export (#24 or MiniDump) |
+| `win_proc_office_spawn_child.yml` | T1566.001 | 1 | 0 | 0.00% | Stable | Restricted to Office suite parents spawning scripting/command line shells |
+| `win_proc_powershell_download_cradle.yml` | T1059.001 | 1 | 0 | 0.00% | Stable | Conjoined web client download method tokens with http/https protocols |
+| `lnx_proc_reverse_shell.yml` | T1059.004 | 1 | 0 | 0.00% | Stable | Scoped to interactive socket descriptors and pseudodevices (/dev/tcp, /dev/udp) |
+| `lnx_auditd_susp_cron_job.yml` | T1053.003 | 1 | 0 | 0.00% | Stable | Filtered system logrotate and anacron automated maintenance routines |
 
 ---
 

@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [v1.1] - 2026-10-21
+
+### Added
+- **feat(rules)**: Expanded Sigma detection catalog from 21 to 26 rules (fulfilling Section 1.3 requirement of 25–30 rules) and introduced multi-platform Linux coverage (`rules/sigma/linux/`):
+  - `win_proc_comsvcs_lsass_dump.yml` (T1003.001 - LSASS Process Memory MiniDump via Comsvcs DLL)
+  - `win_proc_office_spawn_child.yml` (T1566.001 / T1204.002 - Suspicious Child Process Spawning from Microsoft Office Application)
+  - `win_proc_powershell_download_cradle.yml` (T1059.001 - PowerShell CLI Download Cradle Execution)
+  - `lnx_proc_reverse_shell.yml` (T1059.004 - Interactive Reverse Shell Execution via Common Utilities on Linux)
+  - `lnx_auditd_susp_cron_job.yml` (T1053.003 - Persistence via Scheduled Cron Job Modification on Linux)
+- **feat(transpiler)**: Multi-SIEM transpilation of all 26 rules into Wazuh XML (with dynamic Linux SID 80700 support), Microsoft Sentinel KQL, and Splunk SPL.
+- **feat(fixtures)**: Added positive and negative test fixtures for all new techniques; regression harness expanded to 54 fixtures and 69 automated tests passing with 100% accuracy.
+- **feat(ui)**: Svelte 5 (Runes) Field Manual single-page operational application featuring 7 workspaces: Overview (`01`), Rules Catalog (`02`), ATT&CK Matrix (`03`), D3FEND Countermeasures (`04`), Subprocess Replay Engine (`05`), Purple Team Evasions (`06`), and Executive Security Report (`07`).
+- **feat(cqrs)**: Hybrid CQRS architecture pairing Git-tracked Sigma YAML as the single source of truth with a disposable SQLite WAL read model, Watchdog file watching, and a full two-way write path (`PUT /api/rules/{id}/save`).
+- **feat(api-tests)**: Comprehensive FastAPI backend integration and unit test suite in `tests/test_api.py` validating all REST endpoints, validation errors (HTTP 422), and multi-format exports.
+- **feat(streaming)**: Asynchronous non-blocking subprocess streaming over WebSockets (`/ws/replay` and `/ws/test-runner`) persisting execution telemetry to SQLite.
+- **feat(reports)**: Dynamic SOC Executive Security Report generator (`GET /api/reports/summary`, `/markdown`) with `@media print` formatting and instant Markdown export.
+- **feat(offline)**: Air-gapped typography resilience resolving TD-01 with a zero-latency system monospace fallback chain.
+- **feat(ci)**: Upgraded local and remote CI pipeline (`make ci` and `.github/workflows/ci.yml`) enforcing 100% pass across detections, API tests, log replay, and frontend TypeScript build.
+
+---
+
 ## [v1.0] - 2026-10-19
 
 ### Added

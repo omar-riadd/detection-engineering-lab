@@ -1,0 +1,2 @@
+# Interactive Reverse Shell Execution via Common Utilities - ATT&CK: T1059.004
+index=linux (CommandLine="*/dev/tcp/*" OR CommandLine="*/dev/udp/*" OR CommandLine="*exec 5<>*" OR CommandLine="*pty.spawn*" OR CommandLine="*socket.socket*" OR CommandLine="*nc -e *" OR CommandLine="*ncat -e *") | table _time, host, user, Image, CommandLine

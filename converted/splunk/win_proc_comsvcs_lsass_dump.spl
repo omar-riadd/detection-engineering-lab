@@ -1,0 +1,2 @@
+# LSASS Process Memory MiniDump via Comsvcs DLL - ATT&CK: T1003.001
+index=windows Image="*\rundll32.exe" CommandLine="*comsvcs.dll*" (CommandLine="*MiniDump*" OR CommandLine="*#24*") | table _time, host, user, Image, CommandLine

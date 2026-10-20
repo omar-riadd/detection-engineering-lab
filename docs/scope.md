@@ -64,6 +64,22 @@ The portfolio models two realistic, multi-stage intrusion chains reflecting the 
 │               │ T1047 (WMI)     │ T1027            │                        │
 │               │                 │ (Obfuscation)    │                        │
 └───────────────┴─────────────────┴──────────────────┴────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│             SCENARIO C: Multi-Platform Enterprise Intrusion Detections      │
+│                            (Windows & Linux Target)                         │
+├───────────────┬─────────────────┬──────────────────┬────────────────────────┤
+│ Initial Access│ Execution       │ Credential Access│ Persistence            │
+│ & Execution   │ & C2            │ & Memory Dump    │ & Scheduled Tasks      │
+├───────────────┼─────────────────┼──────────────────┼────────────────────────┤
+│ T1566.001 /   │ T1059.001       │ T1003.001        │ T1053.003              │
+│ T1204.002     │ (PowerShell     │ (Comsvcs DLL     │ (Linux Cron            │
+│ (Office Child │ Download Cradle)│ LSASS Dump)      │ Job Modification)      │
+│ Process Spawn)│                 │                  │                        │
+│               │ T1059.004       │                  │                        │
+│               │ (Linux Reverse  │                  │                        │
+│               │ Shell via Bash) │                  │                        │
+└───────────────┴─────────────────┴──────────────────┴────────────────────────┘
 ```
 
 ---
@@ -101,6 +117,18 @@ The portfolio models two realistic, multi-stage intrusion chains reflecting the 
 | 8 | Exfiltration Over C2 Channel | **T1041** | Sysmon | EID 3 (Network Connection) | High-volume egress or persistent outbound connections from non-standard binaries (`rundll32`, `powershell`, `curl`) | TI-04, TI-05 |
 | 9 | Obfuscated Files or Information | **T1027** | PowerShell Operational | EID 4104 (ScriptBlock Logging) | Base64-encoded command invocations (`-EncodedCommand`, `-enc`), `FromBase64String`, string manipulation tricks | TI-02, TI-05 |
 | 10 | Windows Management Instrumentation (WMI) | **T1047** | Sysmon | EID 19, 20, 21 (WMI Events), EID 1 | Execution of `wmic.exe process call create` or persistence via WMI event filters and consumers | TI-02, TI-05 |
+
+---
+
+### Scenario C — Multi-Platform Enterprise Intrusion Detections (Windows & Linux)
+
+| # | Technique Name | ATT&CK ID | Telemetry Source | Primary Event IDs | Detection Logic Focus | TI Reference |
+|---|---|---|---|---|---|---|
+| 1 | OS Credential Dumping: LSASS Memory | **T1003.001** | Sysmon | EID 1 (Process Create) | `rundll32.exe` invoking `comsvcs.dll` with `#24` or `MiniDump` | TI-01, TI-02 |
+| 2 | Spearphishing Attachment / Malicious File | **T1566.001** / **T1204.002** | Sysmon | EID 1 (Process Create) | Office suite binaries spawning scripting/command line shells (`cmd`, `powershell`, `wscript`) | TI-01, TI-03 |
+| 3 | Command and Scripting: PowerShell | **T1059.001** | Sysmon / PowerShell | EID 1, EID 4104 | PowerShell execution of WebClient download cradles referencing remote HTTP/S URLs | TI-02, TI-04 |
+| 4 | Command and Scripting: Unix Shell | **T1059.004** | Linux auditd / Sysmon | SYSCALL execve / EID 1 | Interactive shell execution redirecting standard streams to network sockets (`/dev/tcp/`, `/dev/udp/`) | TI-02, TI-06 |
+| 5 | Scheduled Task/Job: Cron | **T1053.003** | Linux auditd / Sysmon | SYSCALL execve / EID 1 | Unauthorized modification of `/etc/cron*`, `/var/spool/cron/`, or `crontab -e` with logrotate filtering | TI-05, TI-06 |
 
 ---
 

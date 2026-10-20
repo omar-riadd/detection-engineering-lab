@@ -1,0 +1,6 @@
+// Persistence via Scheduled Cron Job Modification
+// Techniques: T1053.003
+DeviceProcessEvents
+| where ProcessCommandLine has_any ("/etc/cron.", "/etc/crontab", "/var/spool/cron/", "crontab -e")
+| where not(ProcessCommandLine has_any ("logrotate", "anacron"))
+| project TimeGenerated, DeviceName, AccountName

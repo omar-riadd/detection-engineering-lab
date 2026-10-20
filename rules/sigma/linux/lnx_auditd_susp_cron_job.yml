@@ -1,0 +1,33 @@
+title: Persistence via Scheduled Cron Job Modification
+id: 57d14bad-caa1-477a-a634-884bd9ad06d1
+status: stable
+description: |
+  Detects modification of cron tables or cron job directories (/etc/cron.d, /etc/cron.daily, /var/spool/cron/crontabs)
+  or invocation of crontab to add scheduled tasks for persistence on Linux hosts.
+references:
+  - https://attack.mitre.org/techniques/T1053/003/
+  - https://attack.mitre.org/techniques/T1053/
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1053.003
+  - attack.persistence
+logsource:
+  category: process_creation
+  product: linux
+detection:
+  selection_cron_path:
+    CommandLine|contains:
+      - '/etc/cron.'
+      - '/etc/crontab'
+      - '/var/spool/cron/'
+      - 'crontab -e'
+  filter_logrotate:
+    CommandLine|contains:
+      - 'logrotate'
+      - 'anacron'
+  condition: selection_cron_path and not filter_logrotate
+falsepositives:
+  - Legitimate administrative maintenance or routine package installation scripts modifying crontab files.
+level: medium

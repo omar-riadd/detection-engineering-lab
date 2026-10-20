@@ -1,0 +1,16 @@
+{
+  "EventID": 1,
+  "Channel": "Linux-Sysmon/Operational",
+  "UtcTime": "2026-10-21T01:20:00.000Z",
+  "Computer": "srv-ubuntu-prod01",
+  "EventData": {
+    "RuleName": "-",
+    "ProcessId": 1024,
+    "Image": "/bin/bash",
+    "CommandLine": "/bin/bash /opt/scripts/backup_database.sh --all",
+    "CurrentDirectory": "/opt/scripts",
+    "User": "backup",
+    "ParentProcessId": 800,
+    "ParentImage": "/usr/sbin/cron"
+  }
+}

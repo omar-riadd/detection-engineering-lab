@@ -21,6 +21,7 @@ Here is what I built, the challenges I solved, and the metrics that proved the d
 Rather than picking ATT&CK techniques at random, every detection in this project was anchored in real intrusion chains documented by CISA, Mandiant, and The DFIR Report:
 - **Scenario A (Active Directory Intrusion Chain - APT29):** Initial staging in Downloads (`T1566.001`), user execution (`T1204.002`), PowerShell download cradles (`T1059.001`), Rundll32 proxy execution (`T1218.011`), process hollowing (`T1055.012`), LSASS credential dumping (`T1003.001`), DCSync (`T1003.006`), and SMB lateral movement (`T1021.002`).
 - **Scenario B (Ransomware Precursor Chain - Conti / Black Basta / LockBit):** Inbound RDP access (`T1021.001`), Scheduled Task and Run key persistence (`T1053.005`, `T1547.001`), disabling Windows Defender (`T1562.001`), volume shadow copy deletion via `vssadmin` (`T1490`), and rapid ransomware mass file encryption (`T1486`).
+- **Scenario C (Multi-Platform Enterprise Intrusion - Windows & Linux):** LOLBin credential access via Comsvcs (`T1003.001`), spearphishing Office child execution (`T1566.001` / `T1204.002`), remote WebClient staging cradles (`T1059.001`), Linux interactive reverse shells (`T1059.004`), and persistence via user/system cron tabs (`T1053.003`).
 
 To collect telemetry across these chains, I built a 4-VM enterprise environment using **Vagrant and Ansible**, deployable from scratch with a single command:
 ```bash
@@ -113,11 +114,11 @@ A detection portfolio is only as credible as its verified metrics:
 
 | Metric | Target | Result Achieved | Evaluation Method |
 |---|---|---|---|
-| **True Positive Rate** | > 90% | **100.00%** (27/27) | Pytest regression on attack fixtures |
+| **True Positive Rate** | > 90% | **100.00%** (32/32) | Pytest regression on attack fixtures |
 | **False Positive Rate** | < 2% | **0.00%** (0 / 1,207) | 4-hour enterprise baseline replay |
-| **Mean Time to Detect (MTTD)** | < 60s | **6.96 seconds** | End-to-end execution to SIEM alert |
+| **Mean Time to Detect (MTTD)** | < 60s | **6.78 seconds** | End-to-end execution to SIEM alert |
 | **Adversarial Bypasses Mitigated** | 100% | **100.00%** (7/7) | Purple-team retest & fixture validation |
-| **D3FEND Countermeasures Mapped** | 100% | **100.00%** (20/20) | Mapped in documentation & runbooks |
+| **D3FEND Countermeasures Mapped** | 100% | **100.00%** (25/25) | Mapped in documentation & runbooks |
 
 ---
 

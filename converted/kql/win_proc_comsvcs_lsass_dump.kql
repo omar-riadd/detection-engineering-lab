@@ -1,0 +1,7 @@
+// LSASS Process Memory MiniDump via Comsvcs DLL
+// Techniques: T1003.001
+DeviceProcessEvents
+| where FileName endswith "\rundll32.exe"
+| where ProcessCommandLine contains "comsvcs.dll"
+| where ProcessCommandLine has_any ("MiniDump", "#24")
+| project TimeGenerated, DeviceName, AccountName

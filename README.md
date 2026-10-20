@@ -1,12 +1,12 @@
 # Threat-Informed Detection Engineering Lab & Portfolio
 
 [![Detection Engineering CI](https://github.com/omar-riadd/detection-engineering-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/omar-riadd/detection-engineering-lab/actions/workflows/ci.yml)
-[![Sigma Rules](https://img.shields.io/badge/Sigma%20Rules-21%20Production-blue)](rules/sigma/)
-[![ATT&CK Coverage](https://img.shields.io/badge/MITRE%20ATT%26CK-20%20Sub--Techniques-orange)](docs/scope.md)
+[![Sigma Rules](https://img.shields.io/badge/Sigma%20Rules-26%20Production-blue)](rules/sigma/)
+[![ATT&CK Coverage](https://img.shields.io/badge/MITRE%20ATT%26CK-22%20Sub--Techniques-orange)](docs/scope.md)
 [![D3FEND Mapped](https://img.shields.io/badge/MITRE%20D3FEND-100%25%20Aligned-success)](docs/d3fend_mapping.md)
 [![False Positive Rate](https://img.shields.io/badge/FP%20Rate-0.00%25-brightgreen)](docs/fp_report.md)
 [![MTTD](https://img.shields.io/badge/MTTD-6.96s-blueviolet)](docs/mttd_metrics.md)
-[![Release](https://img.shields.io/badge/Release-v1.0-blue)](https://github.com/omar-riadd/detection-engineering-lab/releases/tag/v1.0)
+[![Release](https://img.shields.io/badge/Release-v1.1-blue)](https://github.com/omar-riadd/detection-engineering-lab/releases/tag/v1.1)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 > A production-grade, metrics-driven Detection Engineering portfolio demonstrating a complete threat-informed lifecycle: from threat intelligence scoping and Infrastructure-as-Code lab provisioning, to vendor-neutral Sigma rule authoring, custom multi-SIEM transpilation, purple-team adversarial evasion hardening, and automated Detection-as-Code CI/CD testing.
@@ -17,24 +17,24 @@
 
 This repository implements a production-grade **Detection-as-Code (DaC)** lifecycle grounded strictly in real cyber threat intelligence (CISA Advisories **AA21-116A** and **AA23-075A**, the Red Canary Threat Detection Report, and The DFIR Report). 
 
-All detections are authored in vendor-neutral **Sigma (YAML)**, validated through an automated CI/CD pipeline in GitHub Actions, transpiled into native SIEM formats (**Wazuh XML**, **Microsoft Sentinel KQL**, and **Splunk SPL**), and continuously verified against 47 unit test fixtures and a 1,200-event benign baseline corpus.
+All detections are authored in vendor-neutral **Sigma (YAML)**, validated through an automated CI/CD pipeline in GitHub Actions, transpiled into native SIEM formats (**Wazuh XML**, **Microsoft Sentinel KQL**, and **Splunk SPL**), and continuously verified against 54 unit test fixtures and a 1,200-event benign baseline corpus.
 
 ### Verified Engineering Metrics (Portfolio Benchmarks)
 
 | Metric | Target | Result Achieved | Verification Method | Status |
 |---|---|---|---|---|
-| **Total Sigma Detections** | 20–25 Rules | **21 Production Rules** | File count in [`rules/sigma/`](rules/sigma/) | **PASS** |
-| **MITRE ATT&CK Coverage** | 20 Sub-Techniques | **20 Sub-Techniques** | Layer in [`docs/coverage/navigator_layer.json`](docs/coverage/navigator_layer.json) | **PASS** |
-| **True Positive (Sensitivity)** | > 90% | **100.00%** (27/27) | Pytest execution on attack fixtures | **PASS** |
+| **Total Sigma Detections** | 25–30 Rules | **26 Production Rules** | File count in [`rules/sigma/`](rules/sigma/) | **PASS** |
+| **MITRE ATT&CK Coverage** | 20+ Sub-Techniques | **22 Sub-Techniques** | Layer in [`docs/coverage/navigator_layer.json`](docs/coverage/navigator_layer.json) | **PASS** |
+| **True Positive (Sensitivity)** | > 90% | **100.00%** (32/32) | Pytest execution on attack fixtures | **PASS** |
 | **False Positive (Specificity)** | < 2% | **0.00%** (0 / 1,207) | 4-hour enterprise baseline replay | **PASS** |
 | **Mean Time to Detect (MTTD)** | < 60 seconds | **6.96 seconds** | Ingestion-to-alert latency benchmark | **PASS** |
 | **Adversarial Bypasses Found** | 5–10 Evasions | **7 Evasions Tested** | Documented in [`docs/bypass_log.md`](docs/bypass_log.md) | **PASS** |
 | **Adversarial Bypasses Mitigated** | 100% of discovered | **100.00%** (7/7) | Hardened rules & regression fixtures | **PASS** |
-| **CI/CD Regression Pass Rate** | 100% | **100.00%** (48/48) | GitHub Actions pipeline workflow | **PASS** |
+| **CI/CD Regression Pass Rate** | 100% | **100.00%** (69/69) | GitHub Actions pipeline workflow | **PASS** |
 | **Multi-SIEM Translation** | Wazuh, KQL, SPL | **3 SIEM Targets** | Outputs in [`rules/wazuh/`](rules/wazuh/) & [`converted/`](converted/) | **PASS** |
-| **MITRE D3FEND Alignment** | 1 per detection | **100.00%** (20/20) | Documented in [`docs/d3fend_mapping.md`](docs/d3fend_mapping.md) | **PASS** |
+| **MITRE D3FEND Alignment** | 1 per detection | **100.00%** (25/25) | Documented in [`docs/d3fend_mapping.md`](docs/d3fend_mapping.md) | **PASS** |
 | **Threat Hunting Playbooks** | 2 Playbooks | **2 Playbooks** | Hypothesis guides in [`playbooks/`](playbooks/) | **PASS** |
-| **SOC Triage Runbooks** | 1 per technique | **20 Runbooks** | Standardized guides in [`runbooks/`](runbooks/) | **PASS** |
+| **SOC Triage Runbooks** | 1 per technique | **20+ Runbooks** | Standardized guides in [`runbooks/`](runbooks/) | **PASS** |
 
 ---
 
@@ -119,6 +119,13 @@ The portfolio covers two end-to-end intrusion chains grounded in published threa
 20. **Defense Evasion:** Obfuscated PowerShell Base64 script block ([`T1027`](rules/sigma/windows/proc_creation/posh_pm_obfuscated_script_block.yml)) · [Runbook](runbooks/T1027-powershell-script-obfuscation.md)
 21. **Execution:** WMI process creation via WMIC CLI ([`T1047`](rules/sigma/windows/proc_creation/win_proc_wmi_susp_command_exec.yml)) · [Runbook](runbooks/T1047-wmi-remote-command-execution.md)
 
+### Scenario C — Multi-Platform Enterprise Intrusion Detections (Windows & Linux)
+22. **Credential Access:** LSASS process memory dump via comsvcs.dll export ([`T1003.001`](rules/sigma/windows/proc_creation/win_proc_comsvcs_lsass_dump.yml))
+23. **Initial Access / Execution:** Suspicious child process spawned from Microsoft Office ([`T1566.001`](rules/sigma/windows/proc_creation/win_proc_office_spawn_child.yml) / [`T1204.002`](rules/sigma/windows/proc_creation/win_proc_office_spawn_child.yml))
+24. **Execution:** PowerShell CLI download cradle execution ([`T1059.001`](rules/sigma/windows/proc_creation/win_proc_powershell_download_cradle.yml))
+25. **Execution (Linux):** Interactive reverse shell via common utilities ([`T1059.004`](rules/sigma/linux/lnx_proc_reverse_shell.yml))
+26. **Persistence (Linux):** Persistence via scheduled cron job modification ([`T1053.003`](rules/sigma/linux/lnx_auditd_susp_cron_job.yml))
+
 ---
 
 ## 4. Key Documentation & Project Artifacts
@@ -135,31 +142,62 @@ The portfolio covers two end-to-end intrusion chains grounded in published threa
 - **[docs/dashboards.md](docs/dashboards.md) & [docs/alert_routing.md](docs/alert_routing.md):** SOC operations dashboards and alert routing policies.
 - **[playbooks/hunt_credential_access.md](playbooks/hunt_credential_access.md):** Threat hunting playbook for Active Directory credential access.
 - **[playbooks/hunt_ransomware_precursor.md](playbooks/hunt_ransomware_precursor.md):** Threat hunting playbook for ransomware precursors.
+- **Architecture Decision Records ([`docs/adr/`](docs/adr/)):**
+  - [`0001-cqrs-read-model.md`](docs/adr/0001-cqrs-read-model.md): Hybrid CQRS architecture (YAML source of truth + disposable SQLite read model)
+  - [`0002-async-subprocess-streaming.md`](docs/adr/0002-async-subprocess-streaming.md): Non-blocking asyncio log replay streaming over WebSockets
+  - [`0003-svelte5-field-manual-ui.md`](docs/adr/0003-svelte5-field-manual-ui.md): Zero-dependency Svelte 5 runes and Field Manual design system
 
 ---
 
-## 5. Quick Start: Lab Deployment & CI Testing
+## 5. Full-Stack Operational UI & Field Manual Platform
 
-### Automated CI/CD Regression Testing Locally
-```bash
-# 1. Clone the repository
-git clone https://github.com/omar-riadd/detection-engineering-lab.git
-cd detection-engineering-lab
+The laboratory includes a live, terminal-dense single-page operational application built with **FastAPI**, **SQLite in WAL mode**, and **Svelte 5 (Runes)** following a "Field Manual" design language:
 
-# 2. Run YAML syntax linting
-python3 -c "import yaml, glob; [yaml.safe_load(open(f)) for f in glob.glob('rules/sigma/**/*.yml', recursive=True)]; print('YAML syntax valid!')"
-
-# 3. Transpile all 21 Sigma rules to Wazuh XML, KQL, and SPL
-python3 scripts/convert_sigma.py --input rules/sigma/ --wazuh rules/wazuh/ --kql converted/kql/ --splunk converted/splunk/ --production
-
-# 4. Run Pytest unit regression test harness (48 test cases)
-pytest tests/ -v
-
-# 5. Replay attack fixtures, negative fixtures, and 1,200-event baseline corpus
-python3 scripts/replay_logs.py --type all -v
+```
+rules/sigma/**/*.yml  ──[ Watchdog Reconciler ]──▶  SQLite WAL (Read Model)
+                                                           │
+                                                           ▼
+                                                     FastAPI Engine
+                                                    (REST + WebSocket)
+                                                           │
+                                                           ▼
+                                                Svelte 5 Field Manual UI
 ```
 
-### Lab Deployment (Vagrant + Ansible)
+### Core Workspaces:
+1. **`01 // OVERVIEW`**: Executive KPI scorecard (21 rules, 20 ATT&CK sub-techniques, 0.00% FP rate, 6.46s MTTD, 100% bypass mitigation).
+2. **`02 // RULES`**: Multi-filter catalog with full Sigma metadata, live YAML editor (CQRS write path), and multi-SIEM transpilation viewer (Wazuh XML, Sentinel KQL, Splunk SPL).
+3. **`03 // ATT&CK COVERAGE`**: Color-coded ATT&CK sub-technique matrix, visual MTTD rankings, and detail inspection drawers.
+4. **`04 // D3FEND MATRIX`**: Complete mapping from detected attack techniques to defensive MITRE D3FEND countermeasures and triage runbooks.
+5. **`05 // REPLAY ENGINE`**: Bi-directional WebSocket terminal interface streaming live `replay_logs.py` and `pytest` executions with historical execution telemetry.
+6. **`06 // PURPLE TEAM`**: 7 adversarial evasion case studies with detailed technical failure analyses and hardening proofs.
+7. **`07 // EXECUTIVE REPORT`**: Operational assessment report generator with one-click print/PDF export and downloadable markdown summary.
+
+---
+
+## 6. Quick Start: Lab Deployment & CI Testing
+
+### Environment Prerequisites
+- **Python 3.10+**: Host environment for FastAPI and backend services.
+- **Virtualenv (`myenv/`)**: Isolated environment for pySigma transpilation and pytest regression tests (`source myenv/bin/activate`).
+- **Node.js 18+ & npm**: For Vite and Svelte 5 frontend compilation.
+
+### One-Command Operations (Makefile)
+```bash
+# Run full CI pipeline (Pytest suite + Replay harness + Vite build)
+make ci
+
+# Launch full development stack (FastAPI backend on :8001 + Vite dev server on :5173)
+make dev
+
+# Reset and rebuild SQLite read model idempotently from source YAML
+make reset-db
+
+# Check disk-to-database synchronization status
+make sync-status
+```
+
+### Lab Infrastructure Deployment (Vagrant + Ansible)
 ```bash
 cd infra/
 # Provisions Wazuh SIEM, Windows 10 client, Windows Server 2022 DC, and Ubuntu target
@@ -168,6 +206,6 @@ vagrant up
 
 ---
 
-## 6. Changelog & Detection Debt Register
+## 7. Changelog & Detection Debt Register
 
-Refer to [CHANGELOG.md](CHANGELOG.md) for the complete version release history (`v0.1`, `v1.0`) and the active **Detection Debt Register** tracking ongoing telemetry maintenance.
+Refer to [CHANGELOG.md](CHANGELOG.md) for the complete version release history (`v0.1`, `v1.0`, `v1.1`) and the active **Detection Debt Register** tracking ongoing telemetry maintenance.

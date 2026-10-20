@@ -1,0 +1,2 @@
+# Persistence via Scheduled Cron Job Modification - ATT&CK: T1053.003
+index=linux (CommandLine="*/etc/cron.*" OR CommandLine="*/etc/crontab*" OR CommandLine="*/var/spool/cron/*" OR CommandLine="*crontab -e*") NOT (CommandLine="*logrotate*" OR CommandLine="*anacron*") | table _time, host, user, Image, CommandLine

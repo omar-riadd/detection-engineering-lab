@@ -1,0 +1,16 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T01:00:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1003.001,technique_name=Comsvcs LSASS Dump",
+    "ProcessId": 4820,
+    "Image": "C:\\Windows\\System32\\rundll32.exe",
+    "CommandLine": "rundll32.exe C:\\windows\\System32\\comsvcs.dll, MiniDump 684 C:\\Windows\\Temp\\lsass.dmp full",
+    "CurrentDirectory": "C:\\Windows\\System32\\",
+    "User": "NT AUTHORITY\\SYSTEM",
+    "ParentProcessId": 1420,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe"
+  }
+}

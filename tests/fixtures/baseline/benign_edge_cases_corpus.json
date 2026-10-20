@@ -2,7 +2,7 @@
   {
     "EventID": 1,
     "Channel": "Microsoft-Windows-Sysmon/Operational",
-    "UtcTime": "2026-10-18T23:57:02.326602Z",
+    "UtcTime": "2026-10-19T20:58:06.721402Z",
     "Computer": "DC01.corp.local",
     "EventData": {
       "Image": "C:\\Windows\\System32\\vssadmin.exe",
@@ -14,7 +14,7 @@
   {
     "EventID": 1,
     "Channel": "Microsoft-Windows-Sysmon/Operational",
-    "UtcTime": "2026-10-19T00:02:02.326602Z",
+    "UtcTime": "2026-10-19T21:03:06.721402Z",
     "Computer": "WIN10-CLIENT01.corp.local",
     "EventData": {
       "Image": "C:\\Windows\\System32\\wbem\\WMIC.exe",
@@ -26,7 +26,7 @@
   {
     "EventID": 4624,
     "Channel": "Security",
-    "UtcTime": "2026-10-19T00:07:02.326602Z",
+    "UtcTime": "2026-10-19T21:08:06.721402Z",
     "Computer": "WIN10-CLIENT01.corp.local",
     "EventData": {
       "TargetUserName": "jdoe",
@@ -39,7 +39,7 @@
   {
     "EventID": 4698,
     "Channel": "Security",
-    "UtcTime": "2026-10-19T00:12:02.326602Z",
+    "UtcTime": "2026-10-19T21:13:06.721402Z",
     "Computer": "DC01.corp.local",
     "EventData": {
       "SubjectUserName": "SYSTEM",
@@ -50,7 +50,7 @@
   {
     "EventID": 4104,
     "Channel": "Microsoft-Windows-PowerShell/Operational",
-    "UtcTime": "2026-10-19T00:17:02.326602Z",
+    "UtcTime": "2026-10-19T21:18:06.721402Z",
     "Computer": "WIN10-CLIENT01.corp.local",
     "EventData": {
       "ScriptBlockText": "Get-MpComputerStatus | Select-Object AntivirusEnabled, RealTimeProtectionEnabled",
@@ -60,7 +60,7 @@
   {
     "EventID": 11,
     "Channel": "Microsoft-Windows-Sysmon/Operational",
-    "UtcTime": "2026-10-19T00:22:02.326602Z",
+    "UtcTime": "2026-10-19T21:23:06.721402Z",
     "Computer": "WIN10-CLIENT01.corp.local",
     "EventData": {
       "Image": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
@@ -71,7 +71,7 @@
   {
     "EventID": 3,
     "Channel": "Microsoft-Windows-Sysmon/Operational",
-    "UtcTime": "2026-10-19T00:27:02.326602Z",
+    "UtcTime": "2026-10-19T21:28:06.721402Z",
     "Computer": "WIN10-CLIENT01.corp.local",
     "EventData": {
       "Image": "C:\\Windows\\System32\\curl.exe",

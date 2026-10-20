@@ -1,0 +1,5 @@
+// Interactive Reverse Shell Execution via Common Utilities
+// Techniques: T1059.004
+DeviceProcessEvents
+| where ProcessCommandLine has_any ("/dev/tcp/", "/dev/udp/", "exec 5<>", "pty.spawn", "socket.socket", "nc -e ", "ncat -e ")
+| project TimeGenerated, DeviceName, AccountName
