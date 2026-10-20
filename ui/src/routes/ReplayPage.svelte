@@ -9,13 +9,20 @@
   // Test runner state
   let output = $state<string[]>([]);
   let running = $state(false);
+  let activeRunner = $state<'replay' | 'pytest' | null>(null);
   let exitCode = $state<number | null>(null);
   let selectedRule = $state('');
   let mode = $state<'all' | 'rule'>('all');
   let ws: WebSocket | null = null;
 
-  // Telemetry History enhancements
-  let historyStats = $state<{ total_runs: number; passed: number; failed: number; pass_rate_pct: number; avg_duration_seconds: number } | null>(null);
+  // Telemetry History state
+  let historyStats = $state<{
+    total_runs: number;
+    passed: number;
+    failed: number;
+    pass_rate_pct: number;
+    avg_duration_seconds: number;
+  } | null>(null);
   let statusFilter = $state<'all' | 'pass' | 'fail'>('all');
   let selectedRun = $state<TestRun | null>(null);
   let runLogModal = $state(false);
@@ -30,7 +37,7 @@
     try {
       const [r, runs, stats] = await Promise.all([
         rulesApi.list(),
-        testRunsApi.list({ limit: 20 }).catch(() => []),
+        testRunsApi.list({ limit: 25 }).catch(() => []),
         testRunsApi.stats().catch(() => null)
       ]);
       rules = r;
@@ -50,7 +57,7 @@
   async function refreshHistory() {
     try {
       const [runs, stats] = await Promise.all([
-        testRunsApi.list({ limit: 20 }),
+        testRunsApi.list({ limit: 25 }),
         testRunsApi.stats().catch(() => null)
       ]);
       recentRuns = runs;
@@ -65,6 +72,11 @@
     } catch (_) {}
   }
 
+  function clearTerminal() {
+    output = [];
+    exitCode = null;
+  }
+
   function runReplay() {
     if (running) return;
     if (ws && ws.readyState !== WebSocket.CLOSED) {
@@ -74,6 +86,7 @@
     output = [];
     exitCode = null;
     running = true;
+    activeRunner = 'replay';
 
     const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
     ws = new WebSocket(`${proto}://${window.location.host}/ws/replay`);
@@ -96,15 +109,17 @@
       }
       if (msg.type === 'exit') {
         running = false;
+        activeRunner = null;
         exitCode = msg.code;
-        output = [...output, `\n[REPLAY COMPLETE] Exit code: ${msg.code}`];
+        output = [...output, `\n[PROCESS TERMINATED] Subprocess exit code: ${msg.code}`];
         refreshHistory();
       }
     };
 
     ws.onerror = () => {
       running = false;
-      output = [...output, '[ERROR] WebSocket connection failed'];
+      activeRunner = null;
+      output = [...output, '[ERROR] WebSocket connection failed to establish'];
     };
   }
 
@@ -117,6 +132,7 @@
     output = [];
     exitCode = null;
     running = true;
+    activeRunner = 'pytest';
 
     const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
     ws = new WebSocket(`${proto}://${window.location.host}/ws/test-runner`);
@@ -136,224 +152,367 @@
       }
       if (msg.type === 'exit') {
         running = false;
+        activeRunner = null;
         exitCode = msg.code;
-        output = [...output, `\n[TESTS COMPLETE] Exit code: ${msg.code}`];
+        output = [...output, `\n[PROCESS TERMINATED] Subprocess exit code: ${msg.code}`];
         refreshHistory();
       }
     };
 
     ws.onerror = () => {
       running = false;
-      output = [...output, '[ERROR] WebSocket connection failed'];
+      activeRunner = null;
+      output = [...output, '[ERROR] WebSocket connection failed to establish'];
     };
+  }
+
+  let copySuccess = $state(false);
+  function copyModalOutput() {
+    if (!selectedRun?.output) return;
+    navigator.clipboard.writeText(selectedRun.output);
+    copySuccess = true;
+    setTimeout(() => { copySuccess = false; }, 2000);
   }
 </script>
 
-<div class="page">
-  <div class="page__header">
+<div class="view-header">
+  <div class="view-header__meta">
+    <span class="view-header__breadcrumb">WORKSPACE // 05</span>
+    <span class="view-header__divider">/</span>
+    <span class="view-header__tag">CONTINUOUS VERIFICATION</span>
+  </div>
+  <div class="view-header__row">
     <div>
-      <h1 class="page__title">Detection Replay & Test Harness</h1>
-      <span class="page__subtitle">Live WebSocket Subprocess Streaming · Continuous Verification</span>
+      <h1 class="view-title">Detection Replay & Test Harness</h1>
+      <p class="view-description">
+        Live asynchronous WebSocket subprocess execution · Replaying Sysmon telemetry fixtures against Sigma rules with SQLite history persistence.
+      </p>
+    </div>
+    <div style="display: flex; gap: var(--space-2); align-items: center;">
+      <span class="badge" style="background: var(--bg-surface); border: 1px solid var(--border-subtle); font-family: var(--font-mono);">
+        WS:// {window.location.host}/ws/*
+      </span>
+      <span class="badge badge--low">ASYNC SUBPROCESS ENGINE</span>
     </div>
   </div>
+</div>
 
-  {#if loading}
-    <div class="state-loading">Loading configuration</div>
-  {:else if error}
-    <div class="state-error">[ERROR] {error}</div>
-  {:else}
+{#if loading}
+  <div class="state-empty">
+    <span class="beacon beacon--live"></span>
+    <span>Connecting to test runner daemon and loading historical telemetry...</span>
+  </div>
+{:else if error}
+  <div class="callout callout--danger">
+    <div class="callout__title">Failed to load replay harness</div>
+    <div class="callout__body">{error}</div>
+  </div>
+{:else}
 
-    <!-- ── Execution trigger cards ─────────────────────────────── -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-4); margin-bottom: var(--sp-5);">
+  <!-- ── Dual Execution Trigger Workbench ──────────────────────────────── -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); margin-bottom: var(--space-5);">
 
-      <!-- Replay engine card -->
-      <div style="padding: var(--sp-5); background: var(--paper-2); border: var(--border);">
-        <h3 style="margin-bottom: var(--sp-3); font-size: var(--font-size-md);">Log Replay Engine</h3>
-        <p style="font-size: var(--font-size-xs); color: var(--ink-3); margin-bottom: var(--sp-4); line-height: 1.5;">
-          Executes <code>scripts/replay_logs.py --type all --verbose</code> against all 27 attack fixtures, 20 negative fixtures, and 1,200 benign baseline events.
+    <!-- Log Replay Engine Panel -->
+    <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+          <span style="font-size: var(--text-2xs); font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">
+            ENGINE 01 // EVENT REPLAY
+          </span>
+          <span class="badge badge--cyan" style="font-family: var(--font-mono); font-size: 10px;">
+            scripts/replay_logs.py
+          </span>
+        </div>
+        <h3 style="font-family: var(--font-display); font-size: var(--text-base); margin-bottom: var(--space-1-5);">
+          Sysmon Telemetry Replay Engine
+        </h3>
+        <p style="font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.5; margin-bottom: var(--space-3);">
+          Replays synthetic Sysmon XML/JSON events across 27 attack fixtures, 20 negative fixtures, and 1,200 benign events to verify rule triggers.
         </p>
 
-        <div style="display: flex; gap: var(--sp-4); margin-bottom: var(--sp-4);">
-          <label style="font-size: var(--font-size-xs); display: flex; align-items: center; gap: var(--sp-2); cursor: pointer;">
-            <input type="radio" bind:group={mode} value="all" />
-            All Rules (Full Corpus)
-          </label>
-          <label style="font-size: var(--font-size-xs); display: flex; align-items: center; gap: var(--sp-2); cursor: pointer;">
-            <input type="radio" bind:group={mode} value="rule" />
-            Single Rule
-          </label>
+        <!-- Mode Toggle & Rule Selection -->
+        <div style="margin-bottom: var(--space-3);">
+          <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+            <button
+              class="btn btn--xs {mode === 'all' ? 'btn--primary' : 'btn--ghost'}"
+              onclick={() => { mode = 'all'; }}
+            >
+              Full Corpus (All Rules)
+            </button>
+            <button
+              class="btn btn--xs {mode === 'rule' ? 'btn--primary' : 'btn--ghost'}"
+              onclick={() => { mode = 'rule'; }}
+            >
+              Single Targeted Rule
+            </button>
+          </div>
+
+          {#if mode === 'rule'}
+            <select class="input" bind:value={selectedRule} style="width: 100%; font-size: var(--text-xs);">
+              <option value="">— Select targeted Sigma rule ({rules.length} rules available) —</option>
+              {#each rules as r}
+                <option value={r.id}>
+                  {r.title} ({r.techniques?.[0] || 'MITRE'})
+                </option>
+              {/each}
+            </select>
+          {/if}
         </div>
+      </div>
 
-        {#if mode === 'rule'}
-          <select class="select" bind:value={selectedRule} style="width: 100%; margin-bottom: var(--sp-3);">
-            <option value="">— Select a rule —</option>
-            {#each rules as r}
-              <option value={r.id}>{r.title}</option>
-            {/each}
-          </select>
-        {/if}
-
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: var(--space-3); margin-top: var(--space-2);">
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">
+          {mode === 'all' ? 'Target: 27 attack fixtures' : selectedRule ? `Target: ${selectedRule}` : 'Select a rule'}
+        </div>
         <button
           class="btn btn--primary"
           onclick={runReplay}
           disabled={running || (mode === 'rule' && !selectedRule)}
         >
-          {running ? '▶ Running...' : '▶ Run Replay Engine'}
+          {running && activeRunner === 'replay' ? '▶ Replay Running...' : '▶ Execute Log Replay'}
         </button>
       </div>
+    </div>
 
-      <!-- pytest card -->
-      <div style="padding: var(--sp-5); background: var(--paper-2); border: var(--border);">
-        <h3 style="margin-bottom: var(--sp-3); font-size: var(--font-size-md);">Pytest CI Regression Harness</h3>
-        <p style="font-size: var(--font-size-xs); color: var(--ink-3); margin-bottom: var(--sp-4); line-height: 1.5;">
-          Executes <code>pytest tests/ -v</code> across all 48 positive and negative test cases. Mirrors GitHub Actions Detection-as-Code pipeline.
+    <!-- Pytest CI Harness Panel -->
+    <div class="panel" style="display: flex; flex-direction: column; justify-content: space-between;">
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+          <span style="font-size: var(--text-2xs); font-family: var(--font-mono); color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.04em;">
+            ENGINE 02 // CI VERIFICATION
+          </span>
+          <span class="badge badge--low" style="font-family: var(--font-mono); font-size: 10px;">
+            pytest tests/ -v
+          </span>
+        </div>
+        <h3 style="font-family: var(--font-display); font-size: var(--text-base); margin-bottom: var(--space-1-5);">
+          Detection-as-Code Regression Suite
+        </h3>
+        <p style="font-size: var(--text-xs); color: var(--text-secondary); line-height: 1.5; margin-bottom: var(--space-3);">
+          Executes complete pytest test matrix: 59 positive detection assertions, 0 false positive baselines, schema integrity, and evasion bypass checks.
         </p>
-        <div class="terminal" style="height: 52px; font-size: 0.65rem; margin-bottom: var(--sp-3); padding: var(--sp-2);">
-          <span class="terminal__prompt">$ </span>pytest tests/ -v --no-header --tb=short
+
+        <!-- Command terminal preview -->
+        <div class="terminal-pane" style="height: 48px; padding: var(--space-2); margin-bottom: var(--space-3); border-radius: var(--radius-xs);">
+          <div style="font-family: var(--font-mono); font-size: 11px; color: var(--accent-primary);">
+            <span style="color: var(--text-muted);">$ </span>pytest tests/ -v --no-header --tb=short
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: var(--space-3); margin-top: var(--space-2);">
+        <div style="font-family: var(--font-mono); font-size: 10px; color: var(--text-muted);">
+          Environment: Sandbox CI / venv
         </div>
         <button
           class="btn btn--primary"
           onclick={runPytest}
           disabled={running}
         >
-          {running ? '▶ Running...' : '▶ Run Full Pytest Suite'}
+          {running && activeRunner === 'pytest' ? '▶ Tests Running...' : '▶ Execute Full Pytest Suite'}
         </button>
       </div>
     </div>
 
-    <!-- ── Live terminal output ────────────────────────────────── -->
-    <div class="section-head">
-      <span class="section-head__label">Live Execution Terminal</span>
-      <div class="section-head__line"></div>
-      {#if exitCode !== null}
-        <span class="status status--{exitCode === 0 ? 'stable' : 'fail'}">
-          [EXIT: {exitCode === 0 ? 'PASS' : 'FAIL'} (CODE {exitCode})]
+  </div>
+
+  <!-- ── Live Streaming Terminal Console ────────────────────────────────── -->
+  <div class="panel" style="padding: 0; overflow: hidden; margin-bottom: var(--space-5);">
+    <div style="padding: var(--space-2-5) var(--space-3); background: var(--bg-surface-2); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+      <div style="display: flex; align-items: center; gap: var(--space-2);">
+        <span class="status-indicator {running ? 'status-indicator--active' : 'status-indicator--idle'}"></span>
+        <span style="font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase;">
+          Live Subprocess Terminal Output
         </span>
-      {/if}
+        {#if running}
+          <span class="badge badge--cyan" style="font-size: 10px;">
+            STREAMING ({activeRunner})
+          </span>
+        {/if}
+        {#if exitCode !== null}
+          <span class="badge {exitCode === 0 ? 'badge--low' : 'badge--high'}" style="font-size: 10px; font-family: var(--font-mono);">
+            EXIT CODE: {exitCode} {exitCode === 0 ? '(PASS)' : '(FAIL)'}
+          </span>
+        {/if}
+      </div>
+
+      <div style="display: flex; gap: var(--space-2); align-items: center;">
+        <span style="font-size: var(--text-2xs); font-family: var(--font-mono); color: var(--text-muted);">
+          {output.length} lines logged
+        </span>
+        <button class="btn btn--xs btn--ghost" onclick={clearTerminal} disabled={running || output.length === 0}>
+          Clear Console
+        </button>
+      </div>
     </div>
 
     {#if output.length > 0}
       <div
         id="replay-terminal"
-        class="terminal"
-        style="height: 380px; overflow-y: auto; font-size: 0.68rem; margin-bottom: var(--sp-5);"
-      >{output.join('\n')}</div>
+        class="terminal-pane"
+        style="height: 380px; overflow-y: auto; padding: var(--space-3); margin: 0; border: none; font-size: 11px; line-height: 1.6;"
+      >
+        {#each output as line}
+          <div style="white-space: pre-wrap; font-family: var(--font-mono); color: {line.includes('PASSED') || line.includes('PASS') ? 'var(--sev-low)' : line.includes('FAILED') || line.includes('ERROR') ? 'var(--sev-critical)' : line.includes('WARNING') ? 'var(--sev-medium)' : 'var(--text-secondary)'};">
+            {line}
+          </div>
+        {/each}
+      </div>
     {:else}
-      <div class="state-empty" style="margin-bottom: var(--sp-5);">
-        Press a run button above to stream live subprocess execution.<br/>
-        <span style="font-size: var(--font-size-xs); color: var(--ink-3);">
-          WebSocket bidirectional stream (asyncio.create_subprocess_exec + PYTHONUNBUFFERED=1)
-        </span>
+      <div style="padding: var(--space-8); text-align: center; color: var(--text-muted); font-family: var(--font-mono); font-size: var(--text-xs); background: var(--bg-surface);">
+        <div style="margin-bottom: var(--space-1); color: var(--text-secondary); font-weight: 600;">
+          Awaiting execution trigger...
+        </div>
+        <div>
+          Click <strong>Execute Log Replay</strong> or <strong>Execute Full Pytest Suite</strong> to initiate live bidirectional streaming.
+        </div>
       </div>
     {/if}
+  </div>
 
-    <!-- ── Test Run History Table ──────────────────────────────── -->
-    {#if recentRuns.length > 0}
-      <div class="section-head">
-        <span class="section-head__label">Test Telemetry History (Persisted in SQLite)</span>
-        <div class="section-head__line"></div>
-        <button class="btn btn--sm" onclick={refreshHistory} style="margin-left: auto;">↻ Refresh</button>
-      </div>
-
-      <!-- Telemetry summary cards & filter -->
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--sp-3); flex-wrap: wrap; gap: var(--sp-2);">
-        <div style="display: flex; gap: var(--sp-3); font-size: var(--font-size-xs);">
+  <!-- ── Telemetry Run History (SQLite WAL) ─────────────────────────────── -->
+  {#if recentRuns.length > 0}
+    <div class="panel" style="padding: 0; overflow: hidden; margin-bottom: var(--space-6);">
+      <div style="padding: var(--space-3) var(--space-4); background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--space-2);">
+        <div style="display: flex; align-items: center; gap: var(--space-3);">
+          <span style="font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase;">
+            Historical Test Telemetry (SQLite Read-Model)
+          </span>
           {#if historyStats}
-            <span>Total Runs: <strong>{historyStats.total_runs}</strong></span>
-            <span>Pass Rate: <strong style="color: var(--green);">{historyStats.pass_rate_pct}%</strong></span>
-            <span>Avg Duration: <strong>{historyStats.avg_duration_seconds}s</strong></span>
+            <div style="display: flex; gap: var(--space-3); font-size: var(--text-2xs); font-family: var(--font-mono); color: var(--text-muted);">
+              <span>Runs: <strong style="color: var(--text-primary);">{historyStats.total_runs}</strong></span>
+              <span>Pass Rate: <strong style="color: var(--sev-low);">{historyStats.pass_rate_pct}%</strong></span>
+              <span>Avg Latency: <strong style="color: var(--text-primary);">{historyStats.avg_duration_seconds}s</strong></span>
+            </div>
           {/if}
         </div>
 
-        <div style="display: flex; gap: var(--sp-1);">
-          <button
-            class="btn btn--sm"
-            style="border-color: {statusFilter === 'all' ? 'var(--ink-1)' : 'var(--ink-4)'}; font-weight: {statusFilter === 'all' ? '700' : '400'};"
-            onclick={() => { statusFilter = 'all'; }}
-          >
-            All ({recentRuns.length})
-          </button>
-          <button
-            class="btn btn--sm"
-            style="border-color: {statusFilter === 'pass' ? 'var(--green)' : 'var(--ink-4)'}; font-weight: {statusFilter === 'pass' ? '700' : '400'};"
-            onclick={() => { statusFilter = 'pass'; }}
-          >
-            Pass ({recentRuns.filter(r => r.status === 'pass').length})
-          </button>
-          <button
-            class="btn btn--sm"
-            style="border-color: {statusFilter === 'fail' ? 'var(--red)' : 'var(--ink-4)'}; font-weight: {statusFilter === 'fail' ? '700' : '400'};"
-            onclick={() => { statusFilter = 'fail'; }}
-          >
-            Fail ({recentRuns.filter(r => r.status === 'fail').length})
+        <div style="display: flex; gap: var(--space-2); align-items: center;">
+          <div class="btn-group">
+            <button
+              class="btn btn--xs {statusFilter === 'all' ? 'btn--primary' : 'btn--ghost'}"
+              onclick={() => { statusFilter = 'all'; }}
+            >
+              All ({recentRuns.length})
+            </button>
+            <button
+              class="btn btn--xs {statusFilter === 'pass' ? 'btn--primary' : 'btn--ghost'}"
+              onclick={() => { statusFilter = 'pass'; }}
+            >
+              Pass ({recentRuns.filter(r => r.status === 'pass').length})
+            </button>
+            <button
+              class="btn btn--xs {statusFilter === 'fail' ? 'btn--primary' : 'btn--ghost'}"
+              onclick={() => { statusFilter = 'fail'; }}
+            >
+              Fail ({recentRuns.filter(r => r.status === 'fail').length})
+            </button>
+          </div>
+
+          <button class="btn btn--xs btn--ghost" onclick={refreshHistory} title="Refresh historical logs">
+            ↻ Refresh
           </button>
         </div>
       </div>
 
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width: 80px;">Run ID</th>
-            <th style="width: 100px;">Type</th>
-            <th style="width: 140px;">Target</th>
-            <th style="width: 100px;">Status</th>
-            <th style="width: 110px;">Duration</th>
-            <th>Finished At</th>
-            <th style="width: 80px; text-align: right;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {#each filteredRuns as tr}
+      <div style="overflow-x: auto;">
+        <table class="table" style="margin: 0;">
+          <thead>
             <tr>
-              <td style="font-weight: 700; font-family: var(--font-mono);">
-                <button
-                  class="btn btn--sm"
-                  style="border: none; padding: 0; background: transparent; color: var(--blue); text-decoration: underline; cursor: pointer;"
-                  onclick={() => viewRunLog(tr.id)}
-                >
-                  #{tr.id}
-                </button>
-              </td>
-              <td>
-                <span class="badge" style="background: var(--paper-1); border: 1px solid var(--ink-3);">
-                  {tr.run_type}
-                </span>
-              </td>
-              <td style="font-size: var(--font-size-xs);">{tr.rule_id || 'All Rules (Full Suite)'}</td>
-              <td>
-                <span class="status status--{tr.status === 'pass' ? 'stable' : 'fail'}">
-                  [{tr.status.toUpperCase()}]
-                </span>
-              </td>
-              <td style="font-size: var(--font-size-xs); font-family: var(--font-mono);">{tr.duration_seconds ?? 0}s</td>
-              <td style="font-size: var(--font-size-xs); color: var(--ink-3);">
-                {tr.finished_at ? new Date(tr.finished_at).toLocaleTimeString() : '—'}
-              </td>
-              <td style="text-align: right;">
-                <button class="btn btn--sm" onclick={() => viewRunLog(tr.id)}>Log</button>
-              </td>
+              <th style="width: 80px;">Run ID</th>
+              <th style="width: 100px;">Engine</th>
+              <th>Target Suite / Rule</th>
+              <th style="width: 100px;">Status</th>
+              <th style="width: 110px;">Duration</th>
+              <th style="width: 160px;">Finished At</th>
+              <th style="width: 90px; text-align: right;">Action</th>
             </tr>
-          {/each}
-        </tbody>
-      </table>
-    {/if}
+          </thead>
+          <tbody>
+            {#each filteredRuns as tr}
+              <tr>
+                <td style="font-family: var(--font-mono); font-weight: 700;">
+                  <button
+                    class="btn btn--xs btn--ghost"
+                    style="padding: 2px 4px; font-family: var(--font-mono); color: var(--accent-primary);"
+                    onclick={() => viewRunLog(tr.id)}
+                  >
+                    #{tr.id}
+                  </button>
+                </td>
+                <td>
+                  <span class="badge" style="background: var(--bg-surface-2); border: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: 10px;">
+                    {tr.run_type}
+                  </span>
+                </td>
+                <td style="font-size: var(--text-xs); font-family: var(--font-mono);">
+                  {tr.rule_id || 'All Rules (Full Suite)'}
+                </td>
+                <td>
+                  <span class="badge {tr.status === 'pass' ? 'badge--low' : 'badge--high'}" style="font-family: var(--font-mono); font-size: 10px;">
+                    [{tr.status.toUpperCase()}]
+                  </span>
+                </td>
+                <td style="font-family: var(--font-mono); font-size: var(--text-xs);">
+                  {tr.duration_seconds ?? 0}s
+                </td>
+                <td style="font-size: var(--text-2xs); color: var(--text-muted); font-family: var(--font-mono);">
+                  {tr.finished_at ? new Date(tr.finished_at).toLocaleString() : '—'}
+                </td>
+                <td style="text-align: right;">
+                  <button class="btn btn--xs btn--ghost" onclick={() => viewRunLog(tr.id)}>
+                    View Log
+                  </button>
+                </td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {/if}
 
-    <!-- ── Run Log Modal ──────────────────────────────────────── -->
-    {#if runLogModal && selectedRun}
-      <div style="position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: var(--sp-4);">
-        <div style="background: var(--paper-1); border: 1px solid var(--ink-2); width: 100%; max-width: 800px; max-height: 80vh; display: flex; flex-direction: column;">
-          <div style="padding: var(--sp-3); border-bottom: 1px solid var(--ink-3); display: flex; justify-content: space-between; align-items: center; background: var(--paper-2);">
-            <span style="font-weight: 700; font-size: var(--font-size-sm);">
-              Test Run #{selectedRun.id} Terminal Telemetry Log ({selectedRun.run_type})
+  <!-- ── Historical Run Log Modal ──────────────────────────────────────── -->
+  {#if runLogModal && selectedRun}
+    <div
+      class="drawer-backdrop"
+      role="button"
+      tabindex="0"
+      onclick={(e) => { if (e.target === e.currentTarget) runLogModal = false; }}
+      onkeydown={(e) => { if (e.key === 'Escape') runLogModal = false; }}
+      style="align-items: center; justify-content: center; padding: var(--space-4);"
+    >
+      <div class="panel" style="width: 100%; max-width: 860px; max-height: 85vh; display: flex; flex-direction: column; padding: 0; overflow: hidden; box-shadow: 0 16px 48px rgba(0,0,0,0.6);">
+        <div style="padding: var(--space-3) var(--space-4); background: var(--bg-surface-2); border-bottom: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center;">
+          <div style="display: flex; align-items: center; gap: var(--space-2);">
+            <span class="badge {selectedRun.status === 'pass' ? 'badge--low' : 'badge--high'}" style="font-family: var(--font-mono);">
+              #{selectedRun.id} {selectedRun.status.toUpperCase()}
             </span>
-            <button class="btn btn--sm" onclick={() => { runLogModal = false; }}>✕ Close</button>
+            <span style="font-family: var(--font-mono); font-size: var(--text-xs); font-weight: 600;">
+              Execution Telemetry Log ({selectedRun.run_type})
+            </span>
           </div>
-          <div class="terminal" style="margin: 0; border: none; flex: 1; overflow-y: auto; max-height: 60vh; font-size: 0.68rem; padding: var(--sp-3);">
-            {selectedRun.output || '[NO CAPTURED OUTPUT]'}
+
+          <div style="display: flex; gap: var(--space-2); align-items: center;">
+            <button class="btn btn--xs btn--ghost" onclick={copyModalOutput}>
+              {copySuccess ? '✓ Copied' : 'Copy Output'}
+            </button>
+            <button class="btn btn--xs btn--ghost" onclick={() => { runLogModal = false; }}>
+              ✕ Close
+            </button>
           </div>
         </div>
-      </div>
-    {/if}
 
+        <div class="terminal-pane" style="flex: 1; overflow-y: auto; max-height: 60vh; font-size: 11px; padding: var(--space-3); margin: 0; border: none; border-radius: 0;">
+          <pre style="margin: 0; font-family: var(--font-mono); white-space: pre-wrap;">{selectedRun.output || '[NO CAPTURED CONSOLE OUTPUT]'}</pre>
+        </div>
+
+        <div style="padding: var(--space-2-5) var(--space-4); background: var(--bg-surface-2); border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; align-items: center; font-size: var(--text-2xs); font-family: var(--font-mono); color: var(--text-muted);">
+          <span>Duration: {selectedRun.duration_seconds ?? 0}s</span>
+          <span>Timestamp: {selectedRun.finished_at ? new Date(selectedRun.finished_at).toLocaleString() : '—'}</span>
+        </div>
+      </div>
+    </div>
   {/if}
-</div>
+
+{/if}
