@@ -1,0 +1,21 @@
+services:
+  detection-lab:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: detection-engineering-lab
+    ports:
+      - "8001:8001"
+    environment:
+      - PORT=8001
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Optional: bind mount rules and docs for live development feedback
+      - ./rules:/app/rules
+      - ./docs:/app/docs
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3

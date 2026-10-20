@@ -1,0 +1,17 @@
+.git/
+.github/
+.vagrant/
+.pytest_cache/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+myenv/
+venv/
+.env
+ui/node_modules/
+ui/dist/
+api/detection_lab.db*
+detection_lab.db*
+*.box
+*.log

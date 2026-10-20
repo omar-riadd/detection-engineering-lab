@@ -842,6 +842,134 @@ To ensure seamless portfolio consistency across all technical documentation, the
 
 ---
 
+## 18. Git Release v1.1 & Repository State Consolidation
+
+> **Date Completed:** 2026-10-21  
+> **Status:** Completed & Verified Clean  
+> **Execution Reference:** Action 2 of 4-Action Release Sequence
+
+### 18.1 Summary of Committed Changes
+- **Git Commit Hash:** `d3c5d97`
+- **Release Tag:** `v1.1`
+- **Scope of Commit:** 107 files changed, 8,720 insertions(+), 115 deletions(-).
+- **Tracked Assets:**
+  - 26 Production Sigma Rules (`rules/sigma/windows/` and `rules/sigma/linux/`)
+  - 22 SOC Triage Runbooks (`runbooks/`)
+  - 54 Unit & Regression Log Fixtures (`tests/fixtures/`)
+  - 3 Multi-SIEM Transpilation Targets (`rules/wazuh/`, `converted/kql/`, `converted/splunk/`)
+  - Fast-API CQRS Read-Model Backend (`api/`)
+  - Svelte 5 + Tailwind CSS Operations UI (`ui/`)
+  - 3 Architecture Decision Records (`docs/adr/`)
+  - Harmonized Analytical Documentation (`docs/scope.md`, `docs/report.md`, `docs/blog_post.md`, `docs/mttd_metrics.md`, `docs/fp_report.md`, `docs/d3fend_mapping.md`)
+  - Root `Makefile` orchestration and `.github/workflows/ci.yml` CI/CD pipeline
+- **Working Tree Verification:** `git status` clean (`nothing to commit, working tree clean`), `git tag -l` confirms `v1.1`.
+
+---
+
+## 19. Containerization for Portability (`Dockerfile` & `docker-compose.yml`)
+
+> **Date Completed:** 2026-10-21  
+> **Status:** Completed & Verified Running in Container  
+> **Execution Reference:** Action 3 of 4-Action Release Sequence
+
+### 19.1 Architecture & Implementation
+To provide true zero-friction portability and single-command deployment across any cloud or local workstation, the entire Detection Engineering Platform was containerized using a multi-stage Docker build:
+
+1. **Multi-Stage `Dockerfile`**:
+   - **Stage 1 (`frontend-builder`, `node:20-alpine`)**:
+     - Installs NPM packages and runs `npm run build` using Vite.
+     - Produces optimized production distribution bundle in `/app/ui/dist` (119 modules, 124.88 kB JS, 10.21 kB CSS).
+   - **Stage 2 (`runtime`, `python:3.11-slim`)**:
+     - Installs system runtime dependencies (`curl`, `git`, `make`).
+     - Installs Python dependencies via `requirements.txt`.
+     - Copies all rules (`rules/`), runbooks (`runbooks/`), scripts (`scripts/`), tests (`tests/`), docs (`docs/`), and FastAPI code (`api/`).
+     - Copies compiled frontend from Stage 1 into `/app/ui/dist`, enabling FastAPI to auto-mount and serve the full SPA on `/`.
+     - Sets up non-root friendly directory structure, exposed port `8001`, and automated HTTP health check (`curl -f http://localhost:8001/api/health`).
+
+2. **Compose Orchestration (`docker-compose.yml`)**:
+   - Defines `detection-lab` service with port mapping `8001:8001`.
+   - Mounts local `./rules` and `./docs` directories for real-time live CQRS synchronization.
+   - Configures automatic health check monitoring every 30 seconds.
+
+3. **Dependency & Build Files**:
+   - `requirements.txt`: Standardized dependencies (`fastapi`, `uvicorn[standard]`, `pydantic`, `pyyaml`, `sqlalchemy`, `watchdog`, `jinja2`, `httpx`, `pytest`, `websockets`).
+   - `.dockerignore`: Excludes `.git`, `.vagrant`, virtualenvs, caches, and database files from build context.
+   - `Makefile`: Added `docker-build`, `docker-up`, and `docker-down` helper targets.
+
+### 19.2 Container Verification
+- **Container Build**: Built successfully (`detectionengineering-detection-lab`).
+- **Container Launch**: `docker compose up -d` started container `detection-engineering-lab`.
+- **Cold-Start Reconciliation**: Verified in container logs:
+  - SQLite schema created (WAL mode).
+  - 26 Sigma rules reconciled and upserted into read model.
+  - 7 adversarial bypasses parsed from `docs/bypass_log.md`.
+  - Watchdog background thread monitoring `/app/rules/sigma`.
+- **Container API Endpoints Tested**:
+  - `GET /api/health` → `200 OK` (`{"status":"ok","version":"1.0.0","ws_clients":0}`)
+  - `GET /api/rules` → `200 OK` (26 rules returned)
+  - `GET /api/coverage/d3fend` → `200 OK` (25 D3FEND mappings returned)
+  - `GET /api/reports/summary` → `200 OK` (`OPERATIONAL / PRODUCTION READY`, 26 detections, 22 techniques, 7/7 evasions hardened, 100% pass rate)
+  - `GET /` → `200 OK` (Serves Svelte 5 SPA `index.html`)
+
+---
+
+## 20. Live UI Walkthrough Across 7 Operational Workspaces
+
+> **Date Completed:** 2026-10-21  
+> **Status:** Completed & 100% Verified  
+> **Execution Reference:** Action 4 of 4-Action Release Sequence
+
+### 20.1 Workspace Validation Summary
+The end-to-end functionality across all 7 operational workspaces was systematically validated on both local dev servers and the containerized production runtime:
+
+1. **`01 // SYSTEM OVERVIEW` (Dashboard)**:
+   - **Metrics Evaluated**: Total Rules (26), MITRE ATT&CK Techniques (22), Bypasses Hardened (7/7 = 100%), Mean Time to Detect (6.46s / 6.78s), False Positive Rate (0.00%).
+   - **Severity Breakdown Chart**: High (18), Critical (6), Medium (2).
+   - **Recent Activity Ledger**: Displays live cold-start reconciliation and database sync timestamps.
+   - **Navigation & Health**: Direct links to all workspaces with green `ONLINE` status pill.
+
+2. **`02 // RULES CATALOG & EDITOR`**:
+   - **Catalog View**: Displays all 26 Sigma rules with search, status filter (`All`, `Experimental`, `Production`), and platform filters (`Windows`, `Linux`).
+   - **Rule Detail Workspace**:
+     - Shows full metadata, MITRE ATT&CK and D3FEND tags, and raw YAML view.
+     - **Multi-SIEM Transpilation Tabs**: Renders Wazuh XML (dynamic parent SIDs 60103/80700), Sentinel KQL, and Splunk SPL queries on demand.
+     - **In-Browser YAML Editor**: Supports full round-trip editing with syntax checking, safe disk persistence, Watchdog change detection, automatic SQLite reconciliation, and WebSocket push notification.
+
+3. **`03 // ATT&CK MATRIX`**:
+   - **Heatmap Layout**: Groups all 22 techniques across MITRE tactics (Initial Access, Execution, Persistence, Defense Evasion, Credential Access, Discovery, Lateral Movement, C2, Impact).
+   - **Coverage Scoring**: Visual green intensity scores based on rule count and telemetry depth.
+   - **Interactive Modal**: Click-to-inspect displays technique details, associated Sigma rules, and SOC runbook links.
+
+4. **`04 // D3FEND COUNTERMEASURES`**:
+   - **Matrix View**: Displays all 25 D3FEND countermeasure mappings (D3-FSA, D3-PMA, D3-SEA, D3-PBA, D3-PSA, D3-CAI, D3-LMA, D3-DAA, D3-DTA, D3-LAA, D3-SJA, D3-BRA, D3-SPA, D3-NTA).
+   - **Defensive Lineage**: Shows direct links between threat techniques, detection rules, D3FEND countermeasures, and SOC triage runbooks.
+
+5. **`05 // REPLAY ENGINE & TEST RUNS`**:
+   - **Bidirectional Subprocess WebSocket**: Tested via `/ws/replay` with action `replay_all`. Streamed 78 lines of real-time stdout (`54/54 PASSED`, 0.67s runtime).
+   - **Telemetry History**: Automatically recorded run telemetry in SQLite `test_runs` table (Run ID: 1, duration: 0.672s, status: `pass`).
+   - **UI Telemetry Dashboard**: Summary badges (1 Run, 100% Pass Rate, 0.67s Avg Duration), status filtering (`All`, `Pass`, `Fail`), and click-to-view raw terminal logs modal.
+
+6. **`06 // PURPLE TEAM EVASIONS`**:
+   - **Adversarial Hardening Ledger**: Displays all 7 bypass case studies from Week 7:
+     1. T1059.001 (Base64 EncodedCommand / `iwr` cradle)
+     2. T1041 (LOLBin C2 via `certutil` over HTTPS 443)
+     3. T1003.001 (Renamed binary `svchost.exe` in `C:\Users\Public`)
+     4. T1204.002 (PPID spoofing via `spoolsv.exe`)
+     5. T1059.001 (In-memory AMSI bypass reflection)
+     6. T1566.001 (Dropper disguise via double extensions)
+     7. T1490 (`if_sid` scoping gap via Security EID 4688)
+   - **Remediation Details**: Root cause analysis, detection logic diff, and verified retest status (100% mitigation rate).
+
+7. **`07 // EXECUTIVE SECURITY REPORT`**:
+   - **Readiness Scorecard**: Dynamic assessment synthesizing live read-model statistics into an executive summary (`OPERATIONAL / PRODUCTION READY`).
+   - **Operational Tables**: Severity distribution, deployment lifecycle, ATT&CK techniques, and evasion hardening ledger.
+   - **Export Capabilities**: Clean printable layout (`@media print`) and instant Markdown report download via `GET /api/reports/markdown`.
+
+---
+
+
+
+
 
 
 

@@ -130,6 +130,21 @@ clean:
 	rm -rf ui/dist
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 
+## Build Docker container image
+docker-build:
+	@echo "[DOCKER] Building production container image..."
+	docker compose build
+
+## Start containerized platform in background
+docker-up:
+	@echo "[DOCKER] Launching containerized Detection Engineering Platform on http://localhost:8001..."
+	docker compose up -d
+
+## Stop containerized platform
+docker-down:
+	@echo "[DOCKER] Stopping containerized Detection Engineering Platform..."
+	docker compose down
+
 help:
 	@echo ""
 	@echo "Detection Engineering Lab — Commands"
