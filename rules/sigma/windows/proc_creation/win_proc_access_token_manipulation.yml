@@ -1,0 +1,38 @@
+title: Access Token Manipulation and Privilege Inspection
+id: c325b2d1-8920-493b-ba32-238029562002
+status: experimental
+description: |
+  Detects the execution of known access token manipulation utilities (Incognito, Mimikatz token commands)
+  or the systematic inspection of sensitive token privileges (e.g. SeDebugPrivilege, SeImpersonatePrivilege via whoami /priv).
+  Adversaries leverage token impersonation and privilege modification to bypass access controls and escalate to SYSTEM.
+references:
+  - https://attack.mitre.org/techniques/T1134/
+  - https://attack.mitre.org/techniques/T1134/001/
+  - https://redcanary.com/threat-detection-report/techniques/access-token-manipulation/
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1134
+  - attack.defense_evasion
+  - attack.privilege_escalation
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tools:
+    CommandLine|contains:
+      - 'list_tokens'
+      - 'token::elevate'
+      - 'token::impersonate'
+      - 'incognito.exe'
+      - 'DuplicateTokenEx'
+  selection_whoami_priv:
+    Image|endswith: '\whoami.exe'
+    CommandLine|contains|all:
+      - 'whoami'
+      - '/priv'
+  condition: selection_tools or selection_whoami_priv
+falsepositives:
+  - System administrators auditing user token rights during routine privilege troubleshooting
+level: high

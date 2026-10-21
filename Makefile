@@ -86,7 +86,7 @@ reset-db:
 
 ## Convert Sigma rules to all target formats
 convert:
-	@echo "[CONVERT] Converting 26 Sigma rules across all platforms..."
+	@echo "[CONVERT] Converting Sigma rules across all platforms..."
 	$(PYTHON) scripts/convert_sigma.py \
 		--input rules/sigma/ \
 		--wazuh rules/wazuh/ \

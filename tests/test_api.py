@@ -18,16 +18,16 @@ def test_api_health():
     assert res.status_code == 200
     data = res.json()
     assert data["status"] == "ok"
-    assert data["version"] == "1.0.0"
+    assert data["version"] == "2.0.0"
     assert "ws_clients" in data
 
 
 def test_list_rules():
-    """Verify rules catalog returns all 26 rules and supports query filtering."""
+    """Verify rules catalog returns all production rules (at least 26) and supports query filtering."""
     res = client.get("/api/rules")
     assert res.status_code == 200
     rules = res.json()
-    assert len(rules) == 26
+    assert len(rules) >= 26
     assert all("id" in r and "title" in r for r in rules)
 
     # Filter by severity
@@ -48,7 +48,10 @@ def test_rule_stats():
     res = client.get("/api/rules/stats")
     assert res.status_code == 200
     data = res.json()
-    assert data["total"] == 26
+    rules_res = client.get("/api/rules")
+    expected_total = len(rules_res.json())
+    assert data["total"] == expected_total
+    assert data["total"] >= 26
     assert "by_severity" in data
     assert "by_status" in data
     assert data["unique_techniques"] >= 20
@@ -150,12 +153,13 @@ def test_bypass_endpoints():
     res_list = client.get("/api/bypass")
     assert res_list.status_code == 200
     bypasses = res_list.json()
-    assert len(bypasses) == 7
+    assert len(bypasses) >= 7
 
     res_stats = client.get("/api/bypass/stats")
     assert res_stats.status_code == 200
     stats = res_stats.json()
-    assert stats["total_cases"] == 7
+    assert stats["total_cases"] == len(bypasses)
+    assert stats["total_cases"] >= 7
     assert stats["detection_rate_pct"] == 100.0
 
 
@@ -165,8 +169,11 @@ def test_sync_endpoints():
     assert res_status.status_code == 200
     status = res_status.json()
     assert status["db_healthy"] is True
-    assert status["rules_total"] == 26
-    assert status["rules_synced"] == 26
+    rules_res = client.get("/api/rules")
+    expected_total = len(rules_res.json())
+    assert status["rules_total"] == expected_total
+    assert status["rules_total"] >= 26
+    assert status["rules_synced"] == status["rules_total"]
     assert status["rules_error"] == 0
 
     # Targeted rule sync
@@ -195,10 +202,13 @@ def test_reports_endpoints():
     res_sum = client.get("/api/reports/summary")
     assert res_sum.status_code == 200
     summary = res_sum.json()
-    assert summary["portfolio_version"] == "v1.0.0"
+    assert summary["portfolio_version"] == "v2.0"
     exec_sum = summary["executive_summary"]
-    assert exec_sum["total_detections"] == 26
-    assert exec_sum["unique_techniques"] == 22
+    rules_res = client.get("/api/rules")
+    expected_total = len(rules_res.json())
+    assert exec_sum["total_detections"] == expected_total
+    assert exec_sum["total_detections"] >= 26
+    assert exec_sum["unique_techniques"] >= 22
     assert exec_sum["overall_status"] == "OPERATIONAL / PRODUCTION READY"
 
     # Markdown export
@@ -302,4 +312,98 @@ def test_create_bypass_endpoint():
             header_idx = content.rfind("---", 0, idx)
             if header_idx != -1:
                 BYPASS_LOG_FILE.write_text(content[:header_idx].rstrip() + "\n", encoding="utf-8")
+
+
+def test_api_key_authentication(monkeypatch):
+    """Verify optional API key authentication on write endpoints."""
+    # 1. When API_KEY is set in environment
+    monkeypatch.setenv("API_KEY", "super-secret-ci-key")
+
+    # Request without key -> 403 Forbidden
+    res_no_key = client.post(
+        "/api/rules",
+        json={
+            "filename": "unauth_test.yml",
+            "target_dir": "windows/proc_creation",
+            "yaml_content": "title: Test\nlogsource:\n  category: proc\ndetection:\n  selection:\n    Image: test.exe\n  condition: selection\n",
+        },
+    )
+    assert res_no_key.status_code == 403
+    assert "Invalid or missing API key" in res_no_key.json()["detail"]
+
+    # Request with wrong key -> 403 Forbidden
+    res_wrong_key = client.post(
+        "/api/rules",
+        headers={"X-API-Key": "wrong-key"},
+        json={
+            "filename": "unauth_test.yml",
+            "target_dir": "windows/proc_creation",
+            "yaml_content": "title: Test\nlogsource:\n  category: proc\ndetection:\n  selection:\n    Image: test.exe\n  condition: selection\n",
+        },
+    )
+    assert res_wrong_key.status_code == 403
+
+    # Request with correct key -> Authorized (not 403)
+    res_valid_key = client.post(
+        "/api/rules",
+        headers={"X-API-Key": "super-secret-ci-key"},
+        json={
+            "filename": "auth_test_rule.yml",
+            "target_dir": "windows/proc_creation",
+            "yaml_content": "title: Auth Test Rule\nlogsource:\n  category: proc\ndetection:\n  selection:\n    Image: test.exe\n  condition: selection\n",
+        },
+    )
+    assert res_valid_key.status_code == 200
+    created_id = res_valid_key.json()["rule_id"]
+
+    # Clean up created test rule file and database row
+    from api.models.db import Rule, get_session
+    from api.routers.rules import RULES_DIR, PROJECT_ROOT
+    test_file = RULES_DIR / "windows" / "proc_creation" / "auth_test_rule.yml"
+    if test_file.exists():
+        test_file.unlink()
+
+    (PROJECT_ROOT / "converted" / "kql" / "auth_test_rule.kql").unlink(missing_ok=True)
+    (PROJECT_ROOT / "converted" / "splunk" / "auth_test_rule.spl").unlink(missing_ok=True)
+    (PROJECT_ROOT / "rules" / "wazuh" / "auth_test_rule.xml").unlink(missing_ok=True)
+
+    with next(get_session()) as s:
+        rule_row = s.get(Rule, created_id)
+        if rule_row:
+            s.delete(rule_row)
+            s.commit()
+
+
+def test_deployment_endpoints():
+    """Verify live SIEM deployment integration endpoints."""
+    # 1. Target status
+    res_status = client.get("/api/deploy/status")
+    assert res_status.status_code == 200
+    targets = res_status.json()
+    assert "wazuh" in targets
+    assert "sentinel" in targets
+    assert "splunk" in targets
+
+    # 2. Deploy existing rule with simulation
+    rule_id = "4e1b8c29-3910-46d2-88f1-a1b920499009"
+    res_deploy = client.post(f"/api/deploy/{rule_id}?target=all&simulate=true")
+    assert res_deploy.status_code == 200
+    dep_data = res_deploy.json()
+    assert dep_data["status"] == "ok"
+    assert dep_data["rule_id"] == rule_id
+    assert len(dep_data["deployments"]) == 3
+    assert all(d["status"] == "simulated" for d in dep_data["deployments"])
+
+    # 3. Deployment history
+    res_hist = client.get("/api/deploy/history")
+    assert res_hist.status_code == 200
+    history = res_hist.json()
+    assert len(history) >= 3
+    assert history[0]["rule_id"] == rule_id
+
+    # 4. Non-existent rule returns 404
+    res_404 = client.post("/api/deploy/non-existent-rule-id?target=wazuh")
+    assert res_404.status_code == 404
+
+
 

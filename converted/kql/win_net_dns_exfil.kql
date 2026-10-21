@@ -1,0 +1,6 @@
+// Suspicious DNS Outbound Network Connection via Non-Standard Process
+// Techniques: T1048.003
+DeviceNetworkEvents
+| where DestinationPort == "53"
+| where (FileName endswith "\powershell.exe" or FileName endswith "\pwsh.exe" or FileName endswith "\cmd.exe" or FileName endswith "\certutil.exe" or FileName endswith "\rundll32.exe" or FileName endswith "\cscript.exe" or FileName endswith "\wscript.exe")
+| project TimeGenerated, DeviceName, AccountName

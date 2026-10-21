@@ -1,0 +1,37 @@
+title: Suspicious DNS Outbound Network Connection via Non-Standard Process
+id: d436c3e2-9031-4a4c-cb43-349130673003
+status: experimental
+description: |
+  Detects outbound network connections on port 53 (DNS) originating directly from script interpreters, command-line shells,
+  or LOLBins (such as powershell.exe, cmd.exe, certutil.exe, rundll32.exe, wscript.exe). Legitimate DNS resolution on Windows
+  is routed exclusively through the DNS Client service (svchost.exe -k NetworkService). Direct socket communication on port 53
+  by interactive or scripting processes is a high-confidence indicator of DNS tunneling or exfiltration over alternative protocols.
+references:
+  - https://attack.mitre.org/techniques/T1048/003/
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+  - https://thedfirreport.com/
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1048.003
+  - attack.exfiltration
+logsource:
+  category: network
+  product: windows
+detection:
+  selection_port:
+    DestinationPort: 53
+  selection_proc:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+      - '\cmd.exe'
+      - '\certutil.exe'
+      - '\rundll32.exe'
+      - '\cscript.exe'
+      - '\wscript.exe'
+  condition: selection_port and selection_proc
+falsepositives:
+  - Custom internal network diagnostic scripts manually resolving domain names via raw sockets
+level: high

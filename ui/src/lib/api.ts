@@ -205,14 +205,6 @@ export const rulesApi = {
       body: JSON.stringify({ yaml_content: yamlContent }),
     });
   },
-
-  create(data: { filename: string; target_dir?: string; yaml_content: string }): Promise<RuleSaveResult> {
-    return apiFetch<RuleSaveResult>('/api/rules', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-  },
 };
 
 // ── Test Runs ─────────────────────────────────────────────────────────────
@@ -267,22 +259,6 @@ export const bypassApi = {
   },
   stats(): Promise<BypassStats> {
     return apiFetch<BypassStats>('/api/bypass/stats');
-  },
-  create(data: {
-    title: string;
-    technique: string;
-    technique_id: string;
-    target_rule?: string;
-    evasion_method: string;
-    notes?: string;
-    outcome?: string;
-    test_fixture?: any;
-  }): Promise<BypassAttempt> {
-    return apiFetch<BypassAttempt>('/api/bypass', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
   },
 };
 

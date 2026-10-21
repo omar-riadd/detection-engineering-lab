@@ -1,0 +1,27 @@
+id: 61701ee5-9619-4d63-ae94-bb931d2555cb
+title: Suspicious File Drop in Staging Directory
+status: test
+description: Detects executable or script dropped into user temp or downloads folders.
+references:
+    - https://attack.mitre.org/techniques/T1566/001/
+author: SOC Detection Engineer
+date: 2026/10/21
+tags:
+    - attack.initial-access
+    - attack.t1566.001
+logsource:
+    category: file_event
+    product: windows
+detection:
+    selection:
+        TargetFilename|contains:
+            - '\AppData\Local\Temp\'
+            - '\Downloads\'
+        TargetFilename|endswith:
+            - '.exe'
+            - '.vbs'
+            - '.ps1'
+    condition: selection
+falsepositives:
+    - Legitimate software installers
+level: medium

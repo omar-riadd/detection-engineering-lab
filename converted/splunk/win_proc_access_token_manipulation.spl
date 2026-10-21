@@ -1,0 +1,2 @@
+# Access Token Manipulation and Privilege Inspection - ATT&CK: T1134
+index=windows (CommandLine="*list_tokens*" OR CommandLine="*token::elevate*" OR CommandLine="*token::impersonate*" OR CommandLine="*incognito.exe*" OR CommandLine="*DuplicateTokenEx*") Image="*\whoami.exe" (CommandLine="*whoami*" AND CommandLine="*/priv*") | table _time, host, user, Image, CommandLine

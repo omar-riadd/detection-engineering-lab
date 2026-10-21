@@ -1,0 +1,41 @@
+title: Clear Windows Event Logs via Wevtutil or PowerShell
+id: b214a1c0-7819-482a-a921-127918451001
+status: experimental
+description: |
+  Detects attempts to clear Windows event logs using the wevtutil CLI utility or PowerShell cmdlets.
+  Adversaries (including ransomware actors and advanced threat groups) routinely destroy event log evidence
+  prior to exfiltration or payload detonation to evade forensic reconstruction and defensive alerting.
+references:
+  - https://attack.mitre.org/techniques/T1070/001/
+  - https://redcanary.com/threat-detection-report/techniques/indicator-removal/
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1070.001
+  - attack.defense_evasion
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_wevtutil:
+    Image|endswith: '\wevtutil.exe'
+    CommandLine|contains:
+      - ' cl '
+      - ' clear-log '
+      - '/cl:'
+      - '-cl:'
+  selection_powershell:
+    Image|endswith:
+      - '\powershell.exe'
+      - '\pwsh.exe'
+    CommandLine|contains:
+      - 'Clear-EventLog'
+      - 'Limit-EventLog'
+      - 'Remove-EventLog'
+      - 'EventLogSession.ClearLog'
+  condition: selection_wevtutil or selection_powershell
+falsepositives:
+  - Rare enterprise system maintenance scripts or backup software resetting event logs during automated maintenance
+level: high

@@ -46,8 +46,6 @@ COPY runbooks/ /app/runbooks/
 COPY emulation/ /app/emulation/
 COPY converted/ /app/converted/
 COPY Makefile /app/Makefile
-COPY UI_plan.md /app/UI_plan.md
-COPY PROJECT_PLAN.md /app/PROJECT_PLAN.md
 COPY README.md /app/README.md
 
 # Copy compiled frontend from Stage 1 into /app/ui/dist (auto-mounted by FastAPI)

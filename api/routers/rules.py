@@ -16,6 +16,7 @@ from sqlalchemy import select
 from api.models.db import Rule, get_session
 from api.core.reconciler import sync_sigma_rule
 from api.core.ws_manager import ws_manager
+from api.core.auth import verify_api_key
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 RULES_DIR = PROJECT_ROOT / "rules" / "sigma"
@@ -178,6 +179,7 @@ async def save_rule(
     rule_id: str,
     payload: RuleSaveRequest,
     session: Session = Depends(get_session),
+    _auth: Optional[str] = Depends(verify_api_key),
 ):
     """
     CQRS Write Path:
@@ -285,6 +287,7 @@ class RuleCreateRequest(BaseModel):
 async def create_rule(
     payload: RuleCreateRequest,
     session: Session = Depends(get_session),
+    _auth: Optional[str] = Depends(verify_api_key),
 ):
     """
     Create a new Sigma detection rule:

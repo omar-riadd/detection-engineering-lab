@@ -95,19 +95,34 @@ def escape_pcre2(val):
             res += ch
     return res
 
-def build_pcre2_pattern(val, modifier=''):
+def build_pcre2_pattern(val, modifier='', all_must_match=False):
     """Builds a case-insensitive PCRE2 regex pattern."""
     if isinstance(val, list):
         escaped_items = [escape_pcre2(item) for item in val]
-        joined = '|'.join(escaped_items)
-        if modifier == 'endswith':
-            return f'(?i)({joined})$'
-        elif modifier == 'startswith':
-            return f'(?i)^({joined})'
-        elif modifier == 'contains':
-            return f'(?i)({joined})'
+        if all_must_match:
+            if modifier == 'contains':
+                # PCRE2 lookahead assertions: require all items to match anywhere in string
+                lookaheads = ''.join([f'(?=.*{item})' for item in escaped_items])
+                return f'(?i){lookaheads}'
+            elif modifier == 'endswith':
+                joined = '|'.join(escaped_items)
+                return f'(?i)({joined})$'
+            elif modifier == 'startswith':
+                joined = '|'.join(escaped_items)
+                return f'(?i)^({joined})'
+            else:
+                joined = '|'.join(escaped_items)
+                return f'(?i)^({joined})$'
         else:
-            return f'(?i)^({joined})$'
+            joined = '|'.join(escaped_items)
+            if modifier == 'endswith':
+                return f'(?i)({joined})$'
+            elif modifier == 'startswith':
+                return f'(?i)^({joined})'
+            elif modifier == 'contains':
+                return f'(?i)({joined})'
+            else:
+                return f'(?i)^({joined})$'
     else:
         escaped = escape_pcre2(val)
         if modifier == 'endswith':
@@ -191,10 +206,13 @@ def convert_to_wazuh(sigma_data, rule_id, shadow_mode=True):
         for field_def, val in block_content.items():
             parts = field_def.split('|')
             field_name = parts[0]
-            modifier = parts[1] if len(parts) > 1 else ''
+            modifiers = [p.lower() for p in parts[1:]]
+            all_must_match = 'all' in modifiers
+            non_all_mods = [m for m in modifiers if m != 'all']
+            modifier = non_all_mods[0] if non_all_mods else ''
 
             wazuh_field = FIELD_MAPPING.get(field_name, f'win.eventdata.{field_name.lower()}')
-            pattern = build_pcre2_pattern(val, modifier)
+            pattern = build_pcre2_pattern(val, modifier, all_must_match)
             fields.append({
                 'name': wazuh_field,
                 'pattern': pattern,
@@ -247,7 +265,10 @@ def convert_to_kql(sigma_data):
         for field_def, val in block_content.items():
             parts = field_def.split('|')
             field_name = parts[0]
-            modifier = parts[1] if len(parts) > 1 else ''
+            modifiers = [p.lower() for p in parts[1:]]
+            all_must_match = 'all' in modifiers
+            non_all_mods = [m for m in modifiers if m != 'all']
+            modifier = non_all_mods[0] if non_all_mods else ''
 
             # Map field to KQL schema
             kql_field = field_name
@@ -265,19 +286,38 @@ def convert_to_kql(sigma_data):
             if isinstance(val, list):
                 quoted = [f'"{v}"' for v in val]
                 val_list = f"({', '.join(quoted)})"
-                if modifier == 'endswith':
-                    op = "endswith" if not is_negated else "!endswith"
-                    clause = " or ".join([f"{kql_field} {op} {q}" for q in quoted])
-                    clauses.append(f"({clause})")
-                elif modifier == 'contains':
-                    op = "has_any" if not is_negated else "has_any"
-                    if is_negated:
-                        clauses.append(f"not({kql_field} has_any {val_list})")
+                if all_must_match:
+                    if modifier == 'contains':
+                        op = "has_all"
+                        if is_negated:
+                            clauses.append(f"not({kql_field} has_all {val_list})")
+                        else:
+                            clauses.append(f"{kql_field} has_all {val_list}")
+                    elif modifier == 'endswith':
+                        op = "endswith" if not is_negated else "!endswith"
+                        clause = " and ".join([f"{kql_field} {op} {q}" for q in quoted])
+                        clauses.append(f"({clause})")
+                    elif modifier == 'startswith':
+                        op = "startswith" if not is_negated else "!startswith"
+                        clause = " and ".join([f"{kql_field} {op} {q}" for q in quoted])
+                        clauses.append(f"({clause})")
                     else:
-                        clauses.append(f"{kql_field} has_any {val_list}")
+                        clause = " and ".join([f"{kql_field} == {q}" for q in quoted])
+                        clauses.append(f"({clause})")
                 else:
-                    op = "in" if not is_negated else "!in"
-                    clauses.append(f"{kql_field} {op} {val_list}")
+                    if modifier == 'endswith':
+                        op = "endswith" if not is_negated else "!endswith"
+                        clause = " or ".join([f"{kql_field} {op} {q}" for q in quoted])
+                        clauses.append(f"({clause})")
+                    elif modifier == 'contains':
+                        op = "has_any"
+                        if is_negated:
+                            clauses.append(f"not({kql_field} has_any {val_list})")
+                        else:
+                            clauses.append(f"{kql_field} has_any {val_list}")
+                    else:
+                        op = "in" if not is_negated else "!in"
+                        clauses.append(f"{kql_field} {op} {val_list}")
             else:
                 qval = f'"{val}"'
                 if modifier == 'endswith':
@@ -310,7 +350,10 @@ def convert_to_splunk(sigma_data):
         for field_def, val in block_content.items():
             parts = field_def.split('|')
             field_name = parts[0]
-            modifier = parts[1] if len(parts) > 1 else ''
+            modifiers = [p.lower() for p in parts[1:]]
+            all_must_match = 'all' in modifiers
+            non_all_mods = [m for m in modifiers if m != 'all']
+            modifier = non_all_mods[0] if non_all_mods else ''
 
             if isinstance(val, list):
                 subclauses = []
@@ -324,7 +367,8 @@ def convert_to_splunk(sigma_data):
                     else:
                         pattern = v
                     subclauses.append(f'{field_name}="{pattern}"')
-                joined = " OR ".join(subclauses)
+                join_operator = " AND " if all_must_match else " OR "
+                joined = join_operator.join(subclauses)
                 if is_negated:
                     clauses.append(f"NOT ({joined})")
                 else:

@@ -16,7 +16,7 @@ import yaml
 # Ensure project root is in sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from scripts.replay_logs import evaluate_sigma_rule
+from scripts.replay_logs import evaluate_sigma_rule, evaluate_sigma_rule_sequence
 
 def get_rule_map():
     """Maps ATT&CK Technique ID to list of Sigma Rule dicts."""
@@ -64,7 +64,11 @@ def test_positive_detection_fires(tech_id, fixture_path):
     with open(fixture_path, 'r', encoding='utf-8') as ff:
         attack_event = json.load(ff)
 
-    fired = any(evaluate_sigma_rule(rdata, attack_event) for rf, rdata in rule_list)
+    if isinstance(attack_event, list):
+        fired = any(evaluate_sigma_rule_sequence(rdata, attack_event) for rf, rdata in rule_list)
+    else:
+        fired = any(evaluate_sigma_rule(rdata, attack_event) for rf, rdata in rule_list)
+
     assert fired is True, (
         f"FALSE NEGATIVE REGRESSION: None of the {len(rule_list)} rules for ({tech_id}) "
         f"fired on attack log fixture {fixture_path}"
@@ -82,8 +86,52 @@ def test_negative_detection_ignores_benign(tech_id, rule_path, fixture_path):
     with open(fixture_path, 'r', encoding='utf-8') as ff:
         benign_event = json.load(ff)
 
-    fired = evaluate_sigma_rule(rule_data, benign_event)
+    if isinstance(benign_event, list):
+        fired = evaluate_sigma_rule_sequence(rule_data, benign_event)
+    else:
+        fired = evaluate_sigma_rule(rule_data, benign_event)
+
     assert fired is False, (
         f"FALSE POSITIVE REGRESSION: Rule {rule_data.get('title')} ({tech_id}) "
         f"falsely triggered on benign log fixture {fixture_path}"
     )
+
+
+def test_wazuh_alert_format_adapter():
+    """Verify Wazuh JSON alert format adapter normalizes nested win.eventdata and triggers detection."""
+    from scripts.replay_logs import load_log_file
+    event = load_log_file('tests/fixtures/formats/sample_wazuh_alert.json')
+    rule_list = RULE_MAP['T1059.001']
+    fired = any(evaluate_sigma_rule(rdata, event) for rf, rdata in rule_list)
+    assert fired is True, "Wazuh alert format adapter failed to trigger T1059.001 detection rule"
+
+
+def test_sysmon_xml_format_adapter():
+    """Verify Sysmon XML event log adapter parses XML elements into flat dict and triggers detection."""
+    from scripts.replay_logs import load_log_file
+    event = load_log_file('tests/fixtures/formats/sample_sysmon.xml')
+    rule_list = RULE_MAP['T1218.011']
+    fired = any(evaluate_sigma_rule(rdata, event) for rf, rdata in rule_list)
+    assert fired is True, "Sysmon XML format adapter failed to trigger T1218.011 detection rule"
+
+
+def test_cef_format_adapter():
+    """Verify Common Event Format (CEF) adapter parses extension tokens and triggers detection."""
+    from scripts.replay_logs import load_log_file
+    event = load_log_file('tests/fixtures/formats/sample_cef.log')
+    rule_list = RULE_MAP['T1003.001']
+    fired = any(evaluate_sigma_rule(rdata, event) for rf, rdata in rule_list)
+    assert fired is True, "CEF format adapter failed to trigger T1003.001 detection rule"
+
+
+def test_ndjson_format_adapter():
+    """Verify NDJSON stream adapter parses multiple lines, discriminating benign and malicious events."""
+    from scripts.replay_logs import load_log_file
+    events = load_log_file('tests/fixtures/formats/sample_ndjson.log')
+    assert isinstance(events, list) and len(events) == 2
+    rule_list = RULE_MAP['T1490']
+    # Event 1 (explorer.exe) must NOT fire
+    assert not any(evaluate_sigma_rule(rdata, events[0]) for rf, rdata in rule_list)
+    # Event 2 (vssadmin delete shadows) MUST fire
+    assert any(evaluate_sigma_rule(rdata, events[1]) for rf, rdata in rule_list)
+

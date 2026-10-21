@@ -2,7 +2,7 @@
 
 > **Document Status:** Complete Reference  
 > **Last Updated:** 2026-10-19  
-> **Project Plan Reference:** [PROJECT_PLAN.md](../PROJECT_PLAN.md) — Section 5 (Week 7) & Section 9 (Metrics & CV Targets)  
+> **Scope:** Threat Actor Emulation & Adversarial Evasion Hardening  
 > **Target Metrics:** 5–10 Evasion Bypasses Found, 100% Bypasses Fixed, 100% CI Regression Pass Rate  
 
 ---

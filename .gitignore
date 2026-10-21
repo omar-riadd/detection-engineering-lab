@@ -53,3 +53,9 @@ detection_lab.db-wal
 # Detection Lab — UI build artifacts
 ui/node_modules/
 ui/dist/
+
+# Internal project planning and session progress tracking (kept locally, not published)
+PROJECT_PLAN.md
+Project_progress.md
+UI_plan.md
+improve.md

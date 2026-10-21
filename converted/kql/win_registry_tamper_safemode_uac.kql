@@ -1,0 +1,6 @@
+// System Security Configuration and SafeMode Registry Tampering
+// Techniques: T1112
+DeviceProcessEvents
+| where TargetObject has_any ("\Control\SafeBoot\Minimal\", "\Control\SafeBoot\Network\", "\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA", "\Control\Lsa\RunAsPPL")
+| where (FileName !endswith "\trustedinstaller.exe" or FileName !endswith "\tiworker.exe")
+| project TimeGenerated, DeviceName, AccountName

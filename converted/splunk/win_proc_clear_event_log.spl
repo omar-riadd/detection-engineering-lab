@@ -1,0 +1,2 @@
+# Clear Windows Event Logs via Wevtutil or PowerShell - ATT&CK: T1070.001
+index=windows Image="*\wevtutil.exe" (CommandLine="* cl *" OR CommandLine="* clear-log *" OR CommandLine="*/cl:*" OR CommandLine="*-cl:*") (Image="*\powershell.exe" OR Image="*\pwsh.exe") (CommandLine="*Clear-EventLog*" OR CommandLine="*Limit-EventLog*" OR CommandLine="*Remove-EventLog*" OR CommandLine="*EventLogSession.ClearLog*") | table _time, host, user, Image, CommandLine

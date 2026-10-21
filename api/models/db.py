@@ -162,6 +162,32 @@ class BypassAttempt(Base):
         }
 
 
+class DeploymentLog(Base):
+    """
+    Record of a rule deployment push to external SIEM platforms (Wazuh, Sentinel, Splunk).
+    """
+    __tablename__ = "deployment_logs"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    rule_id: Mapped[str] = mapped_column(String, index=True)
+    target: Mapped[str] = mapped_column(String)  # wazuh | sentinel | splunk | all
+    status: Mapped[str] = mapped_column(String)  # deployed | simulated | unconfigured | failed
+    target_rule_id: Mapped[Optional[str]] = mapped_column(String, default=None)
+    details: Mapped[Optional[str]] = mapped_column(Text, default=None)
+    deployed_at: Mapped[datetime] = mapped_column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "rule_id": self.rule_id,
+            "target": self.target,
+            "status": self.status,
+            "target_rule_id": self.target_rule_id,
+            "details": self.details,
+            "deployed_at": self.deployed_at.isoformat() if self.deployed_at else None,
+        }
+
+
 def create_tables():
     """Create all tables if they don't exist. Safe to call multiple times."""
     Base.metadata.create_all(engine)

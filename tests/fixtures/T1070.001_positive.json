@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T02:00:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1070.001,technique_name=Clear Event Logs",
+    "UtcTime": "2026-10-21T02:00:00.000Z",
+    "ProcessId": 4812,
+    "Image": "C:\\Windows\\System32\\wevtutil.exe",
+    "CommandLine": "wevtutil.exe cl System",
+    "CurrentDirectory": "C:\\Windows\\system32\\",
+    "User": "CORP\\corpadmin",
+    "ParentProcessId": 3120,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "ParentCommandLine": "cmd.exe"
+  }
+}

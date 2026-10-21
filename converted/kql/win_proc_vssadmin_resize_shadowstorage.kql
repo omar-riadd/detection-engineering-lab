@@ -2,6 +2,6 @@
 // Techniques: T1490
 DeviceProcessEvents
 | where FileName endswith "\vssadmin.exe"
-| where ProcessCommandLine has_any ("resize", "shadowstorage")
+| where ProcessCommandLine has_all ("resize", "shadowstorage")
 | where not(ProcessCommandLine has_any ("list shadowstorage"))
 | project TimeGenerated, DeviceName, AccountName

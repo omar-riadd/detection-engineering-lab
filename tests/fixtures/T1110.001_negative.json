@@ -1,0 +1,20 @@
+[
+  {
+    "EventID": 4625,
+    "TargetUserName": "Administrator",
+    "Status": "0xC000006D",
+    "SubStatus": "0xC000006A",
+    "IpAddress": "192.168.1.150",
+    "ComputerName": "DC01.corp.internal",
+    "timestamp": 0
+  },
+  {
+    "EventID": 4625,
+    "TargetUserName": "Administrator",
+    "Status": "0xC000006D",
+    "SubStatus": "0xC000006A",
+    "IpAddress": "192.168.1.150",
+    "ComputerName": "DC01.corp.internal",
+    "timestamp": 25
+  }
+]

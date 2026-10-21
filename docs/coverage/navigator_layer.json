@@ -223,6 +223,46 @@
       "color": "#66bb6a",
       "comment": "Rule: lnx_auditd_susp_cron_job.yml. Detects unauthorized modification of scheduled cron jobs. D3FEND: D3-SJA (Scheduled Job Analysis).",
       "enabled": true
+    },
+    {
+      "techniqueID": "T1070.001",
+      "tactic": "defense-evasion",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: win_proc_clear_event_log.yml. Detects wevtutil and PowerShell event log clearing. D3FEND: D3-ELA (System Event Log Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1134",
+      "tactic": "defense-evasion",
+      "score": 90,
+      "color": "#66bb6a",
+      "comment": "Rule: win_proc_access_token_manipulation.yml. Detects token elevation/impersonation tools and whoami /priv inspection. D3FEND: D3-PSA (Process Spawn Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1048.003",
+      "tactic": "exfiltration",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: win_net_dns_exfil.yml. Detects outbound socket connections on port 53 by non-standard scripting and LOLBin processes. D3FEND: D3-NTA (Network Traffic Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1112",
+      "tactic": "defense-evasion",
+      "score": 95,
+      "color": "#2e7d32",
+      "comment": "Rule: win_registry_tamper_safemode_uac.yml. Detects tampering with SafeMode Minimal/Network keys, EnableLUA, and RunAsPPL. D3FEND: D3-SICA (System Init Configuration Analysis).",
+      "enabled": true
+    },
+    {
+      "techniqueID": "T1110.001",
+      "tactic": "credential-access",
+      "score": 90,
+      "color": "#66bb6a",
+      "comment": "Rule: win_sec_multiple_failed_logons.yml. Detects password brute forcing and credential stuffing via 5+ failed logons within 60s. D3FEND: D3-UAAA (User Account Authentication Analysis).",
+      "enabled": true
     }
   ]
 }

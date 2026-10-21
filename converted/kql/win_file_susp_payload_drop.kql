@@ -1,0 +1,6 @@
+// Suspicious File Drop in Staging Directory
+// Techniques: T1566.001
+DeviceFileEvents
+| where FileName has_any ("\AppData\Local\Temp\", "\Downloads\")
+| where (FileName endswith ".exe" or FileName endswith ".vbs" or FileName endswith ".ps1")
+| project TimeGenerated, DeviceName, AccountName

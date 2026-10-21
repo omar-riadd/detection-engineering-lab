@@ -5,7 +5,6 @@
 > **Version:** 1.1  
 > **Status:** Final Executive Report  
 > **Project Repository:** [detection-engineering-lab](https://github.com/omar-riadd/detection-engineering-lab)  
-> **Project Plan Reference:** [PROJECT_PLAN.md](../PROJECT_PLAN.md) — Section 5 (Week 8)  
 
 ---
 

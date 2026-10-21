@@ -1,0 +1,2 @@
+# Potential Password Brute Force or Credential Stuffing via Multiple Failed Logons - ATT&CK: T1110.001
+index=windows EventID="4625" | table _time, host, user, Image, CommandLine

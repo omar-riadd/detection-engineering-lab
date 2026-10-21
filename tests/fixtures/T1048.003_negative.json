@@ -1,0 +1,19 @@
+{
+  "EventID": 3,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T02:10:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "UtcTime": "2026-10-21T02:10:00.000Z",
+    "ProcessId": 1024,
+    "Image": "C:\\Windows\\System32\\svchost.exe",
+    "User": "NT AUTHORITY\\NETWORK SERVICE",
+    "Protocol": "udp",
+    "Initiated": "true",
+    "SourceIp": "192.168.1.105",
+    "SourcePort": 58921,
+    "DestinationIp": "192.168.1.1",
+    "DestinationPort": 53
+  }
+}

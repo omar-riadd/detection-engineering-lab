@@ -1,0 +1,16 @@
+{
+  "EventID": 13,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T02:15:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "-",
+    "EventType": "SetValue",
+    "UtcTime": "2026-10-21T02:15:00.000Z",
+    "ProcessId": 1820,
+    "Image": "C:\\Windows\\explorer.exe",
+    "TargetObject": "HKU\\S-1-5-21-3141592653-589793238-846264338-1001\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\UserAssist",
+    "Details": "Binary Data",
+    "User": "CORP\\corpadmin"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "EventID": 3,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T02:10:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1048.003,technique_name=DNS Exfiltration",
+    "UtcTime": "2026-10-21T02:10:00.000Z",
+    "ProcessId": 6120,
+    "Image": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "User": "CORP\\corpadmin",
+    "Protocol": "udp",
+    "Initiated": "true",
+    "SourceIp": "192.168.1.105",
+    "SourcePort": 51234,
+    "DestinationIp": "198.51.100.45",
+    "DestinationPort": 53
+  }
+}

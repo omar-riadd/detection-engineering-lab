@@ -1,7 +1,6 @@
 # Branch Protection & Pull Request Policy
 
-> **Governing Plan:** [PROJECT_PLAN.md](../PROJECT_PLAN.md) — Section 8 (Git Workflow)
-
+> **Scope:** Detection-as-Code Quality Gates & CI Enforcement  
 ---
 
 ## 1. Protected Branch: `main`

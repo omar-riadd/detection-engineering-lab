@@ -1,0 +1,16 @@
+{
+  "EventID": 13,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T02:15:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1112,technique_name=Modify Registry",
+    "EventType": "SetValue",
+    "UtcTime": "2026-10-21T02:15:00.000Z",
+    "ProcessId": 4912,
+    "Image": "C:\\Windows\\System32\\reg.exe",
+    "TargetObject": "HKLM\\SYSTEM\\CurrentControlSet\\Control\\SafeBoot\\Minimal\\RansomSvc",
+    "Details": "Service",
+    "User": "CORP\\corpadmin"
+  }
+}

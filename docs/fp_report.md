@@ -3,7 +3,7 @@
 > **Document Version:** 1.0.0  
 > **Evaluation Period:** 2026-10-19  
 > **Status:** Active Reference Metric Document  
-> **Target Metric:** Portfolio False Positive Rate < 2.0%, True Positive Rate > 90% (per Section 9 of [PROJECT_PLAN.md](../PROJECT_PLAN.md))
+> **Target Metric:** Portfolio False Positive Rate < 2.0%, True Positive Rate > 90%  
 
 ---
 
@@ -50,6 +50,12 @@ $$\text{False Positive Rate (Fall-out)} = \frac{FP}{FP + TN} \times 100\%$$
 | `win_proc_powershell_download_cradle.yml` | T1059.001 | 1 | 0 | 0.00% | Stable | Conjoined web client download method tokens with http/https protocols |
 | `lnx_proc_reverse_shell.yml` | T1059.004 | 1 | 0 | 0.00% | Stable | Scoped to interactive socket descriptors and pseudodevices (/dev/tcp, /dev/udp) |
 | `lnx_auditd_susp_cron_job.yml` | T1053.003 | 1 | 0 | 0.00% | Stable | Filtered system logrotate and anacron automated maintenance routines |
+| `win_proc_clear_event_log.yml` | T1070.001 | 1 | 0 | 0.00% | Stable | Scoped to wevtutil cl switch and PowerShell event log clearing cmdlets |
+| `win_proc_access_token_manipulation.yml` | T1134 | 1 | 0 | 0.00% | Stable | Conjoined whoami with /priv and targeted explicit token manipulation utilities |
+| `win_net_dns_exfil.yml` | T1048.003 | 1 | 0 | 0.00% | Stable | Restricted to port 53 outbound sockets originating from non-DNS system processes and script hosts |
+| `win_registry_tamper_safemode_uac.yml` | T1112 | 1 | 0 | 0.00% | Stable | Filtered trustedinstaller.exe and tiworker.exe benign maintenance updates |
+| `win_sec_multiple_failed_logons.yml` | T1110.001 | 1 | 0 | 0.00% | Stable | 60s sliding window threshold (5+ events) grouped by TargetUserName; filters machine accounts |
+| `win_proc_credential_dump_lateral_sequence.yml` | T1003.001 / T1021.002 | 1 | 0 | 0.00% | Stable | Ordered sequence correlation (LSASS dump followed by SMB admin share access within 300s window) |
 
 ---
 

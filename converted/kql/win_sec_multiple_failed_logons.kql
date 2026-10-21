@@ -1,0 +1,5 @@
+// Potential Password Brute Force or Credential Stuffing via Multiple Failed Logons
+// Techniques: T1110.001
+SecurityEvent
+| where EventID == "4625"
+| project TimeGenerated, DeviceName, AccountName

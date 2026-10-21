@@ -10,6 +10,7 @@ from sqlalchemy import select, func
 
 from api.models.db import BypassAttempt, get_session
 from api.core.ws_manager import ws_manager
+from api.core.auth import verify_api_key
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 BYPASS_LOG_FILE = PROJECT_ROOT / "docs" / "bypass_log.md"
@@ -62,6 +63,7 @@ class BypassCreateRequest(BaseModel):
 async def create_bypass_attempt(
     payload: BypassCreateRequest,
     session: Session = Depends(get_session),
+    _auth: Optional[str] = Depends(verify_api_key),
 ):
     """
     Register a new Purple Team Adversarial Evasion Case Study:

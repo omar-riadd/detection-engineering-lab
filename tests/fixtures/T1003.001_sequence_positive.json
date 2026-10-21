@@ -1,0 +1,16 @@
+[
+  {
+    "EventID": 10,
+    "TargetImage": "C:\\Windows\\System32\\lsass.exe",
+    "SourceImage": "C:\\Windows\\Temp\\mimikatz.exe",
+    "ComputerName": "WS01.corp.internal",
+    "timestamp": 10
+  },
+  {
+    "EventID": 5140,
+    "ShareName": "\\\\*\\C$",
+    "IpAddress": "192.168.1.100",
+    "ComputerName": "WS01.corp.internal",
+    "timestamp": 45
+  }
+]

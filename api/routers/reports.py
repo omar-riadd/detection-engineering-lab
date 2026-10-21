@@ -60,7 +60,7 @@ def get_report_summary(session: Session = Depends(get_session)):
 
     return {
         "generated_at": now_iso,
-        "portfolio_version": "v1.0.0",
+        "portfolio_version": "v2.0",
         "executive_summary": {
             "title": "Detection Engineering Lab — Operational Assessment Report",
             "overall_status": "OPERATIONAL / PRODUCTION READY",
@@ -113,8 +113,8 @@ def export_markdown_report(session: Session = Depends(get_session)):
         "",
         "| Metric | Target | Measured Result | Status |",
         "|---|---|---|---|",
-        f"| **Total Production Rules** | 20–25 | **{exec_sum['total_detections']} Rules** | PASS |",
-        f"| **MITRE ATT&CK Sub-Techniques** | 20 | **{exec_sum['unique_techniques']} Techniques** | PASS |",
+        f"| **Total Production Rules** | 25–30 | **{exec_sum['total_detections']} Rules** | PASS |",
+        f"| **MITRE ATT&CK Sub-Techniques** | 20+ | **{exec_sum['unique_techniques']} Techniques** | PASS |",
         f"| **False Positive Rate** | < 2.0% | **{exec_sum['false_positive_rate_pct']:.2f}%** (0/1200 events) | PASS |",
         f"| **Mean Time to Detect (MTTD)** | < 60s | **{exec_sum['mean_time_to_detect_seconds']}s** | PASS |",
         f"| **Purple-Team Evasions Tested** | 5–10 | **{exec_sum['adversarial_bypasses_tested']} Evasions** | PASS |",

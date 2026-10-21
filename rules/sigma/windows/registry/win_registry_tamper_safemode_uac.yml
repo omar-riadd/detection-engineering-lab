@@ -1,0 +1,36 @@
+title: System Security Configuration and SafeMode Registry Tampering
+id: e547d4f3-0142-4b5d-dc54-450241784004
+status: experimental
+description: |
+  Detects modifications to sensitive system security registry keys (Sysmon Event ID 13).
+  Adversaries modify registry keys to disable User Account Control (EnableLUA), disable LSA Protected Process (RunAsPPL),
+  or configure malicious service persistence under SafeMode minimal boot keys (SafeBoot\Minimal) to execute ransomware
+  or persistence payloads while security agents are disabled.
+references:
+  - https://attack.mitre.org/techniques/T1112/
+  - https://redcanary.com/threat-detection-report/techniques/modify-registry/
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1112
+  - attack.defense_evasion
+logsource:
+  category: registry
+  product: windows
+detection:
+  selection_target:
+    TargetObject|contains:
+      - '\Control\SafeBoot\Minimal\'
+      - '\Control\SafeBoot\Network\'
+      - '\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA'
+      - '\Control\Lsa\RunAsPPL'
+  filter_benign:
+    Image|endswith:
+      - '\trustedinstaller.exe'
+      - '\tiworker.exe'
+  condition: selection_target and not filter_benign
+falsepositives:
+  - Enterprise endpoint management policies modifying UAC or LSA configurations across the fleet
+level: high

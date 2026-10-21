@@ -30,7 +30,7 @@ from api.core.reconciler import full_reconciliation
 from api.core.watcher import FileWatcher
 from api.core.ws_manager import ws_manager
 from api.models.db import create_tables
-from api.routers import bypass, coverage, reports, rules, sync, tests, websocket
+from api.routers import bypass, coverage, deploy, reports, rules, sync, tests, websocket
 
 
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -91,7 +91,7 @@ app = FastAPI(
         "CQRS-lite hybrid backend: Sigma YAML files as source of truth, "
         "SQLite as derived read model, FastAPI as REST+WebSocket API layer."
     ),
-    version="1.0.0",
+    version="2.0.0",
     lifespan=lifespan,
 )
 
@@ -116,6 +116,7 @@ app.include_router(bypass.router)
 app.include_router(sync.router)
 app.include_router(tests.router)
 app.include_router(reports.router)
+app.include_router(deploy.router)
 app.include_router(websocket.router)
 
 
@@ -125,7 +126,7 @@ app.include_router(websocket.router)
 def health():
     return {
         "status": "ok",
-        "version": "1.0.0",
+        "version": "2.0.0",
         "ws_clients": ws_manager.active_count,
     }
 

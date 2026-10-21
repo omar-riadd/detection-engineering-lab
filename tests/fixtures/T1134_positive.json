@@ -1,0 +1,18 @@
+{
+  "EventID": 1,
+  "Channel": "Microsoft-Windows-Sysmon/Operational",
+  "UtcTime": "2026-10-21T02:05:00.000Z",
+  "Computer": "WIN10-CLIENT01.corp.local",
+  "EventData": {
+    "RuleName": "technique_id=T1134,technique_name=Access Token Manipulation",
+    "UtcTime": "2026-10-21T02:05:00.000Z",
+    "ProcessId": 5214,
+    "Image": "C:\\Windows\\System32\\whoami.exe",
+    "CommandLine": "whoami /priv",
+    "CurrentDirectory": "C:\\Windows\\system32\\",
+    "User": "CORP\\corpadmin",
+    "ParentProcessId": 3120,
+    "ParentImage": "C:\\Windows\\System32\\cmd.exe",
+    "ParentCommandLine": "cmd.exe"
+  }
+}

@@ -1,0 +1,2 @@
+# Suspicious File Drop in Staging Directory - ATT&CK: T1566.001
+index=windows (TargetFilename="*\AppData\Local\Temp\*" OR TargetFilename="*\Downloads\*") (TargetFilename="*.exe" OR TargetFilename="*.vbs" OR TargetFilename="*.ps1") | table _time, host, user, Image, CommandLine

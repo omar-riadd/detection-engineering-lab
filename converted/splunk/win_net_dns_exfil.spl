@@ -1,0 +1,2 @@
+# Suspicious DNS Outbound Network Connection via Non-Standard Process - ATT&CK: T1048.003
+index=windows DestinationPort="53" (Image="*\powershell.exe" OR Image="*\pwsh.exe" OR Image="*\cmd.exe" OR Image="*\certutil.exe" OR Image="*\rundll32.exe" OR Image="*\cscript.exe" OR Image="*\wscript.exe") | table _time, host, user, Image, CommandLine

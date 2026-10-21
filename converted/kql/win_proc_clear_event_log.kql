@@ -1,0 +1,8 @@
+// Clear Windows Event Logs via Wevtutil or PowerShell
+// Techniques: T1070.001
+DeviceProcessEvents
+| where FileName endswith "\wevtutil.exe"
+| where ProcessCommandLine has_any (" cl ", " clear-log ", "/cl:", "-cl:")
+| where (FileName endswith "\powershell.exe" or FileName endswith "\pwsh.exe")
+| where ProcessCommandLine has_any ("Clear-EventLog", "Limit-EventLog", "Remove-EventLog", "EventLogSession.ClearLog")
+| project TimeGenerated, DeviceName, AccountName

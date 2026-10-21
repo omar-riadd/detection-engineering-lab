@@ -1,0 +1,28 @@
+title: Potential Password Brute Force or Credential Stuffing via Multiple Failed Logons
+id: f658e504-1253-4c6e-8d65-561352895005
+status: experimental
+description: |
+  Detects multiple failed logon attempts (Windows Security Event ID 4625) targeting the same user account
+  within a short time window (5 or more failures within 60 seconds). Adversaries perform automated brute force
+  or credential stuffing attacks to gain initial access or compromise privileged accounts.
+references:
+  - https://attack.mitre.org/techniques/T1110/001/
+  - https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-075a
+author: Detection Engineering Team
+date: 2026-10-21
+modified: 2026-10-21
+tags:
+  - attack.t1110.001
+  - attack.credential_access
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4625
+  condition: selection | count() >= 5
+timeframe: 60s
+groupby: TargetUserName
+falsepositives:
+  - Misconfigured service accounts or scheduled tasks with expired passwords attempting repeated logons
+level: high

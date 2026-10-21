@@ -1,0 +1,43 @@
+<Event xmlns="http://schemas.microsoft.com/win/2004/08/events/event">
+  <System>
+    <Provider Name="Microsoft-Windows-Sysmon" Guid="{5770385F-C22A-43E0-BF4C-06F5698FFBD9}" />
+    <EventID>1</EventID>
+    <Version>5</Version>
+    <Level>4</Level>
+    <Task>1</Task>
+    <Opcode>0</Opcode>
+    <Keywords>0x8000000000000000</Keywords>
+    <TimeCreated SystemTime="2026-10-21T09:20:15.456Z" />
+    <EventRecordID>104230</EventRecordID>
+    <Correlation />
+    <Execution ProcessID="2412" ThreadID="3140" />
+    <Channel>Microsoft-Windows-Sysmon/Operational</Channel>
+    <Computer>WKS-FIN-014.corp.local</Computer>
+    <Security UserID="S-1-5-21-1234567890-1234567890-1234567890-1001" />
+  </System>
+  <EventData>
+    <Data Name="RuleName">technique_id=T1218.011,technique_name=Rundll32</Data>
+    <Data Name="UtcTime">2026-10-21 09:20:15.456</Data>
+    <Data Name="ProcessGuid">{D2B601C2-8A10-6716-1200-000000000A00}</Data>
+    <Data Name="ProcessId">4812</Data>
+    <Data Name="Image">C:\Windows\System32\rundll32.exe</Data>
+    <Data Name="FileVersion">10.0.19041.1 (WinBuild.160101.0800)</Data>
+    <Data Name="Description">Windows host process (Rundll32)</Data>
+    <Data Name="Product">Microsoft® Windows® Operating System</Data>
+    <Data Name="Company">Microsoft Corporation</Data>
+    <Data Name="OriginalFileName">RUNDLL32.EXE</Data>
+    <Data Name="CommandLine">rundll32.exe C:\Users\jdoe\AppData\Local\Temp\payload.dll,DllRegisterServer</Data>
+    <Data Name="CurrentDirectory">C:\Windows\System32\</Data>
+    <Data Name="User">CORP\jdoe</Data>
+    <Data Name="LogonGuid">{D2B601C2-7F30-6716-E803-000000000000}</Data>
+    <Data Name="LogonId">0x3E8</Data>
+    <Data Name="TerminalSessionId">1</Data>
+    <Data Name="IntegrityLevel">Medium</Data>
+    <Data Name="Hashes">SHA256=EF310D69BE72BE627A8A33E7AA741CD7EF486E745A17DDF0C515F174BCE0C3B7</Data>
+    <Data Name="ParentProcessGuid">{D2B601C2-8A05-6716-1100-000000000A00}</Data>
+    <Data Name="ParentProcessId">3204</Data>
+    <Data Name="ParentImage">C:\Windows\explorer.exe</Data>
+    <Data Name="ParentCommandLine">C:\Windows\Explorer.EXE</Data>
+    <Data Name="ParentUser">CORP\jdoe</Data>
+  </EventData>
+</Event>

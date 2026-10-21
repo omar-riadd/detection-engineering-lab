@@ -1,0 +1,7 @@
+// Access Token Manipulation and Privilege Inspection
+// Techniques: T1134
+DeviceProcessEvents
+| where ProcessCommandLine has_any ("list_tokens", "token::elevate", "token::impersonate", "incognito.exe", "DuplicateTokenEx")
+| where FileName endswith "\whoami.exe"
+| where ProcessCommandLine has_all ("whoami", "/priv")
+| project TimeGenerated, DeviceName, AccountName

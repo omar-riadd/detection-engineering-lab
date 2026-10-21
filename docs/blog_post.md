@@ -22,6 +22,8 @@ Rather than picking ATT&CK techniques at random, every detection in this project
 - **Scenario A (Active Directory Intrusion Chain - APT29):** Initial staging in Downloads (`T1566.001`), user execution (`T1204.002`), PowerShell download cradles (`T1059.001`), Rundll32 proxy execution (`T1218.011`), process hollowing (`T1055.012`), LSASS credential dumping (`T1003.001`), DCSync (`T1003.006`), and SMB lateral movement (`T1021.002`).
 - **Scenario B (Ransomware Precursor Chain - Conti / Black Basta / LockBit):** Inbound RDP access (`T1021.001`), Scheduled Task and Run key persistence (`T1053.005`, `T1547.001`), disabling Windows Defender (`T1562.001`), volume shadow copy deletion via `vssadmin` (`T1490`), and rapid ransomware mass file encryption (`T1486`).
 - **Scenario C (Multi-Platform Enterprise Intrusion - Windows & Linux):** LOLBin credential access via Comsvcs (`T1003.001`), spearphishing Office child execution (`T1566.001` / `T1204.002`), remote WebClient staging cradles (`T1059.001`), Linux interactive reverse shells (`T1059.004`), and persistence via user/system cron tabs (`T1053.003`).
+- **Scenario D (Defense Evasion, Privilege Escalation & Alternative Exfiltration):** Windows Event Log clearing via `wevtutil` (`T1070.001`), access token manipulation & privilege auditing (`T1134`), DNS exfiltration socket tunnels (`T1048.003`), and SafeMode / UAC registry tampering (`T1112`).
+- **Scenario E (Multi-Event Correlation & Stateful Chains):** Sliding time-window password brute forcing (`T1110.001` - 5+ failed logons in 60s) and multi-stage sequence correlation (`T1003.001` then `T1021.002` - LSASS memory dumping followed by rapid administrative SMB share access within 300s).
 
 To collect telemetry across these chains, I built a 4-VM enterprise environment using **Vagrant and Ansible**, deployable from scratch with a single command:
 ```bash
@@ -52,43 +54,43 @@ To solve this, I engineered a custom Python transpiler (`scripts/convert_sigma.p
    - Sysmon Process Creation $\rightarrow$ `<if_sid>60103</if_sid>`
    - Sysmon Network Connections $\rightarrow$ `<if_sid>60105</if_sid>`
    - PowerShell Script Blocks $\rightarrow$ `<if_sid>91800</if_sid>`
-3. **Multi-SIEM Output:** Simultaneously outputs Microsoft Sentinel KQL and Splunk SPL queries, ensuring complete multi-cloud portability.
+3. **Multi-SIEM Output & Live Push API:** Simultaneously outputs Microsoft Sentinel KQL and Splunk SPL queries, with an integrated REST deployment engine (`POST /api/deploy/{rule_id}`) capable of pushing transpiled rules directly to live SIEM endpoints.
 
 ---
 
-## 3. The Detection-as-Code CI/CD Pipeline
+## 3. The Detection-as-Code CI/CD Pipeline & Multi-Format Ingestion
 
-To ensure detection quality, no rule is deployed to production without passing an automated 6-stage GitHub Actions pipeline:
+To ensure detection quality, no rule is deployed to production without passing an automated CI/CD pipeline mirroring `make ci`:
 
 ```
 [Push / Pull Request]
         │
         ▼
-Stage 1: YAML Linting (Fail if YAML is malformed)
+Stage 1: YAML Linting & Sigma Schema Check
         │
         ▼
-Stage 2: Sigma CLI Schema Check (sigma check)
+Stage 2: Transpiler (Convert to Wazuh XML, KQL, SPL)
         │
         ▼
-Stage 3: Transpiler (Convert to Wazuh XML, KQL, SPL)
+Stage 3: Positive Regression Tests (38 attack fixtures MUST alert)
         │
         ▼
-Stage 4: Positive Regression Tests (Attack fixtures MUST alert)
+Stage 4: Negative Regression Tests (27 benign fixtures MUST NOT alert)
         │
         ▼
-Stage 5: Negative Regression Tests (Benign fixtures MUST NOT alert)
+Stage 5: Multi-Format Replay (Wazuh JSON, Sysmon XML, CEF, NDJSON)
         │
         ▼
-Stage 6: Artifact Packaging & Release Upload
+Stage 6: Svelte 5 Field Manual UI Verification & Build
 ```
 
-If a detection engineer introduces a typo or an overzealous condition that breaks alert firing on an attack fixture, or creates a regression on a benign baseline, **the build breaks and the PR cannot merge.**
+Furthermore, the replay harness does not rely solely on flat JSON mocks. It natively ingests **Sysmon XML event logs**, **Common Event Format (CEF)**, **Wazuh JSON alerts**, and **newline-delimited JSON (NDJSON)** streams, normalizing them into uniform schemas on the fly.
 
 ---
 
 ## 4. Purple-Team Hardening: Attacking My Own Detections
 
-A detection that only works against default lab commands is useless. In Week 7, I played the adversary and attacked my own rules using 7 evasion techniques. Here are three highlights:
+A detection that only works against default lab commands is useless. I attacked my own rules across 7 evasion classes. Here are three highlights:
 
 ### Evasion 1: The Renamed Binary LSASS Dump
 - **The Attack:** I renamed `mimikatz.exe` to `svchost.exe` and ran it from `C:\Users\Public\svchost.exe` to dump LSASS memory (`T1003.001`).
@@ -114,11 +116,15 @@ A detection portfolio is only as credible as its verified metrics:
 
 | Metric | Target | Result Achieved | Evaluation Method |
 |---|---|---|---|
-| **True Positive Rate** | > 90% | **100.00%** (32/32) | Pytest regression on attack fixtures |
+| **Production Sigma Rules** | 25–30 | **33 Rules** | Verified in `rules/sigma/` (30 Win, 2 Lnx, 1 Multi) |
+| **MITRE ATT&CK Sub-Techniques** | 20+ | **27 Techniques** | Fully mapped in ATT&CK Navigator v4.5 |
+| **True Positive Rate** | > 90% | **100.00%** (38/38) | Pytest regression on attack fixtures |
 | **False Positive Rate** | < 2% | **0.00%** (0 / 1,207) | 4-hour enterprise baseline replay |
-| **Mean Time to Detect (MTTD)** | < 60s | **6.78 seconds** | End-to-end execution to SIEM alert |
+| **Mean Time to Detect (MTTD)** | < 60s | **6.32 seconds** | End-to-end execution to SIEM alert |
 | **Adversarial Bypasses Mitigated** | 100% | **100.00%** (7/7) | Purple-team retest & fixture validation |
-| **D3FEND Countermeasures Mapped** | 100% | **100.00%** (25/25) | Mapped in documentation & runbooks |
+| **D3FEND Countermeasures Mapped** | 100% | **100.00%** (33/33) | Documented in `docs/d3fend_mapping.md` |
+| **Threat Hunting Playbooks** | 2 | **3 Playbooks** | Credential Access, Ransomware, Recon/Trust |
+| **SOC Analyst Triage Runbooks** | 20+ | **25+ Runbooks** | Standardized runbooks in `runbooks/` |
 
 ---
 

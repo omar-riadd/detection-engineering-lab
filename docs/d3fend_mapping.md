@@ -65,6 +65,26 @@ Every detection rule authored in this project maps directly to a formal D3FEND d
 
 ---
 
+### Scenario D — Defense Evasion, Privilege Escalation & Alternative Exfiltration
+
+| ATT&CK Sub-Technique | ATT&CK Name | Detection Rule (Sigma) | Triage Runbook | D3FEND Countermeasure | D3FEND ID | Architectural Defense Type |
+|---|---|---|---|---|---|---|
+| **T1070.001** | Clear Windows Event Logs | [`win_proc_clear_event_log.yml`](../rules/sigma/windows/proc_creation/win_proc_clear_event_log.yml) | [`T1070.001-clear-event-logs.md`](../runbooks/T1070.001-clear-event-logs.md) | [System Event Log Analysis](https://d3fend.mitre.org/technique/d3f:SystemEventLogAnalysis/) | **D3-ELA** | Detect / Verify |
+| **T1134** | Access Token Manipulation | [`win_proc_access_token_manipulation.yml`](../rules/sigma/windows/proc_creation/win_proc_access_token_manipulation.yml) | [`T1134-access-token-manipulation.md`](../runbooks/T1134-access-token-manipulation.md) | [Process Spawn Analysis](https://d3fend.mitre.org/technique/d3f:ProcessSpawnAnalysis/) | **D3-PSA** | Detect / Analyze |
+| **T1048.003** | DNS Exfiltration | [`win_net_dns_exfil.yml`](../rules/sigma/windows/network/win_net_dns_exfil.yml) | [`T1048.003-dns-exfiltration.md`](../runbooks/T1048.003-dns-exfiltration.md) | [Network Traffic Analysis](https://d3fend.mitre.org/technique/d3f:NetworkTrafficAnalysis/) | **D3-NTA** | Detect / Filter |
+| **T1112** | Modify Registry | [`win_registry_tamper_safemode_uac.yml`](../rules/sigma/windows/registry/win_registry_tamper_safemode_uac.yml) | [`T1112-modify-registry.md`](../runbooks/T1112-modify-registry.md) | [System Init Configuration Analysis](https://d3fend.mitre.org/technique/d3f:SystemInitConfigurationAnalysis/) | **D3-SICA** | Harden / Detect |
+
+---
+
+### Scenario E — Multi-Event Correlation & Stateful Attack Chains
+
+| ATT&CK Sub-Technique | ATT&CK Name | Detection Rule (Sigma) | Triage Runbook | D3FEND Countermeasure | D3FEND ID | Architectural Defense Type |
+|---|---|---|---|---|---|---|
+| **T1110.001** | Password Guessing / Brute Force | [`win_sec_multiple_failed_logons.yml`](../rules/sigma/windows/proc_creation/win_sec_multiple_failed_logons.yml) | [`T1110.001-password-brute-force.md`](../runbooks/T1110.001-password-brute-force.md) | [User Account Authentication Analysis](https://d3fend.mitre.org/technique/d3f:UserAccountAuthenticationAnalysis/) | **D3-UAAA** | Detect / Model |
+| **T1003.001** / **T1021.002** | Credential Dumping Followed by Lateral SMB Share Access | [`win_proc_credential_dump_lateral_sequence.yml`](../rules/sigma/windows/proc_creation/win_proc_credential_dump_lateral_sequence.yml) | [`T1003.001-lsass-memory-dump.md`](../runbooks/T1003.001-lsass-memory-dump.md) | [Credential Access Interception](https://d3fend.mitre.org/technique/d3f:CredentialAccessInterception/) / [File Share Access Filtering](https://d3fend.mitre.org/technique/d3f:FileShareAccessFiltering/) | **D3-CAI** / **D3-FSAF** | Detect / Correlate |
+
+---
+
 ## 3. Maintenance and Lifecycle
 
 As each Sigma rule is drafted, reviewed, or hardened through purple-team testing, this table will be updated to link directly to the corresponding Sigma rule file in `rules/sigma/` and triage runbook in `runbooks/`.

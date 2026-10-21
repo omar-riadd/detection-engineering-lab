@@ -1,0 +1,2 @@
+# System Security Configuration and SafeMode Registry Tampering - ATT&CK: T1112
+index=windows (TargetObject="*\Control\SafeBoot\Minimal\*" OR TargetObject="*\Control\SafeBoot\Network\*" OR TargetObject="*\Microsoft\Windows\CurrentVersion\Policies\System\EnableLUA*" OR TargetObject="*\Control\Lsa\RunAsPPL*") NOT (Image="*\trustedinstaller.exe" OR Image="*\tiworker.exe") | table _time, host, user, Image, CommandLine
