@@ -206,3 +206,100 @@ def test_reports_endpoints():
     assert res_md.status_code == 200
     assert "text/markdown" in res_md.headers["content-type"]
     assert "# Detection Engineering Lab — Executive Security Report" in res_md.text
+
+
+def test_create_rule_endpoint():
+    """Verify POST /api/rules creates rule file, validates schema, and reconciles into read model."""
+    yaml_content = """title: Test Automated Process Execution Rule
+status: test
+description: Automated test rule created via REST API.
+author: CI Bot
+date: 2026/10/21
+tags:
+    - attack.execution
+    - attack.t1059
+logsource:
+    category: process_creation
+    product: windows
+detection:
+    selection:
+        Image|endswith: '\\pytest_automated_test.exe'
+    condition: selection
+falsepositives:
+    - None
+level: low"""
+
+    res = client.post(
+        "/api/rules",
+        json={
+            "filename": "test_win_proc_automated_test.yml",
+            "target_dir": "windows/proc_creation",
+            "yaml_content": yaml_content,
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["status"] == "ok"
+    assert data["title"] == "Test Automated Process Execution Rule"
+    assert "rule_id" in data
+
+    # Verify rule exists in GET
+    rule_res = client.get(f"/api/rules/{data['rule_id']}")
+    assert rule_res.status_code == 200
+
+    # Cleanup test file and DB entry
+    from api.routers.rules import PROJECT_ROOT
+    from api.models.db import Rule, get_session
+    from sqlalchemy import select
+    test_path = PROJECT_ROOT / data["file_path"]
+    if test_path.exists():
+        test_path.unlink()
+
+    (PROJECT_ROOT / "converted" / "kql" / "test_win_proc_automated_test.kql").unlink(missing_ok=True)
+    (PROJECT_ROOT / "converted" / "splunk" / "test_win_proc_automated_test.spl").unlink(missing_ok=True)
+    (PROJECT_ROOT / "rules" / "wazuh" / "test_win_proc_automated_test.xml").unlink(missing_ok=True)
+
+    with next(get_session()) as s:
+        r = s.get(Rule, data["rule_id"])
+        if r:
+            s.delete(r)
+            s.commit()
+
+
+def test_create_bypass_endpoint():
+    """Verify POST /api/bypass registers evasion case study and read model."""
+    res = client.post(
+        "/api/bypass",
+        json={
+            "title": "Automated CI Test Evasion",
+            "technique": "PowerShell Alternate Cradles",
+            "technique_id": "T1059.001",
+            "target_rule": "rules/sigma/windows/proc_creation/posh_pm_susp_script_block.yml",
+            "evasion_method": "Testing automated evasion creation via REST API",
+            "notes": "Root cause failure analysis documented in automated test",
+            "outcome": "DETECTED",
+        },
+    )
+    assert res.status_code == 200
+    data = res.json()
+    assert data["technique_id"] == "T1059.001"
+    assert data["outcome"] == "DETECTED"
+    assert data["evasion_method"] == "Testing automated evasion creation via REST API"
+
+    # Cleanup DB entry and docs/bypass_log.md
+    from api.models.db import BypassAttempt, get_session
+    from api.routers.bypass import BYPASS_LOG_FILE
+    with next(get_session()) as s:
+        ba = s.get(BypassAttempt, data["id"])
+        if ba:
+            s.delete(ba)
+            s.commit()
+
+    if BYPASS_LOG_FILE.exists():
+        content = BYPASS_LOG_FILE.read_text(encoding="utf-8")
+        idx = content.find("Automated CI Test Evasion")
+        if idx != -1:
+            header_idx = content.rfind("---", 0, idx)
+            if header_idx != -1:
+                BYPASS_LOG_FILE.write_text(content[:header_idx].rstrip() + "\n", encoding="utf-8")
+

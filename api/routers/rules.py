@@ -2,6 +2,9 @@
 /api/rules — CRUD-read endpoints for Sigma detection rules.
 All data is served from SQLite read model (synced from YAML files).
 """
+import subprocess
+import sys
+import uuid
 from pathlib import Path
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -242,6 +245,17 @@ async def save_rule(
     # Refresh rule from session
     session.refresh(rule)
 
+    # Auto-transpile to Wazuh, Sentinel, Splunk
+    try:
+        subprocess.run(
+            [sys.executable, str(PROJECT_ROOT / "scripts" / "convert_sigma.py")],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
+    except Exception:
+        pass
+
     # Broadcast change via WebSocket
     await ws_manager.broadcast({
         "event": "rule_changed",
@@ -259,5 +273,120 @@ async def save_rule(
         "status_level": rule.status,
         "synced_at": rule.synced_at.isoformat() if rule.synced_at else None,
     }
+
+
+class RuleCreateRequest(BaseModel):
+    filename: str = Field(..., description="File name, e.g. win_proc_susp_rundll32.yml")
+    target_dir: str = Field("windows/proc_creation", description="Subfolder under rules/sigma/")
+    yaml_content: str = Field(..., description="Raw Sigma YAML content to write to disk")
+
+
+@router.post("")
+async def create_rule(
+    payload: RuleCreateRequest,
+    session: Session = Depends(get_session),
+):
+    """
+    Create a new Sigma detection rule:
+    1. Validate directory, filename, and YAML schema.
+    2. Ensure valid UUID id field.
+    3. Write the new .yml file to disk.
+    4. Reconcile into SQLite read-model.
+    5. Auto-transpile to Wazuh XML, Sentinel KQL, and Splunk SPL.
+    6. Broadcast WebSocket event to all connected UI clients.
+    """
+    clean_filename = payload.filename.strip()
+    if not clean_filename.endswith((".yml", ".yaml")):
+        clean_filename += ".yml"
+
+    clean_dir = payload.target_dir.strip().strip("/")
+    if ".." in clean_dir or ".." in clean_filename:
+        raise HTTPException(status_code=400, detail="Invalid directory traversal path")
+
+    target_dir_path = (RULES_DIR / clean_dir).resolve()
+    target_dir_path.mkdir(parents=True, exist_ok=True)
+    target_file = (target_dir_path / clean_filename).resolve()
+
+    # Security check: must reside within RULES_DIR
+    try:
+        target_file.relative_to(RULES_DIR.resolve())
+    except ValueError:
+        raise HTTPException(
+            status_code=403,
+            detail="Forbidden: Cannot write outside the rules/sigma directory",
+        )
+
+    # Validate YAML syntax
+    try:
+        parsed = yaml.safe_load(payload.yaml_content)
+    except yaml.YAMLError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Invalid YAML syntax: {exc}",
+        )
+
+    if not isinstance(parsed, dict):
+        raise HTTPException(
+            status_code=422,
+            detail="Invalid Sigma rule: YAML root must be a mapping/dictionary",
+        )
+
+    # Check essential Sigma fields
+    missing_fields = [f for f in ["title", "logsource", "detection"] if f not in parsed]
+    if missing_fields:
+        raise HTTPException(
+            status_code=422,
+            detail=f"Missing mandatory Sigma fields: {', '.join(missing_fields)}",
+        )
+
+    # Ensure UUID id
+    if "id" not in parsed or not parsed["id"]:
+        import uuid
+        rule_uuid = str(uuid.uuid4())
+        # prepend or inject id
+        yaml_text = f"id: {rule_uuid}\n" + payload.yaml_content
+    else:
+        rule_uuid = str(parsed["id"])
+        yaml_text = payload.yaml_content
+
+    # Write file to disk
+    try:
+        target_file.write_text(yaml_text, encoding="utf-8")
+    except Exception as exc:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to write file to disk: {exc}",
+        )
+
+    # Reconcile into SQLite read model
+    sync_result = sync_sigma_rule(target_file, session)
+
+    # Auto-transpile to Wazuh, Sentinel, Splunk
+    try:
+        subprocess.run(
+            [sys.executable, str(PROJECT_ROOT / "scripts" / "convert_sigma.py")],
+            check=False,
+            capture_output=True,
+            timeout=10,
+        )
+    except Exception:
+        pass
+
+    # Broadcast change via WebSocket
+    await ws_manager.broadcast({
+        "event": "rule_created",
+        "rule_id": rule_uuid,
+        "title": parsed.get("title", clean_filename),
+    })
+
+    return {
+        "status": "ok",
+        "action": sync_result.get("action", "created"),
+        "rule_id": rule_uuid,
+        "title": parsed.get("title", clean_filename),
+        "file_path": str(target_file.relative_to(PROJECT_ROOT)),
+        "severity": parsed.get("level", "medium"),
+    }
+
 
 
