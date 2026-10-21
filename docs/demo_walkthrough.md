@@ -72,8 +72,8 @@
 - **Visual On Screen:**
   - Displaying Workspace 06 (Purple Team Evasion Ledger) and `docs/coverage/navigator_layer.json` in the ATT&CK Navigator web application.
   - Displaying the final project metrics summary table:
-    - 33 Sigma Rules | 27 Sub-Techniques | 100% TP Rate (38/38) | 0.00% FP Rate (0/1,207) | 6.32s MTTD | 7/7 Bypasses Mitigated | 3 Threat Hunting Playbooks | 25+ Runbooks.
+    - 33 Sigma Rules | 27 ATT&CK Techniques | 100% TP Rate (38/38) | 0.00% FP Rate (0/1,207) | 6.32s MTTD | 7/7 Bypasses Mitigated | 3 Threat Hunting Playbooks | 25+ Runbooks.
 - **Audio Voiceover Narration:**
   > *"Finally, we don't assume our detections work; we attack them. We purple-teamed our rules across 7 evasion classes—including binary renaming, PPID spoofing, and in-memory AMSI reflection bypasses. We hardened every bypassed rule and proved resilience with regression fixtures.
-  > The result is a battle-tested detection suite of 33 production rules, 27 ATT&CK sub-techniques, a 100% true-positive rate, zero false positives across 1,200 baseline events, and an average MTTD of 6.32 seconds.
+  > The result is a battle-tested detection suite of 33 verified rules, 27 ATT&CK techniques, a 100% true-positive rate, zero false positives across 1,207 baseline events, and an average MTTD of 6.32 seconds.
   > Thank you for watching—the entire open-source project and full documentation are available at the GitHub link below."*

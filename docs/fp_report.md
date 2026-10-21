@@ -12,7 +12,7 @@
 This report establishes the baseline signal-to-noise ratio for all authored Sigma detection rules. In production SOC environments, alert fatigue driven by noisy rules leads directly to missed intrusions. To ensure high detection fidelity, each rule is evaluated against:
 1. **Targeted True Positive Attack Fixtures** (`tests/fixtures/*_positive.json`): Simulating exact adversary execution sequences.
 2. **Discriminative Negative Fixtures** (`tests/fixtures/*_negative.json`): High-similarity benign activities on identical log channels.
-3. **Multi-Hour Benign Baseline Corpus** (`tests/fixtures/baseline/`): Over 1,200 events capturing enterprise user behavior (logons, file creations, network shares, admin tools, background updates).
+3. **Multi-Hour Benign Baseline Corpus** (`tests/fixtures/baseline/`): Curated 1,207 events capturing enterprise user behavior (logons, file creations, network shares, admin tools, background updates).
 
 ### Metric Formulas
 $$\text{True Positive Rate (Sensitivity)} = \frac{TP}{TP + FN} \times 100\%$$
@@ -56,6 +56,7 @@ $$\text{False Positive Rate (Fall-out)} = \frac{FP}{FP + TN} \times 100\%$$
 | `win_registry_tamper_safemode_uac.yml` | T1112 | 1 | 0 | 0.00% | Stable | Filtered trustedinstaller.exe and tiworker.exe benign maintenance updates |
 | `win_sec_multiple_failed_logons.yml` | T1110.001 | 1 | 0 | 0.00% | Stable | 60s sliding window threshold (5+ events) grouped by TargetUserName; filters machine accounts |
 | `win_proc_credential_dump_lateral_sequence.yml` | T1003.001 / T1021.002 | 1 | 0 | 0.00% | Stable | Ordered sequence correlation (LSASS dump followed by SMB admin share access within 300s window) |
+| `win_file_susp_payload_drop.yml` | T1566.001 | 1 | 0 | 0.00% | Stable | Filtered benign downloads to staging and temporary directories |
 
 ---
 

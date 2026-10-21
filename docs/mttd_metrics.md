@@ -2,7 +2,7 @@
 
 > **Document Status:** Complete Benchmark Reference  
 > **Last Updated:** 2026-10-19  
-> **Portfolio Target:** MTTD < 60 seconds across all 20 ATT&CK sub-techniques  
+> **Portfolio Target:** MTTD < 60 seconds across all 27 ATT&CK techniques  
 
 ---
 
@@ -103,4 +103,4 @@ The following benchmarks were captured during end-to-end replay of Scenario A (`
 
 ## 4. Conclusion & CV Relevance
 
-By maintaining an average MTTD of **6.32 seconds** across all 27 evaluated sub-techniques, the detection infrastructure ensures real-time threat response capabilities. High-impact intrusion stages (credential dumping, process injection, defense impairment, recovery destruction) are identified within seconds of execution, providing SOC analysts with immediate actionable alerting before lateral spread or data loss occurs.
+By maintaining an average MTTD of **6.32 seconds** across all 27 evaluated techniques (19 sub-techniques and 8 base techniques), the detection infrastructure ensures real-time threat response capabilities. High-impact intrusion stages (credential dumping, process injection, defense impairment, recovery destruction) are identified within seconds of execution, providing SOC analysts with immediate actionable alerting before lateral spread or data loss occurs.
