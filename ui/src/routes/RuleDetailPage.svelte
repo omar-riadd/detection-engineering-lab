@@ -22,6 +22,7 @@
   // Test runner WebSocket state
   let testOutput = $state<string[]>([]);
   let testRunning = $state(false);
+  let testExitCode = $state<number | null>(null);
   let testWs: WebSocket | null = null;
 
   $effect(() => {
@@ -29,6 +30,8 @@
     rule = null;
     converted = null;
     syncMsg = null;
+    testOutput = [];
+    testExitCode = null;
 
     Promise.all([
       rulesApi.get(ruleId),
@@ -50,16 +53,13 @@
   });
 
   async function copyActiveCode() {
-    const content = converted?.formats[activeFormat]?.content || (activeFormat === 'sigma' ? rule?.raw_yaml : '');
+    const content = activeFormat === 'sigma' ? rule?.raw_yaml : converted?.formats[activeFormat]?.content;
     if (!content) return;
     try {
       await navigator.clipboard.writeText(content);
       copied = true;
-      setTimeout(() => { copied = false; }, 2000);
-    } catch (_) {
-      // Fallback
-      copied = false;
-    }
+      setTimeout(() => copied = false, 1800);
+    } catch (_) {}
   }
 
   async function triggerForceSync() {
@@ -68,14 +68,14 @@
     syncMsg = 'Re-syncing with disk...';
     try {
       const res = await syncApi.forceRule(ruleId);
-      syncMsg = `[SYNCED] ${res.action.toUpperCase()} (${res.file})`;
+      syncMsg = `Synced (${res.action})`;
       rule = await rulesApi.get(ruleId);
       converted = await rulesApi.converted(ruleId).catch(() => null);
     } catch (e: any) {
-      syncMsg = `[ERROR] ${e.message}`;
+      syncMsg = `Sync failed: ${e.message}`;
     } finally {
       syncing = false;
-      setTimeout(() => { syncMsg = null; }, 4000);
+      setTimeout(() => syncMsg = null, 3000);
     }
   }
 
@@ -99,11 +99,11 @@
     try {
       const res = await rulesApi.save(rule.id, editYaml);
       saveSuccess = true;
-      syncMsg = `[SAVED] ${res.action.toUpperCase()}: ${res.title}`;
+      syncMsg = `Saved and reconciled: ${res.title}`;
       rule = await rulesApi.get(rule.id);
       converted = await rulesApi.converted(rule.id).catch(() => null);
       isEditing = false;
-      setTimeout(() => { saveSuccess = false; syncMsg = null; }, 4000);
+      setTimeout(() => { saveSuccess = false; syncMsg = null; }, 3500);
     } catch (e: any) {
       saveError = e.message;
     } finally {
@@ -114,6 +114,7 @@
   function runTests() {
     if (testRunning) return;
     testOutput = [];
+    testExitCode = null;
     testRunning = true;
 
     const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
@@ -128,13 +129,14 @@
       if (msg.type === 'status' || msg.type === 'stdout') {
         testOutput = [...testOutput, msg.data];
         requestAnimationFrame(() => {
-          const el = document.getElementById('test-terminal');
+          const el = document.getElementById('rule-test-terminal');
           if (el) el.scrollTop = el.scrollHeight;
         });
       }
       if (msg.type === 'exit') {
         testRunning = false;
-        testOutput = [...testOutput, `\n[EXIT CODE: ${msg.code}]`];
+        testExitCode = msg.code;
+        testOutput = [...testOutput, `\n[VERIFICATION COMPLETE] Exit code: ${msg.code}`];
       }
     };
 
@@ -144,212 +146,215 @@
     };
   }
 
-  const formatList = [
-    { key: 'sigma',  label: 'Sigma (YAML)',   target: 'Vendor-Neutral' },
-    { key: 'wazuh',  label: 'Wazuh (XML)',    target: 'Wazuh Analysisd' },
-    { key: 'kql',    label: 'Sentinel (KQL)', target: 'Microsoft Sentinel' },
-    { key: 'splunk', label: 'Splunk (SPL)',   target: 'Splunk Enterprise' },
+  const formats = [
+    { key: 'sigma',  label: 'Sigma YAML',    target: 'Vendor-Neutral' },
+    { key: 'wazuh',  label: 'Wazuh XML',     target: 'analysisd Engine' },
+    { key: 'kql',    label: 'Sentinel KQL',  target: 'Azure Log Analytics' },
+    { key: 'splunk', label: 'Splunk SPL',    target: 'Enterprise Search' },
   ] as const;
 </script>
 
-<div class="page">
-  <div style="display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-5);">
-    <button class="btn btn--sm" onclick={onback}>← Back to Rules</button>
-    <span style="color: var(--ink-3); font-size: var(--font-size-xs);">Rules / {ruleId}</span>
-    
-    <div style="margin-left: auto; display: flex; gap: var(--sp-2); align-items: center;">
+<div class="view-content">
+  <!-- Top Navigation & Action Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4); padding-bottom: var(--space-3); border-bottom: 1px solid var(--border-subtle);">
+    <div style="display: flex; align-items: center; gap: var(--space-3);">
+      <button class="btn btn--secondary btn--sm" onclick={onback}>
+        ← Rules Catalog
+      </button>
+      <span class="badge badge--mono" style="font-size: var(--text-2xs); color: var(--text-muted);">
+        {ruleId}
+      </span>
       {#if syncMsg}
-        <span style="font-size: var(--font-size-xs); color: var(--green); font-weight: 600;">{syncMsg}</span>
+        <span class="status-pill status-pill--success">{syncMsg}</span>
       {/if}
-      {#if !isEditing}
-        <button class="btn btn--sm" onclick={startEditing}>
-          ✎ Edit YAML
+    </div>
+
+    <div style="display: flex; align-items: center; gap: var(--space-2);">
+      {#if isEditing}
+        <button class="btn btn--secondary btn--sm" onclick={cancelEditing} disabled={saving}>
+          Cancel
+        </button>
+        <button class="btn btn--primary btn--sm" onclick={saveRule} disabled={saving}>
+          {saving ? 'Validating & Writing...' : 'Save to Disk & Reconcile'}
+        </button>
+      {:else}
+        <button class="btn btn--secondary btn--sm" onclick={startEditing}>
+          Edit YAML
+        </button>
+        <button class="btn btn--secondary btn--sm" onclick={triggerForceSync} disabled={syncing}>
+          {syncing ? 'Syncing...' : 'Force Sync'}
+        </button>
+        <button class="btn btn--primary btn--sm" onclick={runTests} disabled={testRunning}>
+          {testRunning ? 'Running Tests...' : 'Run Unit Tests'}
         </button>
       {/if}
-      <button class="btn btn--sm" onclick={triggerForceSync} disabled={syncing || isEditing}>
-        {syncing ? 'Syncing...' : '↻ Force Re-sync'}
-      </button>
     </div>
   </div>
 
   {#if loading}
-    <div class="state-loading">Loading rule metadata and transpiled outputs</div>
+    <div style="padding: var(--space-8); text-align: center; color: var(--text-muted); font-size: var(--text-xs);">
+      <span class="status-beacon status-beacon--syncing" style="display: inline-block; margin-right: 6px;"></span>
+      Loading rule AST and transpilation artifacts...
+    </div>
   {:else if error}
-    <div class="state-error">[ERROR] {error}</div>
+    <div style="padding: var(--space-4); background: var(--sev-critical-bg); border: 1px solid var(--sev-critical-border); border-radius: var(--radius-sm); color: var(--sev-critical); font-size: var(--text-xs);">
+      Error: {error}
+    </div>
   {:else if rule}
 
-    <div class="page__header">
-      <div>
-        <div style="display: flex; gap: var(--sp-3); align-items: center; margin-bottom: var(--sp-2);">
-          <span class="badge badge--{rule.severity}">{rule.severity}</span>
-          <span class="status status--{rule.status === 'stable' ? 'stable' : 'warn'}">
-            [{rule.status.toUpperCase()}]
-          </span>
-          <span class="status status--{rule.sync_status}">
-            [SYNC: {rule.sync_status.toUpperCase()}]
-          </span>
-        </div>
-        <h1 class="page__title" style="font-size: var(--font-size-xl);">{rule.title}</h1>
-      </div>
-    </div>
-
-    <!-- ── Metadata grid ───────────────────────────────────────────── -->
-    <div class="stat-grid" style="margin-bottom: var(--sp-5);">
-      <div class="stat-card">
-        <div class="stat-card__label">ATT&CK Techniques</div>
-        <div style="font-size: var(--font-size-md); font-weight: 600; color: var(--blue);">
-          {rule.techniques.length > 0 ? rule.techniques.join(', ') : '—'}
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__label">Tactics</div>
-        <div style="font-size: var(--font-size-md); font-weight: 600;">
-          {rule.tactics.length > 0 ? rule.tactics.join(', ') : '—'}
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__label">Log Source</div>
-        <div style="font-size: var(--font-size-md); font-weight: 600;">
-          {rule.log_source_product ?? ''}{rule.log_source_service ? ' / ' + rule.log_source_service : ''}{rule.category ? ' / ' + rule.category : ''}
-          {#if !rule.log_source_product && !rule.category}—{/if}
-        </div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-card__label">Source File</div>
-        <div class="truncate" style="font-size: var(--font-size-xs); color: var(--ink-3);" title={rule.file_path}>
-          {rule.file_path.split('/').slice(-2).join('/')}
-        </div>
-      </div>
-    </div>
-
-    <!-- ── Description ────────────────────────────────────────────── -->
-    {#if rule.description}
-      <div class="section-head">
-        <span class="section-head__label">Description</span>
-        <div class="section-head__line"></div>
-      </div>
-      <p style="font-size: var(--font-size-sm); color: var(--ink-2); margin-bottom: var(--sp-5); max-width: 820px; line-height: 1.7;">
-        {rule.description}
-      </p>
-    {/if}
-
-    {#if isEditing}
-      <!-- ── Live Rule Editor (CQRS Write Path) ──────────────────────── -->
-      <div class="section-head">
-        <span class="section-head__label">Live Sigma Rule Editor (CQRS Round-Trip Write Path)</span>
-        <div class="section-head__line"></div>
-      </div>
-
-      {#if saveError}
-        <div class="state-error" style="margin-bottom: var(--sp-3);">
-          [VALIDATION ERROR] {saveError}
-        </div>
-      {/if}
-
-      <div style="border: 1px solid var(--ink-3); margin-bottom: var(--sp-5); background: var(--paper-2);">
-        <div style="display: flex; background: var(--paper-1); border-bottom: 1px solid var(--ink-3); padding: var(--sp-2) var(--sp-3); align-items: center;">
-          <span style="font-size: var(--font-size-xs); font-weight: 700; color: var(--amber);">
-            [EDIT MODE] Editing YAML Source of Truth
-          </span>
-          <div style="margin-left: auto; display: flex; gap: var(--sp-2);">
-            <button class="btn btn--sm" onclick={cancelEditing} disabled={saving}>
-              Cancel
-            </button>
-            <button class="btn btn--sm btn--primary" onclick={saveRule} disabled={saving}>
-              {saving ? 'Writing to Disk & Reconciling...' : '💾 Save to Disk & Reconcile'}
-            </button>
+    <!-- ── Two-Column Workbench Layout ──────────────────────────────────── -->
+    <div style="display: grid; grid-template-columns: 1fr 380px; gap: var(--space-5);">
+      
+      <!-- Left Column: Code Editor & Query Tabs -->
+      <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: var(--space-2);">
+            <span class="sev-pill sev-pill--{rule.severity}">{rule.severity}</span>
+            <span class="status-pill">{rule.status}</span>
+            <h2 style="font-size: var(--text-md); font-weight: 700; color: var(--text-primary);">
+              {rule.title}
+            </h2>
           </div>
         </div>
 
-        <textarea
-          bind:value={editYaml}
-          spellcheck="false"
-          style="
-            width: 100%;
-            height: 420px;
-            font-family: var(--font-mono);
-            font-size: 0.76rem;
-            line-height: 1.5;
-            padding: var(--sp-3);
-            border: none;
-            outline: none;
-            background: var(--paper-3);
-            color: var(--ink-1);
-            resize: vertical;
-          "
-        ></textarea>
-        <div style="padding: var(--sp-2) var(--sp-3); font-size: var(--font-size-xs); color: var(--ink-3); border-top: 1px solid var(--ink-4); display: flex; justify-content: space-between;">
-          <span>Lines: {editYaml.split('\n').length} | Characters: {editYaml.length}</span>
-          <span>Target File: {rule.file_path.split('/').slice(-3).join('/')}</span>
-        </div>
-      </div>
-    {:else}
-      <!-- ── Multi-SIEM Transpiled Rules Viewer ───────────────────────── -->
-      <div class="section-head">
-        <span class="section-head__label">Multi-SIEM Detection Formats (Transpiled Outputs)</span>
-        <div class="section-head__line"></div>
-      </div>
+        {#if saveError}
+          <div style="padding: var(--space-2) var(--space-3); background: var(--sev-critical-bg); border: 1px solid var(--sev-critical-border); border-radius: var(--radius-xs); color: var(--sev-critical); font-size: var(--text-xs); font-family: var(--font-mono);">
+            Validation Failed: {saveError}
+          </div>
+        {/if}
 
-      <div style="border: 1px solid var(--ink-3); margin-bottom: var(--sp-5); background: var(--paper-2);">
-        <!-- Format Tabs -->
-        <div style="display: flex; background: var(--paper-1); border-bottom: 1px solid var(--ink-3); align-items: center;">
-          {#each formatList as fmt}
-            <button
-              class="btn"
-              style="
-                border: none;
-                border-right: 1px solid var(--ink-3);
-                background: {activeFormat === fmt.key ? 'var(--paper-2)' : 'transparent'};
-                font-weight: {activeFormat === fmt.key ? '700' : '400'};
-                color: {activeFormat === fmt.key ? 'var(--ink-1)' : 'var(--ink-3)'};
-                padding: var(--sp-2) var(--sp-4);
-              "
-              onclick={() => { activeFormat = fmt.key; }}
-            >
-              {fmt.label}
-            </button>
-          {/each}
+        <!-- Multi-SIEM Format Switcher -->
+        {#if !isEditing}
+          <div style="display: flex; gap: 1px; background: var(--border-subtle); border-radius: var(--radius-xs); overflow: hidden;">
+            {#each formats as fmt}
+              <button
+                class="btn btn--sm"
+                style="flex: 1; border-radius: 0; background: {activeFormat === fmt.key ? 'var(--bg-elevated)' : 'var(--bg-surface)'}; color: {activeFormat === fmt.key ? 'var(--accent-primary)' : 'var(--text-muted)'}; font-weight: {activeFormat === fmt.key ? '600' : '500'};"
+                onclick={() => activeFormat = fmt.key}
+              >
+                {fmt.label}
+              </button>
+            {/each}
+          </div>
+        {/if}
 
-          <div style="margin-left: auto; padding-right: var(--sp-3); display: flex; gap: var(--sp-3); align-items: center;">
-            <span style="font-size: var(--font-size-xs); color: var(--ink-3);">
-              Target: <strong>{formatList.find(f => f.key === activeFormat)?.target}</strong>
+        <!-- Code Editor / Viewer Box -->
+        <div class="code-editor-chrome">
+          <div class="code-editor-toolbar">
+            <span class="tabular-nums" style="font-family: var(--font-mono); font-size: var(--text-2xs);">
+              {#if isEditing}
+                EDITING: rules/sigma/ (YAML) · {editYaml.split('\n').length} lines · {editYaml.length} chars
+              {:else if activeFormat === 'sigma'}
+                YAML (Source of Truth) · {rule.file_path}
+              {:else if activeFormat === 'wazuh'}
+                Wazuh XML · Parent SID: {rule.file_path.includes('linux') ? '80700' : '60103'}
+              {:else if activeFormat === 'kql'}
+                Microsoft Sentinel KQL Query
+              {:else if activeFormat === 'splunk'}
+                Splunk Search Processing Language (SPL)
+              {/if}
             </span>
-            <button class="btn btn--sm" onclick={copyActiveCode}>
-              {copied ? '✓ Copied!' : 'Copy Code'}
+            <button class="btn btn--secondary btn--sm" onclick={copyActiveCode}>
+              {copied ? '✓ Copied' : 'Copy'}
             </button>
+          </div>
+
+          {#if isEditing}
+            <textarea
+              class="code-editor-textarea"
+              bind:value={editYaml}
+              spellcheck="false"
+            ></textarea>
+          {:else}
+            <pre class="code-editor-textarea" style="overflow-y: auto; max-height: 480px; white-space: pre-wrap;">{#if activeFormat === 'sigma'}{rule.raw_yaml}{:else}{converted?.formats[activeFormat]?.content || 'Query transpilation not ready'}{/if}</pre>
+          {/if}
+        </div>
+      </div>
+
+      <!-- Right Column: Contextual Inspector & Test Console -->
+      <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+        
+        <!-- Inspector Details Card -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-4);">
+          <h3 style="font-size: var(--text-xs); font-family: var(--font-mono); font-weight: 600; text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--space-3);">
+            Detection Context & Telemetry
+          </h3>
+
+          <div style="display: flex; flex-direction: column; gap: var(--space-3); font-size: var(--text-xs);">
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: var(--text-2xs); margin-bottom: 2px;">MITRE ATT&CK TECHNIQUES</span>
+              <div style="display: flex; gap: 4px; flex-wrap: wrap;">
+                {#each rule.techniques as t}
+                  <span class="badge badge--mono" style="color: var(--accent-primary); font-size: var(--text-2xs);">
+                    {t}
+                  </span>
+                {/each}
+              </div>
+            </div>
+
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: var(--text-2xs); margin-bottom: 2px;">MITRE TACTICS</span>
+              <div style="color: var(--text-secondary); font-family: var(--font-mono); font-size: var(--text-2xs);">
+                {rule.tactics.join(', ') || 'execution'}
+              </div>
+            </div>
+
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: var(--text-2xs); margin-bottom: 2px;">LOG SOURCE TELEMETRY</span>
+              <div style="color: var(--text-primary); font-family: var(--font-mono); font-size: var(--text-2xs);">
+                {rule.log_source_product || 'windows'} / {rule.log_source_service || rule.category || 'process_creation'}
+              </div>
+            </div>
+
+            <div>
+              <span style="color: var(--text-muted); display: block; font-size: var(--text-2xs); margin-bottom: 2px;">TELEMETRY RUNBOOK</span>
+              <span style="color: var(--accent-primary); font-family: var(--font-mono); font-size: var(--text-2xs);">
+                runbooks/{rule.techniques[0] || 'T1059'}-triage.md
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Code Box -->
-        <div class="yaml-block" style="border: none; margin: 0; min-height: 240px; max-height: 500px; overflow: auto;">
-          {converted?.formats[activeFormat]?.content || (activeFormat === 'sigma' ? rule.raw_yaml : 'Format not available on disk')}
+        <!-- Live Unit Test Terminal -->
+        <div style="background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); padding: var(--space-4); display: flex; flex-direction: column; flex: 1;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-2);">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <h3 style="font-size: var(--text-xs); font-family: var(--font-mono); font-weight: 600; text-transform: uppercase; color: var(--text-muted);">
+                Test Execution Console
+              </h3>
+              {#if testExitCode !== null}
+                <span class="sev-pill sev-pill--{testExitCode === 0 ? 'low' : 'critical'}">
+                  {testExitCode === 0 ? 'PASS (0)' : `FAIL (${testExitCode})`}
+                </span>
+              {/if}
+            </div>
+            <button class="btn btn--secondary btn--sm" onclick={runTests} disabled={testRunning}>
+              {testRunning ? 'Testing...' : 'Run'}
+            </button>
+          </div>
+
+          <div
+            id="rule-test-terminal"
+            class="terminal-pane"
+            style="flex: 1; min-height: 200px; max-height: 320px; font-size: var(--text-2xs);"
+          >
+            {#if testOutput.length === 0}
+              <div style="color: var(--text-muted); font-style: italic;">
+                Click "Run" or "Run Unit Tests" to execute positive and negative log fixtures against this detection rule in real time.
+              </div>
+            {:else}
+              {#each testOutput as line}
+                <div class="terminal-line" class:terminal-line--pass={line.includes('PASSED')} class:terminal-line--fail={line.includes('FAILED') || line.includes('FAIL')}>
+                  {line}
+                </div>
+              {/each}
+            {/if}
+          </div>
         </div>
+
       </div>
-    {/if}
 
-    <!-- ── Test runner ────────────────────────────────────────────── -->
-    <div class="section-head">
-      <span class="section-head__label">Live Detection Verification Harness</span>
-      <div class="section-head__line"></div>
     </div>
-
-    <div style="display: flex; gap: var(--sp-3); margin-bottom: var(--sp-3);">
-      <button
-        class="btn btn--primary"
-        onclick={runTests}
-        disabled={testRunning}
-      >
-        {testRunning ? '▶ Running pytest...' : '▶ Run Pytest Regression for this Rule'}
-      </button>
-    </div>
-
-    {#if testOutput.length > 0}
-      <div
-        id="test-terminal"
-        class="terminal"
-        style="height: 320px; overflow-y: auto; font-size: 0.68rem;"
-      >{testOutput.join('\n')}</div>
-    {/if}
 
   {/if}
 </div>
